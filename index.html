@@ -1,1673 +1,1407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Tanking">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="apple-touch-icon" href="tank.png">
-    <link rel="manifest" href="manifest.json">
-    <title>Tanking app</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body {
-            background: #fff; color: #000;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0;
-            position: fixed; width: 100%; height: 100%; overflow: hidden;
-        }
-        .page { width: 100%; padding: 10px; display: none; height: 100vh; position: absolute; top: 0; left: 0; background: #fff; z-index: 10; overflow-y: auto; }
-        #calc-page { display: block; z-index: 20; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="214ST CWP">
+<meta name="theme-color" content="#111111">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Bell 214ST — CWP Quick Reference</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;overflow:hidden;}
 
-        h2 { text-align: center; margin: 4px 0 8px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
-        button { font-weight: bold; border-radius: 6px; border: 2px solid #000; text-transform: uppercase; touch-action: manipulation; cursor: pointer; }
-        .btn-nav { background: #000; color: #fff; padding: 14px; width: 100%; font-size: 1.2rem; border-radius: 10px; margin-top: 10px; }
+/* ── PAGES ── */
+.page{position:fixed;inset:0;display:none;flex-direction:column;background:#111;overflow:hidden;z-index:10;}
+.page.active{display:flex;}
 
-        /* ── CALC PAGE ── */
-        .preset-row { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; justify-content: space-between; }
-        .btn-preset { padding: 12px 10px; background: #f0f0f0; font-size: 0.85rem; width: auto; white-space: nowrap; }
-        .btn-manual { flex: 0 0 auto; padding: 10px 8px; background: #fff; font-size: 0.7rem; border: 2px solid #000; border-radius: 6px; font-weight: bold; text-decoration: none; color: #000; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#1a1a1a;border-bottom:2px solid #333;flex-shrink:0;}
+.hdr-title{font-size:1rem;font-weight:bold;text-transform:uppercase;letter-spacing:1px;flex:1;text-align:center;}
+.btn-back{background:#c00;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-weight:bold;font-size:0.85rem;cursor:pointer;flex-shrink:0;}
+.btn-back:active{opacity:0.7;}
 
-        .input-block { border: 2px solid #000; border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: #fff; }
-        .input-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid #ddd; }
-        .input-row:last-child { border-bottom: none; }
-        input[type="number"] { background: #f5f5f5; border: 2px solid #000; border-radius: 4px; font-size: 1.1rem; font-weight: bold; padding: 4px; text-align: right; width: 100px; font-family: inherit; outline: none; }
+/* ── HOME PAGE ── */
+#home{overflow-y:auto;}
+.home-title{text-align:center;padding:10px 8px 4px;font-size:1.1rem;font-weight:bold;color:#ff0;letter-spacing:2px;}
+.home-sub{text-align:center;font-size:0.75rem;color:#aaa;padding-bottom:8px;}
 
-        .fuel-section { border: 2px solid #000; border-radius: 8px; padding: 15px; margin-bottom: 8px; background: #fff; }
-        .fuel-header-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .fuel-label-text { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
-        .fuel-big-p1 { font-size: 2.8rem; font-weight: bold; line-height: 1; }
+/* ── CWP SVG PANEL ── */
+#cwp-wrap{width:100%;overflow-x:auto;overflow-y:auto;flex:1;padding:6px 4px;}
+#cwp-wrap svg{display:block;margin:0 auto;max-width:100%;height:auto;}
 
-        .timer-row { display: flex; align-items: center; border: 2px solid #000; border-radius: 8px; margin-bottom: 6px; padding: 6px; gap: 4px; }
-        .time-display { flex: 0 0 78px; font-family: 'Courier New', Courier, monospace; font-size: 1.05rem; font-weight: bold; text-align: right; }
-        .timer-label { font-size: 0.6rem; font-weight: bold; width: 45px; text-transform: uppercase; line-height: 1; }
-        .btn-timer { height: 60px; font-size: 0.8rem; }
+/* Clickable light styles */
+.cw-light{cursor:pointer;}
+.cw-light rect{rx:3;ry:3;}
+.cw-light:active rect{opacity:0.6;}
+.cw-fire rect{fill:#c00;stroke:#ff4444;stroke-width:1;}
+.cw-fire text{fill:#fff;font-weight:bold;}
+.cw-warn rect{fill:#1a1a1a;stroke:#ff4444;stroke-width:1.5;}
+.cw-warn text{fill:#ff4444;font-weight:bold;}
+.cw-caut rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1;}
+.cw-caut text{fill:#ffcc00;font-weight:bold;}
+.cw-afcs rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1;}
+.cw-afcs text{fill:#ffcc00;font-weight:bold;}
+.cw-master rect{fill:#c00;stroke:#ff4444;stroke-width:2;}
+.cw-master text{fill:#fff;font-weight:bold;}
+.cw-rotor rect{fill:#1a1a1a;stroke:#ff4444;stroke-width:2;}
+.cw-rotor text{fill:#ff4444;font-weight:bold;}
+.cw-blank rect{fill:#222;stroke:#444;stroke-width:1;}
+.cw-blank text{fill:#555;}
+.cw-chip rect{fill:#111;stroke:#888;stroke-width:1;}
+.cw-chip text{fill:#888;}
+.cw-annun rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1;}
+.cw-annun text{fill:#ffcc00;}
+.cw-green rect{fill:#1a1a1a;stroke:#00cc44;stroke-width:1;}
+.cw-green text{fill:#00cc44;font-weight:bold;}
+.cw-nolink rect{fill:#1a1a1a;stroke:#555;stroke-width:1;}
+.cw-nolink text{fill:#666;}
 
-        .val-xl-v198 { font-size: 3.5rem; font-weight: bold; display: inline-block; line-height: 1; }
-        .unit-xl { font-size: 1.8rem; font-weight: bold; margin-left: 5px; }
-        .bubble-v198 { border: 2px solid #000; border-radius: 10px; margin-bottom: 6px; padding: 8px; text-align: center; background: #fff; }
-        .dec-small { display: block; font-size: 1.1rem; color: #333; margin-top: 2px; font-weight: 500; }
+/* ── PROC PAGE ── */
+#proc-page{overflow:hidden;}
+#proc-scroll{flex:1;overflow-y:auto;padding:10px 12px 20px;}
+.proc-type{display:inline-block;padding:3px 10px;border-radius:4px;font-size:0.7rem;font-weight:bold;text-transform:uppercase;margin-bottom:6px;}
+.proc-type.emergency{background:#c00;color:#fff;}
+.proc-type.abnormal{background:#886600;color:#fff;}
+.proc-title{font-size:1.3rem;font-weight:bold;color:#ff0;margin:0 0 12px;}
+.proc-sub{font-size:1rem;font-weight:bold;color:#fff;margin:14px 0 6px;text-decoration:underline;}
+.proc-label{font-size:0.8rem;font-weight:bold;color:#aaa;text-transform:uppercase;margin:10px 0 4px;}
+.proc-items{list-style:disc;padding-left:20px;margin:4px 0 10px;}
+.proc-items li{font-size:0.9rem;line-height:1.5;margin-bottom:4px;}
+.proc-steps{list-style:none;padding:0;margin:4px 0 10px;}
+.proc-steps li{display:flex;gap:8px;font-size:0.9rem;line-height:1.4;margin-bottom:6px;border-bottom:1px solid #222;padding-bottom:6px;}
+.step-num{flex-shrink:0;font-weight:bold;color:#ffcc00;min-width:20px;}
+.step-action{flex:1;}
+.step-cmd{float:right;font-weight:bold;color:#fff;text-align:right;padding-left:8px;}
+.proc-note{background:#1a1a00;border-left:3px solid #886600;padding:8px 10px;margin:8px 0;border-radius:0 4px 4px 0;font-size:0.82rem;font-style:italic;line-height:1.5;}
+.proc-caution{background:#1a0000;border:1px dashed #c00;padding:8px 10px;margin:8px 0;border-radius:4px;font-size:0.82rem;font-style:italic;line-height:1.5;text-align:center;}
+.proc-warning{background:#2a0000;border:2px solid #c00;padding:10px 12px;margin:10px 0;border-radius:4px;font-size:0.85rem;font-weight:bold;font-style:italic;line-height:1.5;text-align:center;}
+.proc-warning::before{content:"⚠ WARNING";display:block;font-size:0.9rem;margin-bottom:4px;}
+.cw-light-ref{display:inline-block;background:#1a1a1a;border:1.5px solid #ffcc00;color:#ffcc00;font-size:0.7rem;font-weight:bold;padding:1px 6px;border-radius:2px;margin:0 2px;}
+.cw-light-ref.red{border-color:#ff4444;color:#ff4444;}
+.proc-dev{color:#555;font-style:italic;text-align:center;margin-top:30px;font-size:0.9rem;}
 
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 20px; background: #ddd; border-radius: 10px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; background: #000; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #000; }
-        input[type="range"].slider-compact { height: 12px; }
-        input[type="range"].slider-compact::-webkit-slider-thumb { width: 28px; height: 28px; border-width: 2px; }
-        body.dark input[type="range"].slider-compact::-webkit-slider-thumb { box-shadow: 0 0 0 1px #888; }
-
-        .log-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; margin-top: 10px; }
-        .log-table th, .log-table td { border: 1px solid #000; padding: 4px 2px; text-align: center; }
-
-        /* GPS button states */
-        #gps-btn { transition: background 0.2s; }
-        #gps-btn.gps-off      { background: #cc0000 !important; color: #fff !important; }
-        #gps-btn.gps-waiting  { background: #ff9900 !important; color: #000 !important; }
-        #gps-btn.gps-live     { background: #00cc00 !important; color: #000 !important; }
-
-        /* Confirm / alert overlay */
-        #confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9998; justify-content: center; align-items: center; }
-        #confirm-overlay.show { display: flex; }
-        #confirm-box { background: #fff; border: 2px solid #000; border-radius: 12px; padding: 24px; text-align: center; width: min(300px, 88vw); }
-        #confirm-box p { margin: 0 0 16px 0; font-weight: bold; font-size: 0.9rem; line-height: 1.4; }
-        #confirm-box .btn-row { display: flex; gap: 10px; }
-        #confirm-box button { flex: 1; padding: 12px; border: 2px solid #000; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
-
-        /* Toast */
-        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 10px 22px; border-radius: 10px; font-size: 0.9rem; z-index: 9999; white-space: nowrap; pointer-events: none; }
-
-        /* ── FUEL ENDURANCE BOX (2x size) ── */
-        .bingo-row { margin-bottom: 8px; }
-        .bingo-box { border: 3px solid #000; border-radius: 14px; padding: 16px 14px; background: #fff; }
-        .bingo-box.warn { background: #ffeb00; }
-        .bingo-box.warn-red { background: #ff3300; color: #fff; }
-        .bingo-box.warn-red .bingo-reserve { color: #ffdddd; }
-        .fuel-section.warn { background: #ffeb00; }
-        .fuel-section.warn-red { background: #ff3300; color: #fff; }
-        .bubble-v198.warn { background: #ffeb00 !important; }
-        .bubble-v198.warn-red { background: #ff3300 !important; color: #fff; }
-        body.dark .bubble-v198.warn { background: #7a6e00 !important; color: #fff; }
-        body.dark .bubble-v198.warn-red { background: #8b1a00 !important; color: #fff; }
-        .bingo-header-row { display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
-        .bingo-title { font-size: 1.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
-        .bingo-time-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-bottom: 6px; }
-        .bingo-endur-label { font-size: 0.75rem; font-weight: bold; color: #555; text-transform: uppercase; white-space: nowrap; }
-        .bingo-time { font-size: 1.9rem; font-weight: bold; }
-        .bingo-reserve { font-size: 0.75rem; color: #555; font-weight: bold; white-space: nowrap; }
-        .bingo-plan-row { display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 8px; }
-        .bingo-plan-label { font-size: clamp(0.85rem, 4vw, 1.1rem); font-weight: bold; white-space: nowrap; }
-        .bingo-plan-row select { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; border: 2px solid #000; border-radius: 4px; font-family: inherit; padding: 2px 4px; }
-        .bingo-plan-range { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; white-space: nowrap; }
-        .bingo-plan-value { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; white-space: nowrap; }
-        #ttb-row.warn, #ttb-row-dup.warn { background: #ffeb00; }
-        #ttb-row.warn-red, #ttb-row-dup.warn-red { background: #ff3300; }
-        #ttb-row.warn-red .bingo-plan-label,
-        #ttb-row.warn-red .bingo-plan-value,
-        #ttb-row-dup.warn-red .bingo-plan-label,
-        #ttb-row-dup.warn-red .bingo-plan-value { color: #fff; }
-
-        /* ── Fuel Calc toggle ── */
-        body.fuelcalc-off #fuelcalc-items,
-        body.fuelcalc-off #ls-range-bingo-dup { display: none !important; }
-
-        /* ── GS GAUGE ── */
-        .gs-gauge-outer { width: 100%; display: flex; justify-content: center; align-items: center; }
-        .gs-gauge-outer svg { width: 100%; height: auto; max-height: 38vh; display: block; }
-        @media (orientation: landscape) and (min-width: 768px) {
-            .gs-gauge-outer svg { max-height: 55vh; }
-        }
-        /* Same stacked order as portrait (fuel/payload -> bingo -> gauge),
-           just sized to fit a wide-short landscape viewport instead of a tall one. */
-        /* ── LANDSCAPE LAYOUT ── */
-        @media (orientation: landscape) and (min-width: 768px) {
-            #flight-page { overflow-y: auto; }
-            .ls-topbar { display: flex !important; }
-            .ls-fuel-payload { display: flex !important; gap: 6px; }
-            .ls-fuel-payload > .bubble-v198 { flex: 1; }
-            .ls-gauge-wrap { width: 100% !important; }
-            .ls-landscape-only { display: block !important; }
-        }
-
-        /* ── DARK MODE ── */
-        body.dark { background: #1a1a1a; color: #f0f0f0; }
-        body.dark .page { background: #1a1a1a; }
-        body.dark h2 { color: #f0f0f0; }
-        body.dark button { border-color: #555; }
-        body.dark .btn-nav { background: #333; border-color: #555; }
-        body.dark .btn-preset { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
-        body.dark .btn-manual { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
-        body.dark .input-block { background: #252525; border-color: #555; }
-        body.dark .input-row { border-bottom-color: #444; }
-        body.dark input[type="number"] { background: #333; border-color: #555; color: #f0f0f0; }
-        body.dark .fuel-section { background: #252525; border-color: #555; }
-        body.dark .bubble-v198 { background: #252525; border-color: #555; }
-        body.dark .bingo-box { background: #252525; border-color: #555; }
-        body.dark .bingo-box.warn, body.dark .fuel-section.warn { background: #7a6e00; color: #fff; }
-        body.dark .bingo-box.warn-red, body.dark .fuel-section.warn-red { background: #8b1a00; color: #fff; }
-        body.dark .bingo-reserve { color: #aaa; }
-        body.dark .bingo-endur-label { color: #aaa; }
-        body.dark .bingo-plan-row select { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
-        body.dark #ttb-row.warn, body.dark #ttb-row-dup.warn { background: #7a6e00; }
-        body.dark #ttb-row.warn-red, body.dark #ttb-row-dup.warn-red { background: #8b1a00; }
-        body.dark .dec-small { color: #aaa; }
-        body.dark .timer-row { border-color: #555; }
-        body.dark .timer-row[style*="background:#eef"] { background: #1e2535 !important; }
-        body.dark .bubble-v198[style*="background:#f0f0f0"] { background: #2a2a2a !important; }
-        body.dark .bubble-v198[style*="background:#eef"] { background: #1e2535 !important; }
-        body.dark input[type="range"] { background: #444; }
-        body.dark input[type="range"]::-webkit-slider-thumb { background: #f0f0f0; border-color: #1a1a1a; box-shadow: 0 0 0 2px #888; }
-        body.dark .log-table th, body.dark .log-table td { border-color: #555; }
-        body.dark #confirm-box { background: #252525; border-color: #555; color: #f0f0f0; }
-        body.dark select { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
-        body.dark #gs-gauge-svg path[stroke="#ddd"] { stroke: #444; }
-        body.dark .gs-tick-line { stroke: #ccc; }
-        body.dark #toast { background: #444; }
-        /* ── SETUP PAGE ── */
-        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .setup-btn { width: 100%; padding: 18px 10px; font-size: 0.95rem; border-radius: 10px; border: 2px solid #000; font-weight: bold; text-transform: uppercase; background: #f0f0f0; color: #000; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; min-height: 80px; }
-        .setup-btn-icon { font-size: 1.6rem; flex-shrink: 0; }
-        .setup-section-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 18px 0 8px 2px; }
-        body.dark .setup-btn { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
-        body.dark .setup-section-label { color: #888; }
-    </style>
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:#111;}
+::-webkit-scrollbar-thumb{background:#444;border-radius:2px;}
+</style>
 </head>
 <body>
 
-<!-- ── CALC PAGE ── -->
-<div id="calc-page" class="page">
-    <h2 id="app-title"></h2>
+<!-- ══════════════════════════════════════════
+     HOME PAGE — CWP PANEL
+════════════════════════════════════════════ -->
+<div id="home" class="page active">
+  <div class="home-title">BELL 214ST</div>
+  <div class="home-sub">Caution / Warning Panel — Quick Reference · Tap a light for procedures</div>
+  <div id="cwp-wrap">
 
-    <div class="preset-row">
-        <div style="display:flex; gap:6px; align-items:center;">
-            <button class="btn-preset" style="background:#444; color:#fff; padding:12px 14px;" onclick="showPage('setup-page')">&#9881; SETUP</button>
-        </div>
-        <div style="display:flex; gap:6px;">
-            <button class="btn-preset" onclick="applyPreset('214B')">Bell 214B</button>
-            <button class="btn-preset" onclick="applyPreset('214ST')">Bell 214 ST</button>
-            <button class="btn-preset" onclick="openUH60()">UH-60</button>
-        </div>
-    </div>
+<!-- ══ CWP SVG ══
+     Layout faithfully follows the PDF graphic page (32 – CAUTION PANEL GRAPHIC)
+     Coordinate grid: each light cell ≈ 72w × 28h, gap 4px
+     Panel width 500, origin (10,10)
+     Rows (y positions):
+       R0  y=10  FIRE row
+       R1  y=52  MASTER CAUTION / ENG OUT row
+       R2  y=84  sub-row 2
+       R3  y=116 sub-row 3
+       R4  y=158 ENG 1 sub panel left
+       R5  y=200 FUEL/OIL row
+       R6  y=232
+       R7  y=264 NO.1 FUEL TRANS row
+       R8  y=296 NO.1 FUEL LOW row
+       R9  y=328 BATT row
+       R10 y=360 INV row
+       R11 y=392 HYD row
+       R12 y=424 ENG INLET row
+       R13 y=456 COPILOT row
+       R14 y=488 AFCS CAUTION
+       R15 y=520 AFCS annunciators
+       R16 y=560 CHIP INDICATOR panel
+════════════════════════════════════════ -->
+<svg id="cwp-svg" viewBox="0 0 520 700" xmlns="http://www.w3.org/2000/svg">
 
-    <div class="input-block">
-        <div class="input-row"><span>Max Gross Weight</span><input type="number" id="max-gross" value="17500" oninput="updateWB(); saveSettings();"></div>
-        <div class="input-row"><span>A/C Empty Weight</span><input type="number" id="empty-weight" value="10000" oninput="updateWB(); saveSettings();"></div>
-        <div class="input-row"><span>Crew + Gear</span><input type="number" id="crew-gear" value="400" oninput="updateWB(); saveSettings();"></div>
-    </div>
+<!-- Panel background -->
+<rect x="0" y="0" width="520" height="700" fill="#0a0a0a" rx="6"/>
+<rect x="4" y="4" width="512" height="692" fill="#141414" rx="5" stroke="#333" stroke-width="1"/>
 
-    <div class="fuel-section">
-        <div class="fuel-header-row">
-            <span class="fuel-label-text">FUEL</span>
-            <div class="fuel-big-p1" id="fuel-display">2,750 lbs</div>
-        </div>
-        <input type="range" id="fuel-slider" min="0" max="3000" step="50" value="2750" oninput="updateWB(); saveSettings();">
-    </div>
+<!-- ── Title ── -->
+<text x="260" y="22" text-anchor="middle" font-size="11" fill="#888" font-weight="bold">CAUTION / WARNING PANEL</text>
 
-    <div class="bubble-v198">
-        <div style="background:#000; color:#fff; padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">USEFUL PAYLOAD</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr;">
-            <div><small style="font-weight:bold;">LBS</small><div id="res-lbs" style="font-size:1.8rem; font-weight:bold;">--</div></div>
-            <div style="border-left:1px solid #ddd;"><small style="font-weight:bold;">LITERS</small><div id="res-liters" style="font-size:1.8rem; font-weight:bold;">--</div></div>
-        </div>
-    </div>
+<!-- ════════════════════════
+     ROW 0 — FIRE WARNINGS (red)
+════════════════════════ -->
+<!-- FIRE ENG 1 -->
+<g class="cw-light cw-fire" onclick="showProc('fire-eng')">
+  <rect x="10" y="28" width="90" height="26"/>
+  <text x="55" y="45" text-anchor="middle" font-size="9">FIRE ENG 1</text>
+</g>
+<!-- L BAG FIRE -->
+<g class="cw-light cw-fire" onclick="showProc('bag-fire')">
+  <rect x="178" y="28" width="90" height="26"/>
+  <text x="223" y="45" text-anchor="middle" font-size="9">L BAG FIRE</text>
+</g>
+<!-- R BAG FIRE -->
+<g class="cw-light cw-fire" onclick="showProc('bag-fire')">
+  <rect x="312" y="28" width="90" height="26"/>
+  <text x="357" y="45" text-anchor="middle" font-size="9">R BAG FIRE</text>
+</g>
+<!-- FIRE ENG 2 -->
+<g class="cw-light cw-fire" onclick="showProc('fire-eng')">
+  <rect x="420" y="28" width="90" height="26"/>
+  <text x="465" y="45" text-anchor="middle" font-size="9">FIRE ENG 2</text>
+</g>
 
-    <button class="btn-nav" style="background:#28a745;" onclick="showPage('timer-page')">GO START</button>
-    <div id="update-status" style="text-align:center; font-size:0.7rem; color:#888; margin-top:4px;"></div>
-</div>
+<!-- ════════════════════════
+     ROW 1 — MASTER CAUTION / ENG OUT
+════════════════════════ -->
+<!-- 1 ENG OUT -->
+<g class="cw-light cw-warn" onclick="showProc('eng-out')">
+  <rect x="140" y="62" width="80" height="26"/>
+  <text x="180" y="79" text-anchor="middle" font-size="9">1 ENG OUT</text>
+</g>
+<!-- MASTER CAUTION -->
+<g class="cw-light cw-master" onclick="showProc('master-caution')">
+  <rect x="228" y="58" width="64" height="38"/>
+  <text x="260" y="72" text-anchor="middle" font-size="8">MASTER</text>
+  <text x="260" y="84" text-anchor="middle" font-size="9">CAUTION</text>
+  <text x="260" y="93" text-anchor="middle" font-size="6">PRESS TO RESET</text>
+</g>
+<!-- 2 ENG OUT -->
+<g class="cw-light cw-warn" onclick="showProc('eng-out')">
+  <rect x="300" y="62" width="80" height="26"/>
+  <text x="340" y="79" text-anchor="middle" font-size="9">2 ENG OUT</text>
+</g>
 
-<!-- ── TIMER PAGE ── -->
-<div id="timer-page" class="page">
-    <h2>FLIGHT TIMER</h2>
+<!-- ════════════════════════
+     ROW 2 — CARGO / HOIST / ROTOR
+════════════════════════ -->
+<!-- CARGO HOOK ARM -->
+<g class="cw-light cw-caut" onclick="showProc('cargo-hook')">
+  <rect x="140" y="100" width="80" height="26"/>
+  <text x="180" y="113" text-anchor="middle" font-size="8">CARGO HOOK</text>
+  <text x="180" y="123" text-anchor="middle" font-size="8">ARM</text>
+</g>
+<!-- ROTOR RPM -->
+<g class="cw-light cw-rotor" onclick="showProc('rotor-rpm')">
+  <rect x="228" y="100" width="64" height="26"/>
+  <text x="260" y="117" text-anchor="middle" font-size="9">ROTOR RPM</text>
+</g>
+<!-- HOIST 20 FT WARN -->
+<g class="cw-light cw-caut" onclick="showProc('hoist')">
+  <rect x="300" y="100" width="80" height="26"/>
+  <text x="340" y="113" text-anchor="middle" font-size="8">HOIST 20 FT</text>
+  <text x="340" y="123" text-anchor="middle" font-size="8">WARN</text>
+</g>
 
-    <div class="timer-row">
-        <span class="timer-label">ENG</span>
-        <button class="btn-timer" style="background:#0f0; flex:2;" id="eng-start" onclick="startT('eng')">START</button>
-        <button class="btn-timer" style="background:#f00; color:#fff; flex:2;" id="eng-stop" onclick="stopT('eng')" disabled>STOP</button>
-        <button class="btn-timer" style="background:#ccc; flex:1;" onclick="resetRow('eng')">RST</button>
-        <div class="time-display" id="eng-disp">00:00:00</div>
-    </div>
-    <div class="timer-row" style="background:#eef;">
-        <span class="timer-label">FLT</span>
-        <button class="btn-timer" style="background:#0f0; flex:2;" id="fl-start" onclick="startT('fl')">START</button>
-        <button class="btn-timer" style="background:#f00; color:#fff; flex:2;" id="fl-stop" onclick="stopT('fl')" disabled>STOP</button>
-        <button class="btn-timer" style="background:#ccc; flex:1;" onclick="resetRow('fl')">RST</button>
-        <div class="time-display" id="fl-disp">00:00:00</div>
-    </div>
+<!-- ════════════════════════
+     ROW 3 — CARGO HOOK OPEN / FLOATS
+════════════════════════ -->
+<!-- CARGO HOOK OPEN -->
+<g class="cw-light cw-caut" onclick="showProc('cargo-hook')">
+  <rect x="140" y="130" width="80" height="26"/>
+  <text x="180" y="143" text-anchor="middle" font-size="8">CARGO HOOK</text>
+  <text x="180" y="153" text-anchor="middle" font-size="8">OPEN</text>
+</g>
+<!-- FLOATS ARM -->
+<g class="cw-light cw-caut" onclick="showProc('floats')">
+  <rect x="300" y="130" width="80" height="26"/>
+  <text x="340" y="147" text-anchor="middle" font-size="9">FLOATS ARM</text>
+</g>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;">
-        <div class="bubble-v198" style="background:#f0f0f0;">
-            <small style="font-weight:bold;">ENG RUN</small><br>
-            <span id="e-ts" style="font-size:0.7rem;">--:-- to --:--</span>
-            <span id="e-hms" style="display:block; border-top:1px solid #999; margin-top:4px; font-weight:bold;">00:00:00</span>
-            <span class="dec-small" id="e-dec">0.00 hr</span>
-        </div>
-        <div class="bubble-v198" style="background:#eef;">
-            <small style="font-weight:bold;">FLIGHT</small><br>
-            <span id="f-ts" style="font-size:0.7rem;">--:-- to --:--</span>
-            <span id="f-hms" style="display:block; border-top:1px solid #999; margin-top:4px; font-weight:bold;">00:00:00</span>
-            <span class="dec-small" id="f-dec">0.00 hr</span>
-        </div>
-    </div>
+<!-- ════════════════════
+     ENG 1 SUB-PANEL (left side)  y=162
+════════════════════ -->
+<!-- FUEL PRESS L -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-press')">
+  <rect x="10" y="162" width="58" height="28"/>
+  <text x="39" y="174" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="39" y="184" text-anchor="middle" font-size="8">PRESS</text>
+</g>
+<!-- ANTI-ICE ON L -->
+<g class="cw-light cw-caut" onclick="showProc('anti-ice')">
+  <rect x="72" y="162" width="58" height="28"/>
+  <text x="101" y="174" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="101" y="184" text-anchor="middle" font-size="8">ON</text>
+</g>
+<!-- RESET/TEST panel center label -->
+<rect x="134" y="162" width="90" height="60" fill="#0d0d0d" stroke="#333" stroke-width="1" rx="2"/>
+<text x="179" y="177" text-anchor="middle" font-size="7" fill="#555">RESET</text>
+<text x="179" y="188" text-anchor="middle" font-size="7" fill="#555">TEST / PNL</text>
+<text x="179" y="199" text-anchor="middle" font-size="7" fill="#555">ENG  1  ENG</text>
+<text x="179" y="210" text-anchor="middle" font-size="7" fill="#555">BRT / DIM</text>
 
-    <div style="display:flex; gap:5px; margin-top:10px;">
-        <button style="background:#444; color:#fff; flex:1.5; height:50px;" onclick="goBack()">BACK</button>
-        <button style="background:#007bff; color:#fff; flex:1; height:50px;" onclick="saveLog()">SAVE</button>
-        <button style="background:#666; color:#fff; flex:1; height:50px;" onclick="showLog()">LOGS</button>
-    </div>
+<!-- ANTI-ICE ON R -->
+<g class="cw-light cw-caut" onclick="showProc('anti-ice')">
+  <rect x="228" y="162" width="58" height="28"/>
+  <text x="257" y="174" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="257" y="184" text-anchor="middle" font-size="8">ON</text>
+</g>
+<!-- FUEL PRESS R -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-press')">
+  <rect x="290" y="162" width="58" height="28"/>
+  <text x="319" y="174" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="319" y="184" text-anchor="middle" font-size="8">PRESS</text>
+</g>
 
-    <button class="btn-nav" style="background:#dc3545; height:50px; margin-top:15px;" onclick="resetAllTimers()">RESET</button>
-    <button class="btn-nav" style="background:#008800; height:60px; display:flex; align-items:center; justify-content:center; margin-top:8px;" onclick="initFlightPage()">GO FLY</button>
-</div>
+<!-- ECU LOCKOUT L -->
+<g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
+  <rect x="10" y="194" width="58" height="28"/>
+  <text x="39" y="206" text-anchor="middle" font-size="8">ECU</text>
+  <text x="39" y="216" text-anchor="middle" font-size="8">LOCKOUT</text>
+</g>
+<!-- OIL L -->
+<g class="cw-light cw-caut" onclick="showProc('eng-oil')">
+  <rect x="72" y="194" width="58" height="28"/>
+  <text x="101" y="211" text-anchor="middle" font-size="9">OIL</text>
+</g>
+<!-- OIL R -->
+<g class="cw-light cw-caut" onclick="showProc('eng-oil')">
+  <rect x="228" y="194" width="58" height="28"/>
+  <text x="257" y="211" text-anchor="middle" font-size="9">OIL</text>
+</g>
+<!-- ECU LOCKOUT R -->
+<g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
+  <rect x="290" y="194" width="58" height="28"/>
+  <text x="319" y="206" text-anchor="middle" font-size="8">ECU</text>
+  <text x="319" y="216" text-anchor="middle" font-size="8">LOCKOUT</text>
+</g>
 
-<!-- ── FLIGHT PAGE ── -->
-<div id="flight-page" class="page" style="flex-direction:column;">
+<!-- FUEL VALVE L -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
+  <rect x="10" y="226" width="58" height="28"/>
+  <text x="39" y="238" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="39" y="248" text-anchor="middle" font-size="8">VALVE</text>
+</g>
+<!-- BLOWER OFF L -->
+<g class="cw-light cw-caut" onclick="showProc('blower-off')">
+  <rect x="72" y="226" width="58" height="28"/>
+  <text x="101" y="238" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="101" y="248" text-anchor="middle" font-size="8">OFF</text>
+</g>
+<!-- BLOWER OFF R -->
+<g class="cw-light cw-caut" onclick="showProc('blower-off')">
+  <rect x="228" y="226" width="58" height="28"/>
+  <text x="257" y="238" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="257" y="248" text-anchor="middle" font-size="8">OFF</text>
+</g>
+<!-- FUEL VALVE R -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
+  <rect x="290" y="226" width="58" height="28"/>
+  <text x="319" y="238" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="319" y="248" text-anchor="middle" font-size="8">VALVE</text>
+</g>
 
-    <!-- Top bar: [BACK | SETUP | FUELBURN] ... [AC LABEL] ... [GPS] -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:3px; width:100%;">
-        <div style="display:flex; align-items:center; gap:3px; flex-shrink:1; min-width:0;">
-            <button style="background:#d9534f; color:#fff; height:44px; padding:0 7px; font-size:0.65rem; flex-shrink:0;" onclick="leaveFlight()">BACK</button>
-            <button style="background:#444; color:#fff; height:44px; padding:0 7px; font-size:0.65rem; flex-shrink:0;" onclick="showPage('setup-page')">&#9881; SETUP</button>
-            <button id="fuelcalc-btn" onclick="toggleFuelCalc()" style="height:44px; padding:0 6px; font-size:0.65rem; background:#333; color:#fff; border-color:#555; flex-shrink:1;">BINGO CALC</button>
-        </div>
-        <div id="flight-ac-label" style="font-size:1rem; font-weight:bold; text-align:center; text-transform:uppercase; letter-spacing:1px; flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 4px;">Bell 214B</div>
-        <div style="display:flex; align-items:center; gap:3px; flex-shrink:1; min-width:0;">
-            <button id="gps-btn" class="gps-off" style="height:44px; padding:0 6px; font-size:0.65rem; flex-shrink:1;" onclick="toggleGPS()">GPS OFF</button>
-        </div>
-    </div>
+<!-- divider line -->
+<line x1="10" y1="260" x2="510" y2="260" stroke="#333" stroke-width="1"/>
 
-    <!-- Flight timer -->
-    <div class="bubble-v198" style="padding:6px; text-align:center;">
-        <small style="font-weight:bold; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">FLIGHT TIMER</small><br>
-        <span id="flight-timer-main" style="font-family:monospace; font-size:2.4rem; font-weight:bold;">00:00:00</span>
-    </div>
+<!-- ════════════════════
+     ROW — NO.1 FUEL TRANS  y=264
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-trans')">
+  <rect x="10" y="264" width="80" height="28"/>
+  <text x="50" y="276" text-anchor="middle" font-size="8">NO.1 FUEL</text>
+  <text x="50" y="286" text-anchor="middle" font-size="8">TRANS</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('eng-chip')">
+  <rect x="94" y="264" width="80" height="28"/>
+  <text x="134" y="276" text-anchor="middle" font-size="8">ENG 1</text>
+  <text x="134" y="286" text-anchor="middle" font-size="8">CHIP</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('xmsn-oil')">
+  <rect x="178" y="264" width="80" height="28"/>
+  <text x="218" y="276" text-anchor="middle" font-size="8">XMSN</text>
+  <text x="218" y="286" text-anchor="middle" font-size="8">OIL</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('cbox-oil')">
+  <rect x="262" y="264" width="80" height="28"/>
+  <text x="302" y="276" text-anchor="middle" font-size="8">CBOX</text>
+  <text x="302" y="286" text-anchor="middle" font-size="8">OIL</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('eng-chip')">
+  <rect x="346" y="264" width="80" height="28"/>
+  <text x="386" y="276" text-anchor="middle" font-size="8">ENG 2</text>
+  <text x="386" y="286" text-anchor="middle" font-size="8">CHIP</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('fuel-trans')">
+  <rect x="430" y="264" width="80" height="28"/>
+  <text x="470" y="276" text-anchor="middle" font-size="8">NO.2 FUEL</text>
+  <text x="470" y="286" text-anchor="middle" font-size="8">TRANS</text>
+</g>
 
-    <!-- Main content: stacked in both portrait and landscape (gauge always below fuel/bingo) -->
-    <div class="ls-main" style="display:block;">
+<!-- ════════════════════
+     ROW — NO.1 FUEL LOW  y=296
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('fuel-low')">
+  <rect x="10" y="296" width="80" height="28"/>
+  <text x="50" y="308" text-anchor="middle" font-size="8">NO.1 FUEL</text>
+  <text x="50" y="318" text-anchor="middle" font-size="8">LOW</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('fuel-filter')">
+  <rect x="94" y="296" width="80" height="28"/>
+  <text x="134" y="308" text-anchor="middle" font-size="8">NO.1 FUEL</text>
+  <text x="134" y="318" text-anchor="middle" font-size="8">FILTER</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('gearbox-oil')">
+  <rect x="178" y="296" width="80" height="28"/>
+  <text x="218" y="308" text-anchor="middle" font-size="8">90° BOX</text>
+  <text x="218" y="318" text-anchor="middle" font-size="8">OIL</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('gearbox-oil')">
+  <rect x="262" y="296" width="80" height="28"/>
+  <text x="302" y="308" text-anchor="middle" font-size="8">42° BOX</text>
+  <text x="302" y="318" text-anchor="middle" font-size="8">OIL</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('fuel-filter')">
+  <rect x="346" y="296" width="80" height="28"/>
+  <text x="386" y="308" text-anchor="middle" font-size="8">NO.2 FUEL</text>
+  <text x="386" y="318" text-anchor="middle" font-size="8">FILTER</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('fuel-low')">
+  <rect x="430" y="296" width="80" height="28"/>
+  <text x="470" y="308" text-anchor="middle" font-size="8">NO.2 FUEL</text>
+  <text x="470" y="318" text-anchor="middle" font-size="8">LOW</text>
+</g>
 
-        <!-- LEFT COLUMN: fuel/payload/bingo (full width in both orientations) -->
-        <div class="ls-col-left" style="display:block;">
+<!-- ════════════════════
+     ROW — BATT  y=328
+════════════════════ -->
+<g class="cw-light cw-warn" onclick="showProc('batt-temp')">
+  <rect x="10" y="328" width="80" height="28"/>
+  <text x="50" y="340" text-anchor="middle" font-size="8">BATT 1</text>
+  <text x="50" y="350" text-anchor="middle" font-size="8">HOT</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('batt-sys')">
+  <rect x="94" y="328" width="80" height="28"/>
+  <text x="134" y="340" text-anchor="middle" font-size="8">NO.1 BATT</text>
+  <text x="134" y="350" text-anchor="middle" font-size="8">SYS</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('gen-hot')">
+  <rect x="178" y="328" width="80" height="28"/>
+  <text x="218" y="340" text-anchor="middle" font-size="8">GEN 1</text>
+  <text x="218" y="350" text-anchor="middle" font-size="8">HOT</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('gen-hot')">
+  <rect x="262" y="328" width="80" height="28"/>
+  <text x="302" y="340" text-anchor="middle" font-size="8">GEN 2</text>
+  <text x="302" y="350" text-anchor="middle" font-size="8">HOT</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('batt-sys')">
+  <rect x="346" y="328" width="80" height="28"/>
+  <text x="386" y="340" text-anchor="middle" font-size="8">NO.2 BATT</text>
+  <text x="386" y="350" text-anchor="middle" font-size="8">SYS</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('batt-temp')">
+  <rect x="430" y="328" width="80" height="28"/>
+  <text x="470" y="340" text-anchor="middle" font-size="8">BATT 2</text>
+  <text x="470" y="350" text-anchor="middle" font-size="8">HOT</text>
+</g>
 
-            <!-- FUEL LOAD + PAYLOAD side by side in landscape, stacked in portrait -->
-            <div class="ls-fuel-payload" style="display:block;">
-                <div class="bubble-v198" id="fly-fuel-box" style="position:relative;">
-                    <div style="position:absolute; top:4px; left:6px; text-align:left;">
-                        <label style="font-size:0.75rem; font-weight:bold; display:block; line-height:1.2;">BURN lbs/hr</label>
-                        <select id="burn-rate-select" onchange="updateBingo(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
-                            <option value="600">600</option><option value="650">650</option><option value="700">700</option>
-                            <option value="750">750</option><option value="800">800</option><option value="850">850</option>
-                            <option value="900">900</option><option value="950">950</option><option value="1000">1000</option>
-                        </select>
-                    </div>
-                    <small style="font-weight:bold;">FUEL LOAD</small><br>
-                    <div style="display:flex; align-items:baseline; justify-content:center; gap:4px;">
-                        <span class="val-xl-v198" id="fly-fuel-lbs">--</span>
-                        <span class="unit-xl">Lbs</span>
-                    </div>
-                    <div style="height:6px;"></div>
-                    <input type="range" id="fly-fuel-slider" min="0" max="3000" step="50" oninput="curFuel=parseFloat(this.value); updateBingo();">
-                    <!-- ENDURANCE always visible, below slider — single constrained line -->
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-top:10px; margin-bottom:2px; width:100%; overflow:hidden;">
-                        <!-- ENDURANCE block -->
-                        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
-                            <span style="font-size:0.6rem; font-weight:bold; text-transform:uppercase; white-space:nowrap; color:#555;">TOTAL ENDURANCE</span>
-                            <span id="bingo-time" style="font-size:clamp(1.2rem,5.5vw,2rem); font-weight:bold; white-space:nowrap; line-height:1.1;">--h:--m</span>
-                            <span style="font-size:0.6rem; font-weight:bold; white-space:nowrap; color:#555;">To Empty</span>
-                        </div>
-                        <!-- divider -->
-                        <div style="width:1px; background:#ccc; align-self:stretch; flex-shrink:0;"></div>
-                        <!-- BINGO IN block -->
-                        <div id="bingo-in-always-row" style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
-                            <span style="font-size:0.6rem; font-weight:bold; text-transform:uppercase; white-space:nowrap; color:#555;">BINGO IN</span>
-                            <span id="bingo-in-always" style="font-size:clamp(1.2rem,5.5vw,2rem); font-weight:bold; white-space:nowrap; line-height:1.1;">--:--</span>
-                            <span id="bingo-in-basis" style="font-size:0.6rem; color:#000; font-weight:normal; white-space:nowrap; line-height:1.3;">--Nm@--kts</span>
-                        </div>
-                    </div>
-                    <!-- Fuel Calc items below slider, inside fuel box -->
-                    <div id="fuelcalc-items" style="margin-top:6px; border-top:1px solid #ccc; padding-top:8px;">
-                        <!-- Operational Endurance (+500lb spare) -->
-                        <div style="display:flex; align-items:baseline; justify-content:center; gap:6px; margin-bottom:6px;">
-                            <span style="font-size:0.7rem; font-weight:bold; text-transform:uppercase; color:#555;">OPERATIONAL ENDURANCE</span>
-                            <span id="op-endurance" style="font-size:1.8rem; font-weight:bold;">--h:--m</span>
-                            <span style="font-size:0.65rem; font-weight:bold; color:#555;">(+500lb spare)</span>
-                        </div>
-                        <div id="fuelplan-row" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
-                            <span style="font-size:0.85rem; font-weight:bold;">Fuel Plan GS</span>
-                            <select id="fuel-plan-gs" onchange="saveFuelPlanGS(); updateBingo();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
-                                <option value="60">60kts</option>
-                                <option value="70">70kts</option>
-                                <option value="80">80kts</option>
-                                <option value="90">90kts</option>
-                                <option value="100" selected>100kts</option>
-                                <option value="110">110kts</option>
-                                <option value="120">120kts</option>
-                                <option value="130">130kts</option>
-                                <option value="actual">ACTUAL</option>
-                            </select>
-                            <span style="font-size:0.85rem; font-weight:bold; white-space:nowrap;">Range <span id="bingo-range-dist" style="font-size:2.3rem; font-weight:bold;">--</span>Nm</span>
-                        </div>
-                        <div id="ttb-row" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:6px; padding:4px; border-radius:6px;">
-                            <span style="font-size:0.85rem; font-weight:bold;">Dist to fuel</span>
-                            <select id="dist-to-fuel" onchange="updateBingo(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
-                                <option value="10">10</option><option value="20">20</option><option value="30">30</option>
-                                <option value="40">40</option><option value="50">50</option><option value="60">60</option>
-                                <option value="70">70</option><option value="80">80</option><option value="90">90</option>
-                                <option value="100" selected>100</option><option value="110">110</option><option value="120">120</option>
-                                <option value="130">130</option><option value="140">140</option><option value="150">150</option>
-                                <option value="160">160</option><option value="170">170</option><option value="180">180</option>
-                                <option value="190">190</option><option value="200">200</option><option value="210">210</option>
-                                <option value="220">220</option><option value="230">230</option><option value="240">240</option>
-                                <option value="250">250</option><option value="260">260</option><option value="270">270</option>
-                                <option value="280">280</option><option value="290">290</option><option value="300">300</option>
-                            </select>
-                            <span style="font-size:0.85rem; font-weight:bold;">Nm &nbsp; Bingo in</span>
-                            <span id="time-to-bingo" style="font-size:2.3rem; font-weight:bold;">--:--</span>
-                        </div>
-                    </div>
-                </div>
+<!-- ════════════════════
+     ROW — INV / BUS / EXT POWER  y=360
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('inverter')">
+  <rect x="10" y="360" width="80" height="28"/>
+  <text x="50" y="378" text-anchor="middle" font-size="9">INV 1</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('bus-feeder')">
+  <rect x="94" y="360" width="80" height="28"/>
+  <text x="134" y="372" text-anchor="middle" font-size="8">BUS</text>
+  <text x="134" y="382" text-anchor="middle" font-size="8">FEEDER</text>
+</g>
+<g class="cw-light cw-nolink" onclick="showProc('ext-power')">
+  <rect x="178" y="360" width="80" height="28"/>
+  <text x="218" y="372" text-anchor="middle" font-size="8">EXT</text>
+  <text x="218" y="382" text-anchor="middle" font-size="8">POWER</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('gen-fail')">
+  <rect x="262" y="360" width="80" height="28"/>
+  <text x="302" y="378" text-anchor="middle" font-size="9">GEN</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('caut-pnl')">
+  <rect x="346" y="360" width="80" height="28"/>
+  <text x="386" y="372" text-anchor="middle" font-size="8">CAUT</text>
+  <text x="386" y="382" text-anchor="middle" font-size="8">PNL</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('inverter')">
+  <rect x="430" y="360" width="80" height="28"/>
+  <text x="470" y="378" text-anchor="middle" font-size="9">INV 2</text>
+</g>
 
-                <div class="bubble-v198">
-                    <small style="font-weight:bold;">PAYLOAD</small><br>
-                    <div style="display:flex; align-items:baseline; justify-content:center; gap:4px;">
-                        <span class="val-xl-v198" id="fly-ltr">--</span>
-                        <span class="unit-xl">Ltrs</span>
-                    </div>
+<!-- ════════════════════
+     ROW — HYD  y=392
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('hydraulic')">
+  <rect x="10" y="392" width="80" height="28"/>
+  <text x="50" y="404" text-anchor="middle" font-size="8">NO.1 HYD</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('inverter')">
+  <rect x="94" y="392" width="80" height="28"/>
+  <text x="134" y="408" text-anchor="middle" font-size="9">26 VAC</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('oil-cooler')">
+  <rect x="178" y="392" width="80" height="28"/>
+  <text x="218" y="404" text-anchor="middle" font-size="8">OIL</text>
+  <text x="218" y="414" text-anchor="middle" font-size="8">COOLER</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('utility-hyd')">
+  <rect x="262" y="392" width="80" height="28"/>
+  <text x="302" y="404" text-anchor="middle" font-size="8">UTILITY</text>
+  <text x="302" y="414" text-anchor="middle" font-size="8">HYD</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('interconn-valve')">
+  <rect x="346" y="392" width="80" height="28"/>
+  <text x="386" y="404" text-anchor="middle" font-size="8">INTERCONN</text>
+  <text x="386" y="414" text-anchor="middle" font-size="8">VALVE</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('hydraulic')">
+  <rect x="430" y="392" width="80" height="28"/>
+  <text x="470" y="404" text-anchor="middle" font-size="8">NO.2 HYD</text>
+</g>
 
-                    <!-- Landscape-only duplicate of Range + Bingo-in, shown below Payload -->
-                    <div id="ls-range-bingo-dup" class="ls-landscape-only" style="margin-top:10px; border-top:1px solid #ccc; padding-top:8px; display:none;">
-                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
-                            <span style="font-size:1.2rem; font-weight:bold; white-space:nowrap;">Range <span id="bingo-range-dist-dup" style="font-size:3.5rem; font-weight:bold;">--</span>Nm</span>
-                        </div>
-                        <div id="ttb-row-dup" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:6px; padding:4px; border-radius:6px;">
-                            <span style="font-size:1.2rem; font-weight:bold;">Bingo in</span>
-                            <span id="time-to-bingo-dup" style="font-size:3.5rem; font-weight:bold;">--:--</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- ════════════════════
+     ROW — ENG INLET / BRAKES  y=424
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('eng-anti-ice')">
+  <rect x="10" y="424" width="80" height="28"/>
+  <text x="50" y="436" text-anchor="middle" font-size="8">ENG 1 INLET</text>
+  <text x="50" y="446" text-anchor="middle" font-size="8">ANTI-ICE</text>
+</g>
+<g class="cw-light cw-nolink" onclick="showProc('spare')">
+  <rect x="94" y="424" width="80" height="28"/>
+  <text x="134" y="441" text-anchor="middle" font-size="9">SPARE</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('brakes')">
+  <rect x="178" y="424" width="80" height="28"/>
+  <text x="218" y="441" text-anchor="middle" font-size="9">BRAKES</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('htr-air-lines')">
+  <rect x="262" y="424" width="80" height="28"/>
+  <text x="302" y="436" text-anchor="middle" font-size="8">HTR</text>
+  <text x="302" y="446" text-anchor="middle" font-size="8">AIR LINES</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
+  <rect x="346" y="424" width="80" height="28"/>
+  <text x="386" y="436" text-anchor="middle" font-size="8">GR BOX</text>
+  <text x="386" y="446" text-anchor="middle" font-size="8">CHIP</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('eng-anti-ice')">
+  <rect x="430" y="424" width="80" height="28"/>
+  <text x="470" y="436" text-anchor="middle" font-size="8">ENG 2 INLET</text>
+  <text x="470" y="446" text-anchor="middle" font-size="8">ANTI-ICE</text>
+</g>
 
-        </div>
-        <!-- end left col -->
+<!-- ════════════════════
+     ROW — WSHLD HTR / DOOR  y=456
+════════════════════ -->
+<g class="cw-light cw-caut" onclick="showProc('wshld-htr')">
+  <rect x="10" y="456" width="80" height="28"/>
+  <text x="50" y="468" text-anchor="middle" font-size="8">COPILOT</text>
+  <text x="50" y="478" text-anchor="middle" font-size="8">WSHLD HTR</text>
+</g>
+<g class="cw-light cw-nolink" onclick="showProc('spare')">
+  <rect x="94" y="456" width="80" height="28"/>
+  <text x="134" y="473" text-anchor="middle" font-size="9">SPARE</text>
+</g>
+<g class="cw-light cw-warn" onclick="showProc('rotor-brake')">
+  <rect x="178" y="456" width="80" height="28"/>
+  <text x="218" y="468" text-anchor="middle" font-size="8">ROTOR</text>
+  <text x="218" y="478" text-anchor="middle" font-size="8">BRAKE</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('door-lock')">
+  <rect x="262" y="456" width="80" height="28"/>
+  <text x="302" y="468" text-anchor="middle" font-size="8">DOOR</text>
+  <text x="302" y="478" text-anchor="middle" font-size="8">LOCK</text>
+</g>
+<g class="cw-light cw-nolink" onclick="showProc('spare')">
+  <rect x="346" y="456" width="80" height="28"/>
+  <text x="386" y="473" text-anchor="middle" font-size="9">SPARE</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('wshld-htr')">
+  <rect x="430" y="456" width="80" height="28"/>
+  <text x="470" y="468" text-anchor="middle" font-size="8">PILOT</text>
+  <text x="470" y="478" text-anchor="middle" font-size="8">WSHLD HTR</text>
+</g>
 
-        <!-- RIGHT COLUMN: GS gauge — sits BELOW the left column, full width, ~2x height -->
-        <div class="ls-col-right" style="display:block;">
-            <div class="ls-gauge-wrap gs-gauge-outer" style="position:relative;">
-                <div style="position:absolute; top:4px; left:6px; text-align:left; z-index:5;">
-                    <label style="font-size:0.75rem; font-weight:bold; display:block; line-height:1.2;">TARGET GS</label>
-                    <select id="gs-target-select" onchange="updateGSUI(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;"></select>
-                </div>
-                <svg id="gs-gauge-svg" viewBox="0 0 200 135" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Background arc (full sweep, grey) -->
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#ddd" stroke-width="14" stroke-linecap="round"/>
-                    <!-- Yellow arc (full sweep) -->
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#ffcc00" stroke-width="14" stroke-linecap="round"/>
-                    <!-- Green zone: centre ±3 kts (±27°) -->
-                    <path id="gs-green-arc" d="M 100 20 A 80 80 0 0 1 143.2 31.8" fill="none" stroke="#00cc44" stroke-width="14" transform="rotate(-27 100 100)"/>
-                    <path id="gs-green-arc2" d="M 100 20 A 80 80 0 0 0 56.8 31.8" fill="none" stroke="#00cc44" stroke-width="14" transform="rotate(27 100 100)"/>
-                    <!-- Tick marks -->
-                    <g id="gs-tick-group" stroke="#000" stroke-width="1.5"></g>
-                    <!-- Scale labels: positioned above/outside their tick marks -->
-                    <text x="8"   y="103"  text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-min-val">--</text>
-                    <text x="100" y="10"   text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-tgt-val">--</text>
-                    <text x="192" y="103"  text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-max-val">--</text>
-                    <!-- Digital speed readout -->
-                    <text x="100" y="88" text-anchor="middle" font-size="48" font-weight="bold" fill="#000" id="fly-gs-svg">0</text>
-                    <!-- Needle -->
-                    <g id="needle-group" style="transform:rotate(0deg); transform-origin:100px 100px; transition:transform 0.2s linear;">
-                        <line x1="100" y1="100" x2="100" y2="20" stroke="#333" stroke-width="3" stroke-linecap="round"/>
-                        <circle cx="100" cy="100" r="5" fill="#333"/>
-                    </g>
-                </svg>
-            </div>
-        </div>
-        <!-- end right col -->
+<!-- ════════════════════
+     AFCS CAUTION  y=490
+════════════════════ -->
+<g class="cw-light cw-afcs" onclick="showProc('afcs')">
+  <rect x="178" y="490" width="164" height="26"/>
+  <text x="260" y="507" text-anchor="middle" font-size="9">AFCS CAUTION</text>
+</g>
 
-    </div>
-    <!-- end ls-main -->
+<!-- ════════════════════
+     AFCS ANNUNCIATORS  y=522
+════════════════════ -->
+<g class="cw-light cw-annun" onclick="showProc('as3')">
+  <rect x="10" y="522" width="44" height="36"/>
+  <text x="32" y="538" text-anchor="middle" font-size="8">A/S 3</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('elev')">
+  <rect x="58" y="522" width="44" height="16"/>
+  <text x="80" y="533" text-anchor="middle" font-size="8">ELEV 1</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('elev')">
+  <rect x="58" y="542" width="44" height="16"/>
+  <text x="80" y="553" text-anchor="middle" font-size="8">ELEV 2</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('afcs')">
+  <rect x="106" y="522" width="44" height="16"/>
+  <text x="128" y="533" text-anchor="middle" font-size="8">PITCH</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('afcs')">
+  <rect x="106" y="542" width="44" height="16"/>
+  <text x="128" y="553" text-anchor="middle" font-size="8">ROLL</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('afcs')">
+  <rect x="154" y="522" width="22" height="16"/>
+  <text x="165" y="533" text-anchor="middle" font-size="7">P</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('afcs')">
+  <rect x="178" y="522" width="22" height="16"/>
+  <text x="189" y="533" text-anchor="middle" font-size="7">R</text>
+</g>
+<g class="cw-light cw-annun" onclick="showProc('afcs')">
+  <rect x="154" y="542" width="46" height="16"/>
+  <text x="177" y="553" text-anchor="middle" font-size="7">Y</text>
+</g>
+<!-- ALT HLD / HDG SEL / AARS / SCAS -->
+<g class="cw-light cw-green" onclick="showProc('afcs')">
+  <rect x="212" y="522" width="48" height="36"/>
+  <text x="236" y="536" text-anchor="middle" font-size="7">ALT HLD</text>
+  <text x="236" y="548" text-anchor="middle" font-size="7">ENGA</text>
+</g>
+<g class="cw-light cw-green" onclick="showProc('afcs')">
+  <rect x="264" y="522" width="48" height="36"/>
+  <text x="288" y="536" text-anchor="middle" font-size="7">HDG SEL</text>
+  <text x="288" y="548" text-anchor="middle" font-size="7">ENGA</text>
+</g>
+<g class="cw-light cw-green" onclick="showProc('afcs')">
+  <rect x="316" y="522" width="48" height="36"/>
+  <text x="340" y="536" text-anchor="middle" font-size="7">AARS</text>
+  <text x="340" y="548" text-anchor="middle" font-size="7">ENGA</text>
+</g>
+<g class="cw-light cw-green" onclick="showProc('afcs')">
+  <rect x="368" y="522" width="48" height="36"/>
+  <text x="392" y="536" text-anchor="middle" font-size="7">SCAS</text>
+  <text x="392" y="548" text-anchor="middle" font-size="7">ENGA</text>
+</g>
 
-</div>
+<!-- ════════════════════
+     CHIP INDICATOR PANEL  y=568
+════════════════════ -->
+<rect x="80" y="568" width="360" height="60" fill="#0d0d0d" stroke="#555" stroke-width="1" rx="3"/>
+<text x="260" y="580" text-anchor="middle" font-size="8" fill="#888">ANNUNCIATOR INDEX</text>
 
-<!-- ── SETUP PAGE ── -->
-<div id="setup-page" class="page">
-    <h2>&#9881; SETUP</h2>
+<g class="cw-light cw-caut" onclick="showProc('xmsn-chip')">
+  <rect x="90" y="583" width="64" height="28"/>
+  <text x="122" y="595" text-anchor="middle" font-size="8">MAIN</text>
+  <text x="122" y="605" text-anchor="middle" font-size="8">XMSN</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('tr-drive')">
+  <rect x="90" y="595" width="64" height="28"/>
+  <text x="122" y="607" text-anchor="middle" font-size="8">T/R</text>
+  <text x="122" y="617" text-anchor="middle" font-size="8">DRIVE</text>
+</g>
 
-    <p class="setup-section-label">App</p>
-    <div class="setup-grid">
-        <button class="setup-btn" onclick="showPage('manual-page')">
-            <span class="setup-btn-icon">&#9432;</span>
-            <span>Manual</span>
-        </button>
-        <button class="setup-btn" onclick="forceUpdate()">
-            <span class="setup-btn-icon">&#8635;</span>
-            <span>Update App</span>
-        </button>
-    </div>
+<!-- CHIP INDICATOR label -->
+<text x="230" y="592" text-anchor="middle" font-size="8" fill="#666">CHIP INDICATOR</text>
+<circle cx="220" cy="602" r="8" fill="none" stroke="#555" stroke-width="1"/>
+<circle cx="240" cy="602" r="8" fill="none" stroke="#555" stroke-width="1"/>
+<text x="230" y="616" text-anchor="middle" font-size="7" fill="#555">PUSH TO CLEAR</text>
 
-    <p class="setup-section-label">Tools</p>
-    <div class="setup-grid">
-        <button class="setup-btn" onclick="openRefuelCalc()">
-            <span class="setup-btn-icon">&#9981;</span>
-            <span>Refuel Calc</span>
-        </button>
-        <button class="setup-btn" onclick="openAeronetCalc()">
-            <span class="setup-btn-icon">&#9981;</span>
-            <span>Aeronet</span>
-        </button>
-    </div>
+<g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
+  <rect x="318" y="583" width="34" height="14"/>
+  <text x="335" y="593" text-anchor="middle" font-size="7">CB 1</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
+  <rect x="356" y="583" width="34" height="14"/>
+  <text x="373" y="593" text-anchor="middle" font-size="7">CB 2</text>
+</g>
+<g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
+  <rect x="318" y="601" width="72" height="14"/>
+  <text x="354" y="611" text-anchor="middle" font-size="7">CB SUMP</text>
+</g>
 
-    <p class="setup-section-label">Display</p>
-    <div class="setup-grid">
-        <button class="setup-btn" id="setup-dark-btn" onclick="toggleDark()">
-            <span class="setup-btn-icon">🌙</span>
-            <span id="setup-dark-label">Dark Mode</span>
-        </button>
-        <button class="setup-btn" id="setup-wake-btn" onclick="toggleWakeLock()">
-            <span class="setup-btn-icon">☀</span>
-            <span id="setup-wake-label">Keep Awake</span>
-        </button>
-    </div>
+</svg>
+  </div><!-- end cwp-wrap -->
+</div><!-- end home -->
 
-    <p class="setup-section-label">GPS</p>
-    <div class="setup-grid">
-        <button class="setup-btn" onclick="forceGPSPermission()">
-            <span class="setup-btn-icon">&#128205;</span>
-            <span>GPS Permission</span>
-        </button>
-    </div>
-
-    <div style="height:20px;"></div>
-    <button class="btn-nav" style="background:#444;" onclick="goBack()">&#8592; BACK</button>
-</div>
-<!-- ── REFUEL CALC PAGE ── -->
-<div id="refuel-page" class="page">
-    <h2>&#9981; REFUEL CALC</h2>
-
-    <div class="fuel-section">
-        <div class="fuel-header-row">
-            <span class="fuel-label-text">DESIRED FUEL</span>
-            <div class="fuel-big-p1" id="refuel-desired-display">-- lbs</div>
-        </div>
-        <input type="range" id="refuel-desired-slider" min="0" max="3000" step="50" value="0" oninput="updateRefuelCalc()">
-    </div>
-
-    <div class="fuel-section">
-        <div class="fuel-header-row">
-            <span class="fuel-label-text">ACTUAL FUEL (IN TANK)</span>
-            <div class="fuel-big-p1" id="refuel-actual-display">-- lbs</div>
-        </div>
-        <input type="range" id="refuel-actual-slider" min="0" max="3000" step="50" value="0" oninput="updateRefuelCalc()">
-    </div>
-
-    <div class="bubble-v198">
-        <div style="background:#000; color:#fff; padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">FUEL REQUIRED</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr;">
-            <div><small style="font-weight:bold;">LBS</small><div id="refuel-req-lbs" style="font-size:1.8rem; font-weight:bold;">--</div></div>
-            <div style="border-left:1px solid #ddd;"><small style="font-weight:bold;">LITERS</small><div id="refuel-req-liters" style="font-size:1.8rem; font-weight:bold;">--</div></div>
-        </div>
-        <div style="font-size:0.65rem; color:#888; text-align:center; margin-top:6px;">Jet-A @ 20&deg;C, 0.800 kg/L</div>
-    </div>
-
-    <div style="border-top:1px solid #ccc; margin-top:20px; padding-top:16px;">
-        <div class="fuel-section">
-            <div style="text-align:center; font-weight:bold; margin-bottom:10px;">LBS to Liters converter</div>
-            <div class="fuel-header-row">
-                <span class="fuel-label-text">LBS &#8596; LITERS</span>
-                <div class="fuel-big-p1" id="lbsltr-display">0 lbs</div>
-            </div>
-            <input type="range" id="lbsltr-slider" min="0" max="3000" step="50" value="0" oninput="updateLbsLtr()">
-            <div class="fuel-big-p1" style="text-align:center; margin-top:6px;" id="lbsltr-liters-display">0 L</div>
-        </div>
-    </div>
-
-    <button style="background:#444; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem; margin-top:20px;" onclick="goBack()">&#8592; BACK</button>
-</div>
-
-<!-- ── AERONET DAILY FUEL INPUT PAGE ── -->
-<div id="aeronet-page" class="page">
-    <h2>&#9981; Aeronet daily fuel input</h2>
-
-    <div class="fuel-section">
-        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">Start of Day fuel</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; margin-bottom:4px;">
-            <div style="text-align:center;"><small style="font-weight:bold;">LBS</small><div class="fuel-big-p1" id="aeronet-start-lbs">0</div></div>
-            <div style="text-align:center; border-left:1px solid #ccc;"><small style="font-weight:bold;">LITERS</small><div class="fuel-big-p1" id="aeronet-start-liters">0</div></div>
-        </div>
-        <input type="range" class="slider-compact" id="aeronet-start-slider" min="0" max="3000" step="50" value="0" oninput="updateAeronetFuel()">
-    </div>
-
-    <div class="fuel-section" style="margin-top:8px;">
-        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">End of Day Fuel</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; margin-bottom:4px;">
-            <div style="text-align:center;"><small style="font-weight:bold;">LBS</small><div class="fuel-big-p1" id="aeronet-end-lbs">0</div></div>
-            <div style="text-align:center; border-left:1px solid #ccc;"><small style="font-weight:bold;">LITERS</small><div class="fuel-big-p1" id="aeronet-end-liters">0</div></div>
-        </div>
-        <input type="range" class="slider-compact" id="aeronet-end-slider" min="0" max="3000" step="50" value="0" oninput="updateAeronetFuel()">
-    </div>
-
-    <div style="border-top:1px solid #ccc; margin-top:10px; padding-top:8px;">
-        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">fuel Added (LITERS)</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-weight:bold;">Fuel 1</label>
-            <input type="number" inputmode="numeric" id="aeronet-fuel1" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-weight:bold;">Fuel 2</label>
-            <input type="number" inputmode="numeric" id="aeronet-fuel2" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-weight:bold;">Fuel 3</label>
-            <input type="number" inputmode="numeric" id="aeronet-fuel3" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-weight:bold;">Fuel 4</label>
-            <input type="number" inputmode="numeric" id="aeronet-fuel4" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label style="font-weight:bold;">Fuel 5</label>
-            <input type="number" inputmode="numeric" id="aeronet-fuel5" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
-        </div>
-    </div>
-
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-        <button onclick="clearAeronetReceipts()" style="background:#A1A1A1; color:#000; border:2px solid #000; border-radius:10px; font-weight:bold; font-size:1rem;">CLEAR</button>
-        <div class="bubble-v198" style="margin-bottom:0;">
-            <div style="background:#fff; color:#000 padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">Total Fuel Added</div>
-            <div class="fuel-big-p1" id="aeronet-total-liters" style="font-size:2rem;">0 L</div>
-        </div>
-    </div>
-
-    <button style="background:#000; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem; margin-top:10px;" onclick="goBack()">&#8592; BACK</button>
-</div>
-
-<!-- ── MANUAL PAGE (loaded inside app) ── -->
-<div id="manual-page" class="page" style="padding:0;">
-    <button style="background:#444; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem;" onclick="goBack()">&#8592; EXIT MANUAL</button>
-    <iframe id="manual-frame" src="manual.html" style="width:100%; height:calc(100% - 50px); border:none; display:block;"></iframe>
-</div>
-
-<!-- ── LOG PAGE ── -->
-<div id="log-page" class="page">
-    <button onclick="goBack()" style="background:#28a745; color:#fff; width:100%; padding:16px; margin-bottom:12px; border:2px solid #000; border-radius:8px; font-weight:bold;">BACK</button>
-    <table class="log-table">
-        <thead>
-            <tr><th>Date</th><th>Reg</th><th>Eng Block</th><th>HH:MM</th><th>Eng</th><th>Flt Block</th><th>HH:MM</th><th>Flt</th></tr>
-        </thead>
-        <tbody id="log-body"></tbody>
-    </table>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:15px;">
-        <button style="background:#217346; color:#fff; padding:12px; border-radius:8px; border:2px solid #000; font-weight:bold;" onclick="exportData('csv')">SAVE .CSV</button>
-        <button style="background:#444; color:#fff; padding:12px; border-radius:8px; border:2px solid #000; font-weight:bold;" onclick="exportData('txt')">SAVE .TXT</button>
-    </div>
-    <button class="btn-nav" style="background:#dc3545; margin-top:25px;" onclick="confirmClear()">DELETE ALL</button>
-</div>
-
-<!-- ── CONFIRM / ALERT OVERLAY ── -->
-<div id="confirm-overlay">
-    <div id="confirm-box">
-        <p id="confirm-text">Confirm action?</p>
-        <div class="btn-row">
-            <button id="confirm-yes" style="background:#dc3545; color:#fff;">YES</button>
-            <button id="confirm-no"  style="background:#ccc;">NO</button>
-        </div>
-    </div>
-</div>
-
-<!-- ── TOAST ── -->
-<div id="toast"></div>
-
-<!-- ── RICKROLL OVERLAY ── -->
-<div id="rickroll-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:99999; flex-direction:column; align-items:center; justify-content:center;">
-    <video id="rickroll-video" playsinline style="width:100%; height:100%; object-fit:contain;"></video>
-    <button onclick="closeRickroll()" style="position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.6); color:#fff; border:2px solid #fff; border-radius:8px; font-size:1.1rem; font-weight:bold; padding:8px 18px; z-index:100000;">✕ CLOSE</button>
+<!-- ══════════════════════════════════════════
+     PROCEDURE PAGE
+════════════════════════════════════════════ -->
+<div id="proc-page" class="page">
+  <div class="hdr">
+    <button class="btn-back" onclick="goHome()">◀ CWP</button>
+    <div class="hdr-title" id="proc-hdr-title">Procedure</div>
+  </div>
+  <div id="proc-scroll"></div>
 </div>
 
 <script>
-    // ── App version — change this ONE line to update everywhere ───────────────
-    var APP_VERSION = 'V10.4';
-    document.getElementById('app-title').textContent = 'Tanking app ' + APP_VERSION;
-    document.title = 'Tanking app ' + APP_VERSION;
-    // ── Service Worker ────────────────────────────────────────────────────────
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            // updateViaCache: 'none' is critical — without it the browser is allowed
-            // to serve sw.js itself from HTTP cache on registration, which means a
-            // force-update can wipe every cache yet still reinstall the OLD worker
-            // script a moment later. This guarantees the worker file is always
-            // fetched from the network.
-            navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' })
-                .then(function(r) { console.log('[SW] registered:', r.scope); })
-                .catch(function(e) { console.warn('[SW] failed:', e); });
-        });
-    }
-
-    // Let the manual page's own Exit button (clicked inside the iframe) close back to wherever manual was opened from
-    window.addEventListener('message', function(e) {
-        if (e.data && e.data.type === 'EXIT_MANUAL') {
-            goBack();
-        }
-        if (e.data && e.data.type === 'FORCE_UPDATE_DONE') {
-            finishForceUpdate();
-        }
-    });
-
-    // ── (1) Force Update ─────────────────────────────────────────────────────
-    // Wipes every cache this app owns, unregisters the old service worker,
-    // re-registers a fresh one, then hard-reloads bypassing the HTTP cache too.
-    function forceUpdate() {
-        showDialog("Update app now?\n\nThis re-downloads all files from scratch and clears the offline cache.", function() {
-            runForceUpdate();
-        }, null);
-    }
-
-    function runForceUpdate() {
-        var status = document.getElementById('update-status');
-        if (status) status.textContent = 'Clearing cache…';
-
-        // Step 1: Unregister ALL service workers so nothing can intercept the reload
-        var unregister = ('serviceWorker' in navigator)
-            ? navigator.serviceWorker.getRegistrations().then(function(regs) {
-                return Promise.all(regs.map(function(r) { return r.unregister(); }));
-              })
-            : Promise.resolve();
-
-        // Step 2: Wipe every Cache Storage bucket (SW offline cache)
-        var clearCaches = ('caches' in window)
-            ? caches.keys().then(function(keys) {
-                return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-              })
-            : Promise.resolve();
-
-        // Step 3: Wipe all IndexedDB databases
-        // NOTE: localStorage is intentionally NEVER touched here — that's where
-        // per-aircraft settings (settings_214B / settings_214ST), the flight log,
-        // and dark-mode preference live. Force Update must overwrite every app
-        // file but must never wipe user settings.
-        var clearIDB = new Promise(function(resolve) {
-            if (!window.indexedDB || !indexedDB.databases) { resolve(); return; }
-            indexedDB.databases().then(function(dbs) {
-                var dels = dbs.map(function(db) {
-                    return new Promise(function(res) {
-                        var req = indexedDB.deleteDatabase(db.name);
-                        req.onsuccess = req.onerror = req.onblocked = res;
-                    });
-                });
-                Promise.all(dels).then(resolve).catch(resolve);
-            }).catch(resolve);
-        });
-
-        Promise.all([unregister, clearCaches, clearIDB]).then(function() {
-            if (status) status.textContent = 'Downloading fresh files…';
-
-            // Step 4: Force-fetch every asset with no-store so the browser
-            // pulls directly from the server and cannot serve anything cached.
-            var bust = '?nocache=' + Date.now();
-            var assets = [
-                './index.html', './sw.js', './manifest.json',
-                './manual.html', './tank.png'
-            ];
-            return Promise.all(assets.map(function(url) {
-                return fetch(url + bust, {
-                    cache: 'no-store',
-                    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
-                }).catch(function() {});
-            }));
-        }).then(function() {
-            if (status) status.textContent = 'Saving & reloading…';
-
-            // Step 5: Hard navigate back to this same page — just strip any existing
-            // query string and add a fresh bust token. No path manipulation needed.
-            var cleanUrl = window.location.origin + window.location.pathname;
-            window.location.replace(cleanUrl + '?t=' + Date.now());
-        }).catch(function(err) {
-            console.warn('[Update] fallback reload, error:', err);
-            // Last-resort: at minimum hard-reload
-            window.location.reload(true);
-        });
-    }
-
-    function openUH60() {
-        var overlay = document.getElementById('rickroll-overlay');
-        var video   = document.getElementById('rickroll-video');
-        overlay.style.display = 'flex';
-        video.src = 'rickroll.mp4';
-        video.currentTime = 0;
-        video.play();
-        if (overlay.requestFullscreen) overlay.requestFullscreen();
-        else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
-    }
-
-    function closeRickroll() {
-        var overlay = document.getElementById('rickroll-overlay');
-        var video   = document.getElementById('rickroll-video');
-        video.pause();
-        video.src = '';
-        video.load();
-        overlay.style.display = 'none';
-        if (document.exitFullscreen) document.exitFullscreen().catch(function(){});
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-    }
-
-    // no-op — kept so any stray SW FORCE_UPDATE_DONE messages don't throw
-    function finishForceUpdate() {}
-
-    // ── Setup Page ────────────────────────────────────────────────────────────
-    function updateSetupButtons() {
-        var isDark = document.body.classList.contains('dark');
-        var darkBtn = document.getElementById('setup-dark-btn');
-        var darkLbl = document.getElementById('setup-dark-label');
-        if (darkBtn && darkLbl) {
-            darkLbl.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-            darkBtn.querySelector('.setup-btn-icon').textContent = isDark ? '☀' : '🌙';
-        }
-        var wakeBtn = document.getElementById('setup-wake-btn');
-        var wakeLbl = document.getElementById('setup-wake-label');
-        if (wakeBtn && wakeLbl) {
-            var awake = !!wakeLock;
-            wakeLbl.textContent = awake ? 'Awake (ON)' : 'Keep Awake';
-            wakeBtn.querySelector('.setup-btn-icon').textContent = awake ? '🔆' : '☀';
-        }
-    }
-
-
-    // ── Toast ─────────────────────────────────────────────────────────────────
-    function showToast(msg, duration) {
-        duration = duration || 2500;
-        var t = document.getElementById('toast');
-        t.textContent = msg;
-        t.style.display = 'block';
-        setTimeout(function() { t.style.display = 'none'; }, duration);
-    }
-
-    // ── Confirm / info dialog ─────────────────────────────────────────────────
-    function showDialog(msg, yesCallback, noCallback) {
-        document.getElementById('confirm-text').innerText = msg;
-        var overlay = document.getElementById('confirm-overlay');
-        var yesBtn  = document.getElementById('confirm-yes');
-        var noBtn   = document.getElementById('confirm-no');
-        if (yesCallback === null) {
-            yesBtn.textContent = 'OK';
-            yesBtn.style.background = '#000';
-            yesBtn.style.color = '#fff';
-            noBtn.style.display = 'none';
-        } else {
-            yesBtn.textContent = 'YES';
-            yesBtn.style.background = '#dc3545';
-            yesBtn.style.color = '#fff';
-            noBtn.style.display = '';
-        }
-        overlay.classList.add('show');
-        yesBtn.onclick = function() {
-            overlay.classList.remove('show');
-            noBtn.style.display = '';
-            if (yesCallback) yesCallback();
-        };
-        noBtn.onclick = function() {
-            overlay.classList.remove('show');
-            if (noCallback) noCallback();
-        };
-    }
-
-    // ── State ─────────────────────────────────────────────────────────────────
-    var timers = {
-        eng:  { elapsed:0, start:null, blockStart:null, blockEnd:null, interval:null, running:false },
-        fl:   { elapsed:0, start:null, interval:null, running:false, tsS:null, tsE:null }
-    };
-    var curFuel = 2750, burnRef = null, flyTick = null, curGS = 0, watchID = null;
-
-    // ── (3) Settings: per-aircraft persistence ────────────────────────────────
-    // Key: 'settings_214B' and 'settings_214ST'
-    // Stores: maxGross, emptyWeight, crewGear, fuel, burn, gsTarget
-    var currentAircraft = '214B';  // tracks which preset was last applied
-
-    function saveSettings() {
-        var key = 'settings_' + currentAircraft;
-        var distEl = document.getElementById('dist-to-fuel');
-        var s = {
-            maxGross:    document.getElementById('max-gross').value,
-            emptyWeight: document.getElementById('empty-weight').value,
-            crewGear:    document.getElementById('crew-gear').value,
-            fuel:        document.getElementById('fuel-slider').value,
-            burn:        document.getElementById('burn-rate-select').value,
-            gsTarget:    document.getElementById('gs-target-select').value,
-            distToFuel:  distEl ? distEl.value : undefined
-        };
-        localStorage.setItem(key, JSON.stringify(s));
-    }
-
-    function loadSettings(aircraft) {
-        var key = 'settings_' + aircraft;
-        var raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : null;
-    }
-
-    // ── Presets ───────────────────────────────────────────────────────────────
-    // Default values per aircraft type (used if no saved settings)
-    var defaults = {
-        '214B':  { maxGross: 16000, emptyWeight: 8000,  crewGear: 400, fuel: 2500, burn: 1000, gsTarget: 18 },
-        '214ST': { maxGross: 17500, emptyWeight: 10000, crewGear: 400, fuel: 2750, burn: 800,  gsTarget: 18 }
-    };
-
-    function applyPreset(aircraft) {
-        currentAircraft = aircraft;
-        localStorage.setItem('lastAircraft', aircraft);
-        var saved = loadSettings(aircraft);
-        var d     = saved || defaults[aircraft];
-        document.getElementById('max-gross').value     = d.maxGross;
-        document.getElementById('empty-weight').value  = d.emptyWeight;
-        document.getElementById('crew-gear').value     = d.crewGear;
-        document.getElementById('fuel-slider').value   = d.fuel;
-        document.getElementById('burn-rate-select').value = d.burn;
-        if (d.gsTarget) {
-            document.getElementById('gs-target-select').value = d.gsTarget;
-        }
-        var distEl = document.getElementById('dist-to-fuel');
-        if (distEl && d.distToFuel !== undefined) distEl.value = d.distToFuel;
-        // Update flight page aircraft label
-        var lbl = document.getElementById('flight-ac-label');
-        if (lbl) lbl.textContent = aircraft === '214ST' ? 'Bell 214ST' : 'Bell 214B';
-        updateWB();
-        updateGSUI();
-    }
-
-    // ── W&B calc ──────────────────────────────────────────────────────────────
-    function updateWB() {
-        var mg    = parseFloat(document.getElementById('max-gross').value)    || 0;
-        var empty = parseFloat(document.getElementById('empty-weight').value) || 0;
-        var crew  = parseFloat(document.getElementById('crew-gear').value)    || 0;
-        curFuel   = parseFloat(document.getElementById('fuel-slider').value);
-        var p     = mg - (empty + crew + curFuel);
-        document.getElementById('fuel-display').innerText  = curFuel.toLocaleString() + ' lbs';
-        document.getElementById('res-lbs').innerText       = p < 0 ? "OVER"  : Math.round(p).toLocaleString();
-        document.getElementById('res-liters').innerText    = p < 0 ? "0"     : Math.round(p * 0.4536).toLocaleString();
-    }
-
-     // ── Refuel Calculator ─────────────────────────────────────────────────────
-	    // Jet-A reference density is ~0.804 kg/L at 15°C (ASTM D1655). Corrected
-	    // for a typical 20°C fuel temperature that works out to ~0.800 kg/L,
-	    // which also matches the standard industry planning figure of 0.8 kg/L.
-	    // Good for quick ramp math - for certified W&B use the density on the
-	    // actual fuel slip/BOL.
-	    var JETA_KG_PER_LITER_20C = 0.800;
-	    function lbsToLitersJetA20C(lbs) {
-	        return (lbs * 0.453592) / JETA_KG_PER_LITER_20C;
-	    }
-
-	    function openRefuelCalc() {
-	        // Desired fuel starts from whatever is set on the main (page one)
-	        // fuel slider - that's the flight's planned load.
-	        var pageOneFuel = parseFloat(document.getElementById('fuel-slider').value) || 0;
-	        document.getElementById('refuel-desired-slider').value = pageOneFuel;
-	        // Actual fuel (what's currently in the tank) has no app source to
-	        // pull from - it's read off the aircraft gauge each time - so just
-	        // remember whatever was last entered here.
-	        var lastActual = parseFloat(localStorage.getItem('refuelActualLbs'));
-	        document.getElementById('refuel-actual-slider').value = isNaN(lastActual) ? 0 : lastActual;
-	        showPage('refuel-page');
-	        updateRefuelCalc();
-	        updateLbsLtr();
-	    }
-
-	    function updateRefuelCalc() {
-	        var desired = parseFloat(document.getElementById('refuel-desired-slider').value) || 0;
-	        var actual  = parseFloat(document.getElementById('refuel-actual-slider').value) || 0;
-	        localStorage.setItem('refuelActualLbs', actual);
-
-	        document.getElementById('refuel-desired-display').innerText = desired.toLocaleString() + ' lbs';
-	        document.getElementById('refuel-actual-display').innerText  = actual.toLocaleString() + ' lbs';
-
-	        var req = desired - actual;
-	        var lbsEl = document.getElementById('refuel-req-lbs');
-	        var ltrEl = document.getElementById('refuel-req-liters');
-	        if (req >= 0) {
-	            lbsEl.innerText = Math.round(req).toLocaleString();
-	            ltrEl.innerText = Math.round(lbsToLitersJetA20C(req)).toLocaleString();
-	        } else {
-	            lbsEl.innerText = 'DEFUEL ' + Math.round(-req).toLocaleString();
-	            ltrEl.innerText = Math.round(lbsToLitersJetA20C(-req)).toLocaleString();
-	        }
-	    }
-
-
-	    function updateLbsLtr() {
-	        var lbs = parseFloat(document.getElementById('lbsltr-slider').value) || 0;
-	        document.getElementById('lbsltr-display').innerText = lbs.toLocaleString() + ' lbs';
-	        document.getElementById('lbsltr-liters-display').innerText = Math.round(lbsToLitersJetA20C(lbs)).toLocaleString() + ' L';
-	    }
-
-	    var AERONET_FUEL_IDS = ['aeronet-fuel1','aeronet-fuel2','aeronet-fuel3','aeronet-fuel4','aeronet-fuel5'];
-	    var AERONET_FUEL_KEYS = ['aeronetFuel1','aeronetFuel2','aeronetFuel3','aeronetFuel4','aeronetFuel5'];
-
-	    function openAeronetCalc() {
-	        var lastStart = parseFloat(localStorage.getItem('aeronetStartLbs'));
-	        var lastEnd = parseFloat(localStorage.getItem('aeronetEndLbs'));
-	        document.getElementById('aeronet-start-slider').value = isNaN(lastStart) ? 0 : lastStart;
-	        document.getElementById('aeronet-end-slider').value = isNaN(lastEnd) ? 0 : lastEnd;
-	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
-	            var v = parseFloat(localStorage.getItem(AERONET_FUEL_KEYS[i]));
-	            document.getElementById(AERONET_FUEL_IDS[i]).value = isNaN(v) ? 0 : v;
-	        }
-	        showPage('aeronet-page');
-	        updateAeronetFuel();
-	        updateAeronetTotal();
-	    }
-
-	    function updateAeronetFuel() {
-	        var startLbs = parseFloat(document.getElementById('aeronet-start-slider').value) || 0;
-	        var endLbs = parseFloat(document.getElementById('aeronet-end-slider').value) || 0;
-	        localStorage.setItem('aeronetStartLbs', startLbs);
-	        localStorage.setItem('aeronetEndLbs', endLbs);
-	        document.getElementById('aeronet-start-lbs').innerText = startLbs.toLocaleString();
-	        document.getElementById('aeronet-start-liters').innerText = Math.round(lbsToLitersJetA20C(startLbs)).toLocaleString();
-	        document.getElementById('aeronet-end-lbs').innerText = endLbs.toLocaleString();
-	        document.getElementById('aeronet-end-liters').innerText = Math.round(lbsToLitersJetA20C(endLbs)).toLocaleString();
-	    }
-
-	    function updateAeronetTotal() {
-	        var total = 0;
-	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
-	            var v = parseFloat(document.getElementById(AERONET_FUEL_IDS[i]).value) || 0;
-	            localStorage.setItem(AERONET_FUEL_KEYS[i], v);
-	            total += v;
-	        }
-	        document.getElementById('aeronet-total-liters').innerText = Math.round(total).toLocaleString() + ' L';
-	    }
-
-	    function clearAeronetReceipts() {
-	        // Only zeroes the 5 fuel-added receipts - Start/End Fuel sliders
-	        // are left exactly as they are.
-	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
-	            document.getElementById(AERONET_FUEL_IDS[i]).value = 0;
-	        }
-	        updateAeronetTotal();
-	    }
-
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    function getTimeStr(d) { return (d ? new Date(d) : new Date()).toTimeString().slice(0,5); }
-    function format(ms) {
-        var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
-        return [h,m,sec].map(function(v){return v.toString().padStart(2,'0');}).join(':');
-    }
-    function formatShort(ms) {
-        var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
-        return [h,m].map(function(v){return v.toString().padStart(2,'0');}).join(':');
-    }
-
-    // ── Page navigation ───────────────────────────────────────────────────────
-    // Real back-stack: every forward navigation (showPage) pushes the page you
-    // were just on. goBack() pops the stack and returns you there - works for
-    // any depth (flight -> setup -> aeronet -> back -> setup -> back -> flight),
-    // not just one remembered level.
-    var _navStack = [];
-
-    function _currentPageId() {
-        var cur = Array.from(document.querySelectorAll('.page')).find(function(p) {
-            return getComputedStyle(p).display !== 'none';
-        });
-        return cur ? cur.id : null;
-    }
-
-    function _switchToPage(id) {
-        cancelAnimationFrame(flyTick);
-        document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
-        document.getElementById(id).style.display = (id === 'flight-page') ? 'flex' : 'block';
-        if (id === 'setup-page') updateSetupButtons();
-        setTimeout(function() { if (typeof fitActivePage === 'function') fitActivePage(); }, 80);
-    }
-
-    function showPage(id) {
-        var cur = _currentPageId();
-        if (cur && cur !== id) _navStack.push(cur);
-        _switchToPage(id);
-    }
-
-    function goBack() {
-        var prev = _navStack.pop() || 'calc-page'; // safety fallback if the stack is ever empty
-        _switchToPage(prev);
-    }
-
-    // ── Timers ────────────────────────────────────────────────────────────────
-    function startT(id) {
-        if (timers[id].running) return;
-        timers[id].running = true;
-        timers[id].start   = Date.now() - timers[id].elapsed;
-        if (id === 'fl' && !timers.fl.tsS) timers.fl.tsS = getTimeStr();
-        if (id === 'eng' && !timers.eng.blockStart) timers.eng.blockStart = Date.now();
-        timers[id].interval = setInterval(function() {
-            timers[id].elapsed = Date.now() - timers[id].start;
-            document.getElementById(id+'-disp').innerText = format(timers[id].elapsed);
-            updateStats();
-        }, 1000);
-        document.getElementById(id+'-start').disabled = true;
-        document.getElementById(id+'-stop').disabled  = false;
-    }
-
-    function stopT(id) {
-        timers[id].running = false;
-        clearInterval(timers[id].interval);
-        if (id === 'fl') timers.fl.tsE = getTimeStr();
-        if (id === 'eng') timers.eng.blockEnd = Date.now();
-        document.getElementById(id+'-start').disabled = false;
-        document.getElementById(id+'-stop').disabled  = true;
-        updateStats();
-    }
-
-    function resetRow(id) {
-        stopT(id); timers[id].elapsed = 0;
-        document.getElementById(id+'-disp').innerText = "00:00:00";
-        if (id === 'fl') { timers.fl.tsS = null; timers.fl.tsE = null; }
-        if (id === 'eng') { timers.eng.blockStart = null; timers.eng.blockEnd = null; }
-        updateStats();
-    }
-
-    function resetAllTimers() {
-        showDialog("Reset ALL current timers?", function() {
-            ['eng','fl'].forEach(resetRow);
-        }, null);
-    }
-
-    function updateStats() {
-        var eMs = (timers.eng.blockEnd || (timers.eng.blockStart ? Date.now() : 0)) - (timers.eng.blockStart || 0);
-        document.getElementById('e-hms').innerText = format(Math.max(0, eMs));
-        document.getElementById('e-dec').innerText = (eMs/3600000).toFixed(2) + " hr";
-        document.getElementById('e-ts').innerText  = (timers.eng.blockStart ? getTimeStr(timers.eng.blockStart) : "--:--") + " to " + (timers.eng.blockEnd ? getTimeStr(timers.eng.blockEnd) : "--:--");
-        document.getElementById('f-hms').innerText = format(timers.fl.elapsed);
-        document.getElementById('f-dec').innerText = (timers.fl.elapsed/3600000).toFixed(2) + " hr";
-        document.getElementById('f-ts').innerText  = (timers.fl.tsS || "--:--") + " to " + (timers.fl.tsE || "--:--");
-    }
-
-    // ── Save / Log ────────────────────────────────────────────────────────────
-    function saveLog() {
-        var lastReg = localStorage.getItem('lastAcReg') || '';
-        var reg = prompt("Aircraft registration (e.g. N1234):", lastReg);
-        if (reg === null) reg = lastReg; // cancelled — keep previous default, don't block the save
-        reg = reg.trim().toUpperCase();
-        localStorage.setItem('lastAcReg', reg);
-
-        var engMs = (timers.eng.blockEnd || (timers.eng.blockStart ? Date.now() : 0)) - (timers.eng.blockStart || 0);
-        var entry = {
-            date: new Date().toLocaleDateString(),
-            reg:  reg,
-            eb:   document.getElementById('e-ts').innerText,
-            ehms: formatShort(engMs),
-            eh:   (engMs/3600000).toFixed(2),
-            fb:   document.getElementById('f-ts').innerText,
-            fhms: formatShort(timers.fl.elapsed),
-            fh:   (timers.fl.elapsed/3600000).toFixed(2)
-        };
-        var log = JSON.parse(localStorage.getItem('hLogV36') || '[]');
-        log.push(entry);
-        localStorage.setItem('hLogV36', JSON.stringify(log));
-        showToast("✓ Flight Saved");
-    }
-
-    function showLog() {
-        showPage('log-page');
-        var log   = JSON.parse(localStorage.getItem('hLogV36') || '[]').reverse();
-        var tbody = document.getElementById('log-body');
-        tbody.innerHTML = '';
-        if (!log.length) { tbody.innerHTML = '<tr><td colspan="8">No logs.</td></tr>'; return; }
-        var html = '', dailyE = 0, dailyF = 0, lastDate = log[0].date, dayHtml = '';
-        log.forEach(function(e, i) {
-            if (e.date !== lastDate) {
-                html += dayHtml + '<tr style="background:#f0f0f0;font-weight:bold;"><td colspan="4">TOTAL ' + lastDate + '</td><td>' + dailyE.toFixed(2) + '</td><td colspan="2"></td><td>' + dailyF.toFixed(2) + '</td></tr>';
-                dayHtml = ''; dailyE = 0; dailyF = 0; lastDate = e.date;
-            }
-            dayHtml += '<tr><td>' + e.date + '</td><td>' + (e.reg || '') + '</td><td>' + e.eb + '</td><td>' + e.ehms + '</td><td>' + e.eh + '</td><td>' + e.fb + '</td><td>' + e.fhms + '</td><td>' + e.fh + '</td></tr>';
-            dailyE += parseFloat(e.eh);
-            dailyF += parseFloat(e.fh);
-            if (i === log.length - 1) {
-                html += dayHtml + '<tr style="background:#f0f0f0;font-weight:bold;"><td colspan="4">TOTAL ' + lastDate + '</td><td>' + dailyE.toFixed(2) + '</td><td colspan="2"></td><td>' + dailyF.toFixed(2) + '</td></tr>';
-            }
-        });
-        tbody.innerHTML = html;
-    }
-
-    function confirmClear() {
-        showDialog("Delete ALL logs? Cannot be undone.", function() {
-            localStorage.removeItem('hLogV36');
-            showLog();
-            showToast("All logs deleted");
-        }, null);
-    }
-
-    function exportData(type) {
-        var log = JSON.parse(localStorage.getItem('hLogV36') || '[]');
-        if (!log.length) { showToast("No logs found."); return; }
-        var content, ext, mime;
-        if (type === 'csv') {
-            content = "Date,Reg,Eng Block,Eng HHMM,Eng Dec,Flt Block,Flt HHMM,Flt Dec\n" +
-                log.map(function(e){return [e.date,(e.reg||''),e.eb,e.ehms,e.eh,e.fb,e.fhms,e.fh].join(',');}).join('\n');
-            ext = ".csv"; mime = "text/csv";
-        } else {
-            content = "HELI LOG\n" +
-                log.map(function(e){return e.date+(e.reg ? " ["+e.reg+"]" : "")+" | ENG: "+e.eb+" ["+e.ehms+"] ("+e.eh+"h) | FLT: "+e.fb+" ["+e.fhms+"] ("+e.fh+"h)";}).join('\n');
-            ext = ".txt"; mime = "text/plain";
-        }
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([content],{type:mime}));
-        a.download = "HeliLog_" + new Date().toISOString().slice(0,10) + ext;
-        a.click();
-    }
-
-    // ── (2) Fuel Calc ──────────────────────────────────────────────────────────
-    // Endurance = time remaining before landing with 500 lbs reserve
-    // usable fuel = curFuel - 500 (reserve)
-    // time available = usable / burn_rate  (hours) -> shown as HHhr : MMmin
-    // Range = time * planned GS (chosen via dropdown, or live GPS GS if "ACTUAL")
-    // Box turns bright yellow once remaining fuel drops to 700 lbs or below.
-    var BINGO_RESERVE = 500; // lbs
-    var BINGO_WARN_RED = 500;    // lbs remaining → red
-    var BINGO_WARN_YELLOW = 800; // lbs remaining → yellow
-
-    function saveFuelPlanGS() {
-        var sel = document.getElementById('fuel-plan-gs');
-        if (sel) localStorage.setItem('fuelPlanGS', sel.value);
-    }
-
-    function loadFuelPlanGS() {
-        var sel = document.getElementById('fuel-plan-gs');
-        if (!sel) return;
-        var saved = localStorage.getItem('fuelPlanGS');
-        sel.value = saved || '100';
-    }
-
-    function updateBingo() {
-        var burn = parseFloat(document.getElementById('burn-rate-select').value) || 800;
-        var fuel = curFuel;
-        var usable = fuel - BINGO_RESERVE;
-        var box = document.getElementById('fly-fuel-box') || document.getElementById('calc-fuel-section');
-        var planSel = document.getElementById('fuel-plan-gs');
-        var planVal = planSel ? planSel.value : '100';
-        var planGS  = (planVal === 'actual') ? curGS : parseFloat(planVal);
-
-        // ── TOTAL ENDURANCE: all fuel on board at burn rate (always calculated) ──
-        var hrsTotal  = fuel / burn;
-        var minsTotal = Math.round(hrsTotal * 60);
-        var hT = Math.floor(minsTotal / 60), mT = minsTotal % 60;
-        document.getElementById('bingo-time').innerText = String(hT).padStart(2,'0') + 'h:' + String(mT).padStart(2,'0') + 'm';
-
-        // ── OPERATIONAL ENDURANCE: fuel minus 500lb reserve, floors at 0 ─────
-        var opMins = Math.round(Math.max(0, usable) / burn * 60);
-        var hO = Math.floor(opMins / 60), mO = opMins % 60;
-        var opEl = document.getElementById('op-endurance');
-        if (opEl) opEl.innerText = String(hO).padStart(2,'0') + 'h:' + String(mO).padStart(2,'0') + 'm';
-
-        // ── Range (based on operational endurance) ────────────────────────────
-        var hrsOp = Math.max(0, usable) / burn;
-        document.getElementById('bingo-range-dist').innerText = Math.round(hrsOp * planGS);
-        var rangeDup1 = document.getElementById('bingo-range-dist-dup');
-        if (rangeDup1) rangeDup1.innerText = Math.round(hrsOp * planGS);
-
-        // ── Time to Bingo ──────────────────────────────────────────────────────
-        // How long you can still wait (burning fuel at the chosen burn rate)
-        // before departure, and still reach "distance to fuel" at the chosen
-        // planned GS with exactly 500lbs reserve remaining on arrival.
-        var distEl = document.getElementById('dist-to-fuel');
-        var dist   = distEl ? parseFloat(distEl.value) || 0 : 0;
-        var ttbEl  = document.getElementById('time-to-bingo');
-        var ttbRow = document.getElementById('ttb-row');
-        var ttbElDup  = document.getElementById('time-to-bingo-dup');
-        var ttbRowDup = document.getElementById('ttb-row-dup');
-        var ttbAlways    = document.getElementById('bingo-in-always');
-        var ttbAlwaysRow = document.getElementById('bingo-in-always-row');
-        if (ttbEl) {
-            if (!planGS || planGS <= 0) {
-                ttbEl.innerText = '--:--';
-                if (ttbRow) { ttbRow.classList.remove('warn','warn-red'); }
-                if (ttbElDup) ttbElDup.innerText = '--:--';
-                if (ttbRowDup) { ttbRowDup.classList.remove('warn','warn-red'); }
-                if (ttbAlways) ttbAlways.innerText = '--:--';
-                if (ttbAlwaysRow) { ttbAlwaysRow.style.background = ''; ttbAlwaysRow.style.color = ''; }
-                var basisEl0 = document.getElementById('bingo-in-basis');
-                if (basisEl0) basisEl0.innerText = '--Nm@--kts';
-            } else {
-                var transitHrs  = dist / planGS;
-                var fuelNeeded  = transitHrs * burn + BINGO_RESERVE;
-                var rawTtbHrs   = (fuel - fuelNeeded) / burn; // can go negative — already past bingo
-                var ttbHrs      = rawTtbHrs;
-                if (ttbHrs < 0) ttbHrs = 0;
-                var ttbMins = Math.round(ttbHrs * 60);
-                var th = Math.floor(ttbMins / 60), tm = ttbMins % 60;
-                var ttbStr = String(th).padStart(2,'0') + ':' + String(tm).padStart(2,'0');
-                ttbEl.innerText = ttbStr;
-                if (ttbElDup) ttbElDup.innerText = ttbStr;
-                if (ttbAlways) ttbAlways.innerText = ttbStr;
-                var basisEl = document.getElementById('bingo-in-basis');
-                if (basisEl) basisEl.innerText = dist + 'Nm@' + Math.round(planGS) + 'kts';
-                if (ttbAlwaysRow) {
-                    if (rawTtbHrs <= 0) {
-                        ttbAlwaysRow.style.background = '#ff3300'; ttbAlwaysRow.style.color = '#fff';
-                        ttbAlwaysRow.style.borderRadius = '6px'; ttbAlwaysRow.style.padding = '2px 8px 2px 10px';
-                    } else if (rawTtbHrs <= 0.25) {
-                        ttbAlwaysRow.style.background = '#ffeb00'; ttbAlwaysRow.style.color = '#000';
-                        ttbAlwaysRow.style.borderRadius = '6px'; ttbAlwaysRow.style.padding = '2px 8px 2px 10px';
-                    } else {
-                        ttbAlwaysRow.style.background = ''; ttbAlwaysRow.style.color = '';
-                        ttbAlwaysRow.style.borderRadius = ''; ttbAlwaysRow.style.padding = ''; ttbAlwaysRow.style.paddingLeft = '12px';
-                    }
-                }
-
-                if (ttbRow) {
-                    if (rawTtbHrs <= 0) {
-                        ttbRow.classList.add('warn-red');
-                        ttbRow.classList.remove('warn');
-                    } else if (rawTtbHrs <= 0.25) { // 15 minutes
-                        ttbRow.classList.add('warn');
-                        ttbRow.classList.remove('warn-red');
-                    } else {
-                        ttbRow.classList.remove('warn','warn-red');
-                    }
-                }
-                if (ttbRowDup) {
-                    if (rawTtbHrs <= 0) {
-                        ttbRowDup.classList.add('warn-red');
-                        ttbRowDup.classList.remove('warn');
-                    } else if (rawTtbHrs <= 0.25) { // 15 minutes
-                        ttbRowDup.classList.add('warn');
-                        ttbRowDup.classList.remove('warn-red');
-                    } else {
-                        ttbRowDup.classList.remove('warn','warn-red');
-                    }
-                }
-            }
-        }
-
-        if (fuel <= BINGO_WARN_RED) {
-            box.classList.add('warn-red');
-            box.classList.remove('warn');
-        } else if (fuel <= BINGO_WARN_YELLOW) {
-            box.classList.add('warn');
-            box.classList.remove('warn-red');
-        } else {
-            box.classList.remove('warn');
-            box.classList.remove('warn-red');
-        }
-    }
-
-    // ── (4) Landscape layout switch ───────────────────────────────────────────
-    // Gauge always sits BELOW the fuel/payload/bingo block, full width — same
-    // stacking order in landscape as portrait, just sized to fit the screen.
-    function applyLayoutMode() {
-        var isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 768;
-        var fuelPayload = document.querySelector('.ls-fuel-payload');
-        var gaugeWrap   = document.querySelector('.ls-gauge-wrap');
-        var gaugeSvg    = gaugeWrap ? gaugeWrap.querySelector('svg') : null;
-
-        if (isLandscape) {
-            // Fuel + payload side by side to save vertical space
-            fuelPayload.style.display = 'flex';
-            fuelPayload.style.gap     = '6px';
-            if (gaugeSvg) { gaugeSvg.style.width = '100%'; gaugeSvg.style.maxHeight = '60vh'; }
-        } else {
-            // Portrait — stacked single column
-            fuelPayload.style.display = 'block';
-            if (gaugeSvg) { gaugeSvg.style.width = '100%'; gaugeSvg.style.maxHeight = ''; }
-        }
-    }
-
-    window.addEventListener('resize',        applyLayoutMode);
-    window.addEventListener('orientationchange', function() {
-        setTimeout(applyLayoutMode, 150);
-    });
-
-    // ── (5) iPad / tablet no-scroll auto-fit ────────────────────────────────
-    // Detects tablet-class screens (iPad and similar) and scales the active
-    // page's inner content down just enough that it fits the viewport with
-    // zero scroll, centered horizontally and vertically. Works for both
-    // display:block and display:flex pages. Runs on load, resize,
-    // orientation change, and whenever the visible page changes.
-    function isTabletScreen() {
-        var w = window.innerWidth, h = window.innerHeight;
-        var longSide = Math.max(w, h);
-        var isIOSTouch = navigator.maxTouchPoints > 1 &&
-            /Mac|iPad|iPhone|iPod/.test(navigator.platform || navigator.userAgent);
-        // iPads (and tablet-sized touch screens generally) have a long side
-        // roughly 1024–1400pt. Phones are smaller; desktops aren't touch.
-        return isIOSTouch && longSide >= 950 && longSide <= 1400;
-    }
-
-    function resetFit(el) {
-        el.style.transform       = '';
-        el.style.transformOrigin = '';
-        el.style.position        = '';
-        el.style.left            = '';
-        el.style.top             = '';
-        el.style.width           = '';
-        el.style.height          = '';
-        el.style.margin          = '';
-    }
-
-    function fitActivePage() {
-        var pages = document.querySelectorAll('.page');
-        var active = null;
-        for (var i = 0; i < pages.length; i++) {
-            if (getComputedStyle(pages[i]).display !== 'none') { active = pages[i]; break; }
-        }
-        // Always reset every page first so hidden pages don't keep stale styles
-        for (var j = 0; j < pages.length; j++) { resetFit(pages[j]); }
-        if (!active) return;
-        if (!isTabletScreen()) return;
-
-        // Measure natural (unscaled) content size
-        var naturalW = active.scrollWidth  || active.offsetWidth;
-        var naturalH = active.scrollHeight || active.offsetHeight;
-        var availW   = window.innerWidth;
-        var availH   = window.innerHeight;
-
-        if (naturalH <= availH && naturalW <= availW) return; // already fits
-
-        var scale = Math.min(availW / naturalW, availH / naturalH);
-        scale = Math.max(Math.min(scale, 1), 0.4); // clamp 0.4–1.0
-
-        // Fix the page at a known size/position, then scale it from its own
-        // center. Using position:fixed + left/top 50% + translate(-50%,-50%)
-        // centers correctly regardless of the page's own display mode
-        // (block or flex), so it can't drift to one side.
-        active.style.position        = 'fixed';
-        active.style.left            = '50%';
-        active.style.top             = '50%';
-        active.style.width           = naturalW + 'px';
-        active.style.height          = naturalH + 'px';
-        active.style.margin          = '0';
-        active.style.transformOrigin = 'center center';
-        active.style.transform       = 'translate(-50%, -50%) scale(' + scale + ')';
-    }
-
-    window.addEventListener('load', function() { setTimeout(fitActivePage, 50); });
-    window.addEventListener('resize', function() { setTimeout(fitActivePage, 50); });
-    window.addEventListener('orientationchange', function() { setTimeout(fitActivePage, 200); });
-
-    // ── Flight page ───────────────────────────────────────────────────────────
-    function initFlightPage() {
-        if (!timers.fl.running) startT('fl');
-        showPage('flight-page');
-        document.getElementById('fly-fuel-slider').value = curFuel;
-        burnRef = Date.now();
-        applyLayoutMode();
-        startGPS();
-        wakeWanted = true;
-        requestWakeLock();
-
-        function loop() {
-            var now  = Date.now();
-            var rate = parseFloat(document.getElementById('burn-rate-select').value);
-            curFuel -= ((now - burnRef) / 3600000) * rate;
-            burnRef  = now;
-            if (curFuel < 0) curFuel = 0;
-            var mg    = parseFloat(document.getElementById('max-gross').value)    || 0;
-            var empty = parseFloat(document.getElementById('empty-weight').value) || 0;
-            var crew  = parseFloat(document.getElementById('crew-gear').value)    || 0;
-            var p     = mg - (empty + crew + curFuel);
-            document.getElementById('fly-ltr').innerText      = p < 0 ? "0" : Math.round(p * 0.4536).toLocaleString();
-            document.getElementById('fly-fuel-lbs').innerText = Math.round(curFuel).toLocaleString();
-            document.getElementById('flight-timer-main').innerText = format(timers.fl.elapsed);
-            updateGSUI();
-            updateBingo();
-            flyTick = requestAnimationFrame(loop);
-        }
-        flyTick = requestAnimationFrame(loop);
-    }
-
-    function leaveFlight() {
-        stopGPS();
-        releaseWakeLock();
-        goBack();
-    }
-
-    // ── Screen Wake Lock (iPad must not sleep while flying) ────────────────────
-    var wakeLock = null;
-    var wakeWanted = false;
-
-    function setWakeBtn(active) {
-        var btn = document.getElementById('wake-btn');
-        if (!btn) return;
-        btn.textContent  = active ? '☀ AWAKE' : '⏾ SLEEP OK';
-        btn.style.background = active ? '#28a745' : '#333';
-    }
-
-    function requestWakeLock() {
-        if (!('wakeLock' in navigator)) { setWakeBtn(false); return; }
-        navigator.wakeLock.request('screen').then(function(lock) {
-            wakeLock = lock;
-            setWakeBtn(true);
-            if (typeof updateSetupButtons === 'function') updateSetupButtons();
-            lock.addEventListener('release', function() {
-                wakeLock = null;
-                setWakeBtn(false);
-                if (typeof updateSetupButtons === 'function') updateSetupButtons();
-            });
-        }).catch(function() { setWakeBtn(false); });
-    }
-
-    function releaseWakeLock() {
-        wakeWanted = false;
-        if (wakeLock) { wakeLock.release(); wakeLock = null; }
-        setWakeBtn(false);
-        if (typeof updateSetupButtons === 'function') updateSetupButtons();
-    }
-
-    function toggleWakeLock() {
-        if (wakeLock) {
-            releaseWakeLock();
-        } else {
-            wakeWanted = true;
-            requestWakeLock();
-        }
-    }
-
-    // iOS/Android release the lock automatically when the page is backgrounded
-    // (app switch, screen lock). Silently re-acquire it once the flight page
-    // is visible again, if the pilot still wants it on.
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible' && wakeWanted && !wakeLock) {
-            requestWakeLock();
-        }
-    });
-
-    // ── Fuel Calc toggle ─────────────────────────────────────────────────────
-    // When OFF: the whole Fuel Calc block — Endurance, Fuel Plan GS + Range,
-    // and Dist-to-fuel + Bingo-in (portrait row and its landscape duplicate)
-    // — is hidden via the body.fuelcalc-off CSS rule. Fuel load, burn rate,
-    // and payload stay visible either way.
-    function setFuelCalcBtn(enabled) {
-        var btn = document.getElementById('fuelcalc-btn');
-        if (!btn) return;
-        btn.style.background = enabled ? '#28a745' : '#333';
-        btn.style.color = enabled ? '#fff' : '#aaa';
-    }
-
-    function applyFuelCalc(enabled) {
-        document.body.classList.toggle('fuelcalc-off', !enabled);
-        setFuelCalcBtn(enabled);
-        // Content height changed — rescale the active page so it still fits
-        // the screen with no scroll (matters most in landscape on iPad).
-        setTimeout(function() { if (typeof fitActivePage === 'function') fitActivePage(); }, 50);
-    }
-
-    function toggleFuelCalc() {
-        var enabled = document.body.classList.contains('fuelcalc-off'); // currently off -> turning on
-        localStorage.setItem('fuelCalcEnabled', enabled ? '1' : '0');
-        applyFuelCalc(enabled);
-    }
-
-
-    // ── GPS ───────────────────────────────────────────────────────────────────
-    function setGPSBtn(state, label) {
-        var btn = document.getElementById('gps-btn');
-        btn.className = 'gps-' + state;
-        btn.innerText = label;
-    }
-
-    function startGPS() {
-        if (watchID !== null) return;
-        if (!navigator.geolocation) { setGPSBtn('off', 'NO GPS'); return; }
-        setGPSBtn('waiting', 'GPS...');
-        if (navigator.permissions && navigator.permissions.query) {
-            navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
-                if (result.state === 'denied') {
-                    setGPSBtn('off', 'GPS DENIED');
-                    showDialog("Location access is denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app or Safari → set to \"While Using\".\n\nAndroid: Settings → Apps → Browser → Permissions → Location → Allow.", null, null);
-                } else {
-                    doWatchPosition();
-                }
-            }).catch(function() { doWatchPosition(); });
-        } else {
-            doWatchPosition();
-        }
-    }
-
-    function doWatchPosition() {
-        watchID = navigator.geolocation.watchPosition(
-            function(pos) {
-                curGS = (pos.coords.speed || 0) * 1.94384;
-                setGPSBtn('live', 'GPS LIVE');
-                updateGSUI();
-            },
-            function(err) {
-                watchID = null;
-                if (err.code === 1) {
-                    setGPSBtn('off', 'GPS DENIED');
-                    showDialog("Location access denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app → set to \"While Using\".\n\nThen tap GPS OFF to try again.", null, null);
-                } else if (err.code === 2) {
-                    setGPSBtn('off', 'NO SIGNAL');
-                } else {
-                    setGPSBtn('off', 'GPS ERR');
-                }
-            },
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-        );
-    }
-
-    function stopGPS() {
-        if (watchID !== null) { navigator.geolocation.clearWatch(watchID); watchID = null; }
-        curGS = 0;
-        setGPSBtn('off', 'GPS OFF');
-    }
-
-    function toggleGPS() {
-        if (watchID !== null) { stopGPS(); } else { startGPS(); }
-    }
-
-    // ── (3) Force GPS permission ─────────────────────────────────────────────
-    // A website/app can never re-open the browser's native permission dialog
-    // once the user has explicitly denied it — that's an OS/browser security
-    // rule, not something this code can override. What this CAN do:
-    //  - If permission has never been asked (state "prompt"), calling
-    //    getCurrentPosition() right now triggers that native prompt immediately.
-    //  - If it's already "denied", the only fix is in OS/browser settings, so
-    //    open the settings instructions instead of pretending to "force" it.
-    function forceGPSPermission() {
-        if (!navigator.geolocation) {
-            showDialog("This device/browser has no GPS support.", null, null);
-            return;
-        }
-        var settingsMsg = "Location access is denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app (or Safari) → set to \"While Using\".\n\nAndroid: Settings → Apps → this app/browser → Permissions → Location → Allow.\n\nAfter changing it, come back and tap PERMIT again.";
-
-        if (navigator.permissions && navigator.permissions.query) {
-            navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
-                if (result.state === 'denied') {
-                    showDialog(settingsMsg, null, null);
-                } else {
-                    // "prompt" or "granted" — asking again either shows the native
-                    // dialog or simply confirms access and starts the GPS watch.
-                    setGPSBtn('waiting', 'GPS...');
-                    doWatchPosition();
-                }
-            }).catch(function() {
-                // Permissions API unsupported (e.g. some iOS Safari versions) —
-                // just attempt the request; the browser will prompt if needed.
-                setGPSBtn('waiting', 'GPS...');
-                doWatchPosition();
-            });
-        } else {
-            setGPSBtn('waiting', 'GPS...');
-            doWatchPosition();
-        }
-    }
-
-    // ── GS gauge ──────────────────────────────────────────────────────────────
-    // Arc: center radius=80, stroke-width=14, so outer edge = 80-7=73 from center (r=73), inner edge = 80+7=87 from center (r=87)
-    // In SVG coords: center is (100,100), top of arc outer edge is y=100-73=27, inner edge y=100-87=13
-    // Ticks should span only the arc band: from r=73 (outer) to r=87 (inner), i.e. y=27 to y=13
-    (function drawGSTicks() {
-        var g = document.getElementById('gs-tick-group');
-        if (!g) return;
-        for (var i = -90; i <= 90; i += 9) {
-            var l = document.createElementNS('http://www.w3.org/2000/svg','line');
-            l.setAttribute('x1','100'); l.setAttribute('y1','13');
-            l.setAttribute('x2','100'); l.setAttribute('y2','27');
-            l.setAttribute('stroke','#000');
-            l.setAttribute('stroke-width','1.5');
-            l.setAttribute('transform','rotate('+i+' 100 100)');
-            g.appendChild(l);
-        }
-    })();
-
-    function updateGSUI() {
-        var tgt = parseFloat(document.getElementById('gs-target-select').value);
-        document.getElementById('gs-min-val').textContent = Math.max(0, tgt - 10);
-        document.getElementById('gs-tgt-val').textContent = tgt;
-        document.getElementById('gs-max-val').textContent = tgt + 10;
-        document.getElementById('fly-gs-svg').textContent = Math.round(curGS);
-        var diff = curGS - tgt;
-        var deg  = Math.min(90, Math.max(-90, diff * 9));
-        var ng = document.getElementById('needle-group');
-        if (ng) ng.style.transform = 'rotate(' + deg + 'deg)';
-        // colour the digital readout
-        var gsText = document.getElementById('fly-gs-svg');
-        if (gsText) gsText.setAttribute('fill', document.body.classList.contains('dark') ? '#e0e0e0' : '#000');
-    }
-
-    // ── Init ──────────────────────────────────────────────────────────────────
-    // Build GS selector
-    var gsS = document.getElementById('gs-target-select');
-    for (var i = 0; i <= 30; i++) {
-        var o = document.createElement('option');
-        o.value = i; o.innerText = i;
-        if (i === 18) o.selected = true;
-        gsS.appendChild(o);
-    }
-
-    // ── Dark Mode ─────────────────────────────────────────────────────────────
-    function applyDark(isDark) {
-        document.body.classList.toggle('dark', isDark);
-        var btn = document.getElementById('dark-toggle-btn');
-        if (btn) {
-            btn.textContent = isDark ? '☀ LIGHT' : '🌙 DARK';
-            btn.style.background = isDark ? '#c8a800' : '#333';
-            btn.style.color = isDark ? '#000' : '#fff';
-        }
-        var svgColor = isDark ? '#e0e0e0' : '#000';
-        var ticks = document.getElementById('gs-tick-group');
-        if (ticks) Array.from(ticks.querySelectorAll('line')).forEach(function(l) { l.setAttribute('stroke', svgColor); });
-        ['gs-min-val','gs-tgt-val','gs-max-val'].forEach(function(id) { var el = document.getElementById(id); if (el) el.setAttribute('fill', svgColor); });
-        var needle = document.querySelector('#needle-group line');
-        var needleDot = document.querySelector('#needle-group circle');
-        var nc = isDark ? '#ccc' : '#333';
-        if (needle) needle.setAttribute('stroke', nc);
-        if (needleDot) needleDot.setAttribute('fill', nc);
-        var gaugeSvg = document.getElementById('gs-gauge-svg');
-        if (gaugeSvg) { var paths = gaugeSvg.querySelectorAll('path'); if (paths[0]) paths[0].setAttribute('stroke', isDark ? '#444' : '#ddd'); }
-        if (typeof updateSetupButtons === 'function') updateSetupButtons();
-    }
-
-    function toggleDark() {
-        var isDark = !document.body.classList.contains('dark');
-        localStorage.setItem('darkMode', isDark ? '1' : '0');
-        applyDark(isDark);
-    }
-
-    // Load last used aircraft settings on startup
-    // Default to 214B if nothing saved
-    applyPreset(localStorage.getItem('lastAircraft') || '214B');
-    updateWB();
-    loadFuelPlanGS();
-    updateGSUI();
-    updateBingo();
-    applyLayoutMode();
-    // Restore dark mode preference
-    applyDark(localStorage.getItem('darkMode') === '1');
-    // Restore fuel calc preference (default ON)
-    applyFuelCalc(localStorage.getItem('fuelCalcEnabled') !== '0');
+// ── Navigation ──────────────────────────────
+function showProc(id) {
+  var content = PROCS[id];
+  if (!content) content = '<p class="proc-dev">Content under development for: ' + id + '</p>';
+  document.getElementById('proc-scroll').innerHTML = content;
+  document.getElementById('proc-hdr-title').textContent = PROC_TITLES[id] || id.toUpperCase();
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('proc-page').classList.add('active');
+  document.getElementById('proc-scroll').scrollTop = 0;
+}
+function goHome() {
+  document.getElementById('proc-page').classList.remove('active');
+  document.getElementById('home').classList.add('active');
+}
+
+// ── Procedure titles ────────────────────────
+var PROC_TITLES = {
+  'fire-eng':       'ENGINE FIRE',
+  'bag-fire':       'BAGGAGE FIRE / SMOKE',
+  'eng-out':        'ENGINE OUT',
+  'master-caution': 'MASTER CAUTION',
+  'rotor-rpm':      'ROTOR RPM / NP UNDERSPEED / OVERSPEED',
+  'fuel-press':     'FUEL SUCTION PUMP / LOW PRESSURE',
+  'fuel-low':       'FUEL LOW',
+  'fuel-filter':    'FUEL FILTER PARTIALLY CLOGGED',
+  'fuel-valve':     'FUEL VALVE IN TRANSIT',
+  'fuel-trans':     'NO FUEL TO AFT FLOOR CELL',
+  'interconn-valve':'FUEL INTERCONNECT VALVE IN TRANSIT',
+  'eng-oil':        'ENGINE OIL PRESSURE',
+  'ecu-lockout':    'ECU LOCKOUT',
+  'eng-chip':       'ENGINE CHIP',
+  'gr-box-chip':    'COMBINING GEARBOX / CHIP',
+  'gearbox-oil':    '42/90° GEARBOX OIL',
+  'xmsn-oil':       'TRANSMISSION OIL PRESSURE / TEMPERATURE',
+  'cbox-oil':       'C-BOX OIL PRESSURE / TEMPERATURE',
+  'xmsn-chip':      'TRANSMISSION CHIP',
+  'tr-drive':       'CHIP 42/90 / T/R DRIVE',
+  'oil-cooler':     'OIL COOLER',
+  'gen-hot':        'GENERATOR OVERHEAT',
+  'gen-fail':       'GENERATOR FAILURE',
+  'bus-feeder':     'BUS FEEDER',
+  'inverter':       'INVERTER FAILURE',
+  'batt-sys':       'BATTERY SYSTEM',
+  'batt-temp':      'BATTERY TEMPERATURE',
+  'hydraulic':      'HYDRAULIC SYSTEM FAILURES',
+  'utility-hyd':    'UTILITY HYDRAULIC SYSTEM',
+  'oil-cooler':     'OIL COOLER',
+  'htr-air-lines':  'HEATER MIXING VALVE FAILURE',
+  'blower-off':     'PARTICLE SEPARATOR BLOWER',
+  'wshld-htr':      'WINDSHIELD OVERHEAT',
+  'caut-pnl':       'CAUTION PANEL INOPERATIVE',
+  'door-lock':      'DOOR LOCK',
+  'rotor-brake':    'ROTOR BRAKE',
+  'afcs':           'AFCS MALFUNCTIONS',
+  'as3':            'A/S 3 FAILURE',
+  'elev':           'FLY-BY-WIRE ELEVATOR SYSTEM FAILURE',
+  'eng-out-emg':    'SINGLE / DUAL ENGINE FAILURE',
+  'eng-anti-ice':   'ENGINE INLET ANTI-ICE',
+  'brakes':         'BRAKES',
+  'anti-ice':       'ANTI-ICE ON',
+  'cargo-hook':     'CARGO HOOK',
+  'hoist':          'HOIST',
+  'floats':         'FLOATS ARM',
+  'spare':          'SPARE',
+  'ext-power':      'EXT POWER',
+};
+
+// ── Helper HTML builders ────────────────────
+function ptype(t){return '<span class="proc-type '+t+'">'+t.toUpperCase()+' PROCEDURE</span>';}
+function ptitle(t){return '<h2 class="proc-title">'+t+'</h2>';}
+function psub(t){return '<div class="proc-sub">'+t+'</div>';}
+function plabel(t){return '<div class="proc-label">'+t+'</div>';}
+function pnote(t){return '<div class="proc-note"><strong>NOTE</strong><br>'+t+'</div>';}
+function pcaut(t){return '<div class="proc-caution">'+t+'</div>';}
+function pwarn(t){return '<div class="proc-warning">'+t+'</div>';}
+function plight(t,red){return '<span class="cw-light-ref'+(red?' red':'')+'">'+t+'</span>';}
+function pbullets(arr){return '<ul class="proc-items">'+arr.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul>';}
+function psteps(arr){
+  return '<ol class="proc-steps">'+arr.map(function(s,i){
+    return '<li><span class="step-num">'+(i+1)+'.</span><span class="step-action">'+s[0]+(s[1]?'<span class="step-cmd">'+s[1]+'</span>':'')+'</span></li>';
+  }).join('')+'</ol>';
+}
+
+// ── PROCEDURES DATABASE ──────────────────────
+var PROCS = {};
+
+// ── ENGINE FIRE ─────────────────────────────
+PROCS['fire-eng'] = ptype('emergency')+ptitle('ENGINE FIRE')+
+psub('ENGINE HOT START')+
+plabel('Indications')+pbullets(['MGT exceeds 850°C before idle speed is reached.'])+
+plabel('Procedures')+psteps([
+  ['Throttle (affected engine)','CLOSE'],
+  ['ENGINE FUEL Switch (affected engine)','OFF'],
+  ['ENG START Switch','ENERGIZE — continue until MGT decreases below 275°C.'],
+  ['Use normal aircraft shutdown procedures.','']
+])+
+psub('ENGINE FIRE ON START (External)')+
+plabel('Indications')+pbullets([plight('FIRE ENG 1',true)+' or '+plight('FIRE ENG 2',true)+' light illuminates.','Smoke.','Fire.'])+
+plabel('Procedures')+psteps([
+  ['Throttle (affected engine)','CLOSE'],
+  ['ENG Fire Extinguisher Switch (affected engine)','ARM'],
+  ['AGENT RLSE Switch','BLT 1'],
+  ['If fire light does not extinguish — AGENT RLSE Switch','BLT 2'],
+  ['Fuel and Electrical Switches','OFF'],
+  ['Exit helicopter after shutdown is completed.','']
+])+
+psub('ENGINE FIRE IN FLIGHT')+
+plabel('Indications')+pbullets([plight('FIRE ENG 1',true)+' or '+plight('FIRE ENG 2',true)+' light illuminates.','Smoke.','Fumes.','Fire.'])+
+pnote('Selecting ARM with either ENG fire switch will close both engine bleed air valves, causing loss of the cabin heater and secondary oil cooler blower. If the remaining engine is operating below maximum MGT and power, the appropriate bleed air override switch may be used to regain bleed air.')+
+plabel('Procedures')+psteps([
+  ['Throttle (affected engine) — Reduce power and maintain control.','CLOSE'],
+  ['ENG Fire Extinguisher Switch (affected engine)','ARM'],
+  ['AGENT RLSE Switch','BTL 1'],
+  ['ENGINE FUEL Switch (affected engine)','OFF'],
+  ['TRANS PUMP Switches','ON'],
+  ['FUEL PRIME Switch (affected engine)','OFF'],
+  ['GRAVITY INTCON Switch','OPEN'],
+  ['If Fire Warning Light remains illuminated — AGENT RLSE Switch','BLT 2'],
+  ['Land as soon as possible on remaining engine.','']
+])+
+pwarn('If fire indications persist, land immediately.');
+
+// ── BAG FIRE ────────────────────────────────
+PROCS['bag-fire'] = ptype('emergency')+ptitle('BAGGAGE FIRE / SMOKE')+
+plabel('Indications')+pbullets([plight('L BAG FIRE',true)+' or '+plight('R BAG FIRE',true)+' warning light illuminates.'])+
+plabel('Procedures')+psteps([
+  ['Land as soon as possible.',''],
+  ['Helicopter','SHUTDOWN'],
+  ['Inspect for damage.','']
+]);
+
+// ── SMOKE & FUME ELIMINATION ────────────────
+PROCS['smoke-fume'] = ptype('emergency')+ptitle('SMOKE AND FUME ELIMINATION')+
+plabel('Procedures')+psteps([
+  ['Cockpit Window(s)','OPEN'],
+  ['Cockpit and Cabin Vents','OPEN'],
+  ['HEATER Switches','OFF']
+]);
+
+// ── ENG OUT ─────────────────────────────────
+PROCS['eng-out'] = ptype('emergency')+ptitle('ENGINE OUT')+
+psub('SINGLE ENGINE FAILURE DURING TAKEOFF')+
+plabel('Indications')+pbullets(['Left yaw.','Master caution light and appropriate caution panel lights illuminate.',plight('ENG OUT',true)+' warning light (affected engine) illuminates.','Rotor RPM decrease (possibly).',plight('ROTOR RPM',true)+' warning light (possibly).','Engine instrument readings of affected engine decrease.'])+
+plabel('Procedures')+psteps([
+  ['Maintain heading control and adjust attitude as necessary.',''],
+  ['Collective — Maintain rotor RPM or control rate of descent and cushion landing.','ADJUST'],
+  ['Land as soon as practical.',''],
+  ['Helicopter','SHUTDOWN']
+])+
+psub('SINGLE ENGINE FAILURE — HOVERING IGE')+psteps([
+  ['Maintain heading control and adjust attitude as necessary.',''],
+  ['Collective — Maintain hover or control rate of descent and cushion landing.','ADJUST'],
+  ['Land as soon as practical.',''],
+  ['Helicopter','SHUTDOWN']
+])+
+psub('SINGLE ENGINE FAILURE — HOVERING OGE')+psteps([
+  ['Heading','MAINTAIN'],
+  ['Attitude','ADJUST AS REQUIRED'],
+  ['Collective — Maintain hover or control rate of descent and cushion landing.','ADJUST'],
+  ['Land as soon as practical.',''],
+  ['Helicopter','SHUTDOWN']
+])+
+psub('SINGLE ENGINE FAILURE INFLIGHT')+psteps([
+  ['Rotor RPM','MAINTAIN WITHIN LIMITS'],
+  ['Collective','ADJUST TO OEI LIMITS OR BELOW'],
+  ['Airspeed','ADJUST TO BELOW SINGLE ENGINE V<sub>NE</sub>'],
+  ['Failed Engine','IDENTIFY'],
+  ['Throttle (affected engine)','CLOSE'],
+  ['ENGINE FUEL Switch (affected engine)','OFF'],
+  ['GRAVITY INTCON Switch','OPEN'],
+  ['MASTER CAUTION Light','RESET'],
+  ['Airstart if conditions permit — see ENGINE RESTART IN FLIGHT (AIRSTART).',''],
+  ['Land as soon as practical.','']
+])+pnote('If engine failure is due to fuel starvation, leave GRAVITY INTCON switch closed.')+
+psub('DUAL ENGINE FAILURE')+
+pnote('Minimum rate of descent airspeed is 75 KIAS. Maximum range airspeed is 105 KIAS.')+
+plabel('Indications')+pbullets(['Left yaw.','ROTOR RPM decreases.',plight('1 ENG OUT',true)+' and '+plight('2 ENG OUT',true)+' lights illuminate.','Both engines instrument readings decrease.',plight('ROTOR RPM',true)+' caution light and audio.'])+
+psteps([
+  ['Collective — Enter autorotative descent.','DOWN'],
+  ['Airspeed','MAXIMUM GLIDE DISTANCE OR MINIMUM RATE OF DESCENT'],
+  ['If unable to airstart, close throttles and shut off fuel.',''],
+  ['Conduct autorotative procedures.','']
+])+pnote('If conditions permit, attempt an airstart.');
+
+// ── ENGINE RESTART IN FLIGHT ────────────────
+PROCS['airstart'] = ptype('emergency')+ptitle('ENGINE RESTART IN FLIGHT (AIRSTART)')+
+pcaut('If cause of failure is obviously mechanical as evidenced by abnormal, metallic, or grinding sounds, do not attempt an airstart.')+
+psteps([
+  ['Maintain control of helicopter.',''],
+  ['GRAVITY INCON Switch — Check OPEN (if no evidence of fuel leak on failed engine side).','CHECK'],
+  ['TRANS PUMP Switch (both engines)','CHECK ON'],
+  ['Engine oil temperature (affected engine)','NORMAL'],
+  ['Throttle (affected engine)','CLOSED'],
+  ['ENGINE FUEL Switch (affected engine)','ON'],
+  ['ENGINE PRIME Switch (affected engine)','ON FOR START'],
+  ['ENG START Switch (affected engine)','SET TO AFFECTED ENGINE'],
+  ['Throttle (affected engine)','INCREASE TO IDLE POSITION'],
+  ['ENG START Switch — Verify OFF at Normal N<sub>G</sub> automatic starter cutout 52–59%.','OFF'],
+  ['Oil temperature and pressure (affected engine)','CHECK'],
+  ['Throttle (affected engine)','ADVANCE TO FULL OPEN']
+])+pnote('There will be a 2–3% N<sub>R</sub> deviation during start cycle with obvious yawing of helicopter.')+
+pnote('Observe normal starting limitations.');
+
+// ── ROTOR RPM ───────────────────────────────
+PROCS['rotor-rpm'] = ptype('abnormal')+ptitle('ROTOR RPM / N<sub>P</sub> SPEED EXCEEDANCE')+
+psub('N<sub>P</sub> UNDERSPEED')+
+plabel('Indications')+pbullets(['Torque split.','N<sub>G</sub> decrease.','MGT decrease.','N<sub>R</sub>/N<sub>P</sub> decrease of unaffected engine if power demand exceeds single engine limit.'])+
+plabel('Procedures')+psteps([
+  ['Rotor RPM','CONTROL'],
+  ['Throttle (affected engine) — Verify RPM increases and ECU LOCKOUT light illuminated.','ADVANCE TO ECU LOCKOUT'],
+  ['Throttle (affected engine)','RETARD MANUALLY — CONTROL POWER'],
+  ['Engine Power','MAINTAIN TORQUE UP TO 10% LOWER THAN GOOD ENGINE'],
+  ['Engine Instruments','MONITOR CLOSELY']
+])+pcaut('N<sub>P</sub> governing, MGT limiting and load sharing functions are not available with ECU in lockout mode. Close monitoring of engine during manual operation is required to ensure limits are not exceeded.')+
+pnote('If engine does not respond to ECU LOCKOUT, EXECUTE single engine landing.')+
+psub('N<sub>P</sub> OVERSPEED')+
+plabel('Indications')+pbullets(['Increase in N<sub>P</sub> and N<sub>R</sub>.','Torque split.',plight('ROTOR RPM')+' caution light (possible).','Good engine reduces power and N<sub>P</sub> may increase 3% or higher depending on rotor load.'])+
+plabel('Procedures')+psteps([
+  ['Rotor RPM','CONTROL'],
+  ['Throttle (affected engine) — Limit power manually.','RETARD'],
+  ['Engine Power — Maintain torque up to 10% below other engine.','SET'],
+  ['Engine Instruments','MONITOR']
+])+pnote('If rotor speed is high, engine with higher MGT is engine with failure and throttle should be retarded to set torque up to 10% below good engine.');
+
+// ── MASTER CAUTION ───────────────────────────
+PROCS['master-caution'] = ptype('abnormal')+ptitle('MASTER CAUTION')+
+'<p style="font-size:0.9rem;line-height:1.6;">The red MASTER CAUTION light illuminates whenever any caution or warning light on the panel illuminates. Press to reset (extinguish) the MASTER CAUTION light after identifying the triggering system. The individual caution light will remain illuminated until the fault is cleared.</p>'+
+'<p style="font-size:0.9rem;line-height:1.6;">Identify the illuminated caution/warning light and refer to the appropriate procedure by tapping the relevant light on the CWP panel.</p>';
+
+// ── FUEL PRESS ───────────────────────────────
+PROCS['fuel-press'] = ptype('abnormal')+ptitle('FUEL SUCTION PUMP FAILURE / FUEL LOW PRESSURE')+
+psub('4 — FUEL SUCTION PUMP FAILURE')+
+plabel('Indications')+pbullets([plight('FUEL PRESS')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check engine switches in appropriate positions.',''],
+  ['Prepare for single engine operation/limitations.','']
+])+
+psub('5 — FUEL LOW PRESSURE')+
+plabel('Indications')+pbullets([plight('FUEL PRESS')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check engine switches in appropriate positions.',''],
+  ['Prepare for single engine operation/limitations.','']
+]);
+
+// ── FUEL LOW ─────────────────────────────────
+PROCS['fuel-low'] = ptype('abnormal')+ptitle('FUEL LOW')+
+plabel('Indications')+pbullets([plight('NO.1 FUEL LOW')+' or '+plight('NO.2 FUEL LOW')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Fuel Quantity','CHECK'],
+  ['GRAVITY INTCON SWITCH','OPEN']
+]);
+
+// ── FUEL FILTER ──────────────────────────────
+PROCS['fuel-filter'] = ptype('abnormal')+ptitle('FUEL FILTER PARTIALLY CLOGGED')+
+plabel('Indications')+pbullets([plight('NO.1 FUEL FILTER')+' or '+plight('NO.2 FUEL FILTER')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Reduce power if possible on affected engine in an attempt to clear light.',''],
+  ['If unable to clear light — Land as soon as practical.','']
+])+pnote('Illumination of FUEL FILTER caution light indicates that the bypass valve may open and allow unfiltered fuel to pass fuel injectors with a potential for fuel system contamination and possible power loss.');
+
+// ── FUEL VALVE ───────────────────────────────
+PROCS['fuel-valve'] = ptype('abnormal')+ptitle('FUEL VALVE IN TRANSIT')+
+plabel('Indications')+pbullets([plight('FUEL VALVE')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check fuel switch for desired position.',''],
+  ['Check circuit breaker.',''],
+  ['Prepare for single engine operation.',''],
+  ['Correct prior to next flight.','']
+]);
+
+// ── INTERCONNECT VALVE ───────────────────────
+PROCS['interconn-valve'] = ptype('abnormal')+ptitle('FUEL INTERCONNECT VALVE IN TRANSIT')+
+plabel('Indications')+pbullets([plight('INTERCONN VALVE')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['GRAVITY INTCON Switch','CHECK'],
+  ['INTCON AFT and INTCON FWD circuit breakers','CHECK']
+]);
+
+// ── FUEL TRANS ───────────────────────────────
+PROCS['fuel-trans'] = ptype('abnormal')+ptitle('NO FUEL TO AFT FLOOR CELL')+
+plabel('Indications')+pbullets([plight('NO.1 FUEL TRANS')+' or '+plight('NO.2 FUEL TRANS')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['TRANS PUMP Switch','CHECK'],
+  ['FUEL XFER circuit breaker','CHECK'],
+  ['GRAVITY INTCON Switch','OPEN'],
+  ['Forward Fuel Cell Quantity — Verify proper fuel burn.','TEST'],
+  ['Fuel Quantity','MONITOR']
+])+pnote('If both fuel transfer pumps are inoperative, approximately 500 pounds of fuel will be unusable if tanks were full.');
+
+// ── ENGINE OIL ────────────────────────────────
+PROCS['eng-oil'] = ptype('abnormal')+ptitle('ENGINE OIL PRESSURE')+
+plabel('Indications')+pbullets([plight('OIL')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check ENG OIL gauge.',''],
+  ['Reduce affected engine power.',''],
+  ['Adjust power as required.',''],
+  ['Monitor ENG OIL gauge.',''],
+  ['Shut down engine as soon as practical.',''],
+  ['Continue under single engine limitations.','']
+]);
+
+// ── ECU LOCKOUT ───────────────────────────────
+PROCS['ecu-lockout'] = ptype('abnormal')+ptitle('ECU LOCKOUT')+
+plabel('Indications')+pbullets([plight('ECU LOCKOUT')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check for overspeed indication and control RPM with throttle.','']
+])+pnote('If overspeed does not exist, correct prior to next flight.');
+
+// ── ENGINE CHIP ───────────────────────────────
+PROCS['eng-chip'] = ptype('abnormal')+ptitle('ENGINE CHIP')+
+plabel('Indications')+pbullets([plight('ENG CHIP')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Reduce power as soon as practical.',''],
+  ['If power not required, shut down affected engine. If circumstances prevent shutting down, power output from affected engine should be reduced by retarding throttle and transferring more load to good engine.',''],
+  ['Shut down engine if light cannot be cleared and a problem is indicated by engine gages, noise, etc.',''],
+  ['LAND AS SOON AS PRACTICAL','']
+]);
+
+// ── COMBINING GEARBOX / GR BOX CHIP ──────────
+PROCS['gr-box-chip'] = ptype('abnormal')+ptitle('COMBINING GEARBOX')+
+psub('C-BOX CHIP')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('CB 1')+' or '+plight('CB 2')+' lights illuminate.'])+
+plabel('Actions')+psteps([
+  ['Push CB 1 or CB 2 chip indicator three (3) times to attempt chip burn off.',''],
+  ['If chip light extinguishes — Continue flight.',''],
+  ['If chip light fails to extinguish — Retard throttle on affected engine to idle stop. Shutdown engine at pilot discretion.',''],
+  ['Land as soon as practical.','']
+])+
+psub('C-BOX FAILURE')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('CB 1')+' or '+plight('CB 2')+' lights illuminate.','Gearbox noise or vibration.'])+
+psteps([['Shutdown affected engine.',''],['Land as soon as practical.','']])+
+psub('TOTAL C-BOX FAILURE')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+', '+plight('CB 1')+' or '+plight('CB 2')+', and '+plight('CB SUMP')+' lights illuminate.',plight('C BOX OIL')+' and/or noise or vibration.'])+
+psteps([['Land immediately.','']])+
+psub('CHIP GEARBOX SUMP')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('CB SUMP')+' lights illuminate.'])+
+psteps([
+  ['Push CB SUMP chip detector three (3) times to attempt chip burn off.',''],
+  ['If chip light extinguishes — Continue flight.',''],
+  ['If chip light fails to extinguish — Land as soon as possible.','']
+]);
+
+// ── 42/90 GEARBOX OIL ────────────────────────
+PROCS['gearbox-oil'] = ptype('abnormal')+ptitle('42/90° GEARBOX OIL')+
+psub('14 — 42/90 GEARBOX OIL PRESSURE LOW')+
+plabel('Indications')+pbullets([plight('42° BOX OIL',true)+' or '+plight('90° BOX OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([['Reduce power.',''],['Land as soon as possible.','']])+
+psub('15 — 42/90 GEARBOX OIL TEMPERATURE HIGH')+
+plabel('Indications')+pbullets([plight('42° BOX OIL',true)+' or '+plight('90° BOX OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([['Reduce power.',''],['Land as soon as possible.','']]);
+
+// ── GEARBOX CHIP (general) ────────────────────
+PROCS['gearbox-chip-general'] = ptype('abnormal')+ptitle('GEARBOX CHIP')+
+psub('16 — GEARBOX CHIP')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check chip indicator panel.',''],
+  ['See procedures under CHIP INDICATOR PANEL.','']
+])+
+psub('17 — CHIP 42/90')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('T/R DRIVE')+' lights illuminate.'])+
+plabel('Actions')+psteps([
+  ['Reduce power and airspeed.',''],
+  ['Push T/R DRIVE chip indicator three (3) times to attempt chip burn off.',''],
+  ['If chip light extinguishes — Continue flight.',''],
+  ['If chip light fails to extinguish — Reset MASTER CAUTION lights.',''],
+  ['Land as soon as possible.','']
+]);
+
+// ── XMSN OIL ─────────────────────────────────
+PROCS['xmsn-oil'] = ptype('abnormal')+ptitle('TRANSMISSION OIL')+
+psub('LOW TRANSMISSION OIL PRESSURE')+
+plabel('Indications')+pbullets([plight('XMSN OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([['Check XMSN OIL gauge.',''],['Reduce power if necessary.',''],['Land as soon as possible.','']])+
+psub('HIGH TRANSMISSION OIL TEMPERATURE')+
+plabel('Indications')+pbullets([plight('XMSN OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check XMSN OIL gauge.',''],
+  ['Reduce power if necessary.',''],
+  ['Oil cooler switch','SECONDARY'],
+  ['If temperature remains high — Land as soon as possible.','']
+])+pnote('Oil cooler provides cooling for transmission and combining gearbox.');
+
+// ── C-BOX OIL ────────────────────────────────
+PROCS['cbox-oil'] = ptype('abnormal')+ptitle('C-BOX OIL PRESSURE / TEMPERATURE')+
+psub('LOW C-BOX OIL PRESSURE')+
+plabel('Indications')+pbullets([plight('CBOX OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([['Check XMSN OIL gauge.',''],['Reduce power if necessary.',''],['Land as soon as possible.','']])+
+psub('HIGH C-BOX OIL TEMPERATURE')+
+plabel('Indications')+pbullets([plight('CBOX OIL',true)+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Check XMSN OIL gauge.',''],
+  ['Reduce power if necessary.',''],
+  ['Oil cooler switch','SECONDARY'],
+  ['If temperature remains high — Land as soon as possible.','']
+])+pnote('Oil cooler provides cooling for transmission and combining gearbox.');
+
+// ── XMSN CHIP ────────────────────────────────
+PROCS['xmsn-chip'] = ptype('abnormal')+ptitle('TRANSMISSION CHIP / FAILURE')+
+psub('TRANSMISSION CHIP')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('MAIN XMSN')+' lights illuminate.'])+
+plabel('Actions')+psteps([
+  ['Reduce power and airspeed.',''],
+  ['Push MRGB Chip indicator three (3) times to attempt chip burn off.',''],
+  ['If chip light extinguishes — Continue flight.',''],
+  ['If chip light fails to extinguish — Reset MASTER CAUTION light.',''],
+  ['Land as soon as possible.','']
+])+
+psub('TRANSMISSION FAILURE')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+', '+plight('MAIN XMSN')+', and '+plight('XMSN OIL',true)+' lights illuminate.'])+
+psteps([['Land immediately.','']]);
+
+// ── T/R DRIVE ────────────────────────────────
+PROCS['tr-drive'] = ptype('abnormal')+ptitle('CHIP 42/90 — T/R DRIVE')+
+plabel('Indications')+pbullets([plight('GR BOX CHIP')+' and '+plight('T/R DRIVE')+' lights illuminate.'])+
+plabel('Actions')+psteps([
+  ['Reduce power and airspeed.',''],
+  ['Push T/R DRIVE chip indicator three (3) times to attempt chip burn off.',''],
+  ['If chip light extinguishes — Continue flight.',''],
+  ['If chip light fails to extinguish — Reset MASTER CAUTION lights.',''],
+  ['Land as soon as possible.','']
+]);
+
+// ── OIL COOLER ───────────────────────────────
+PROCS['oil-cooler'] = ptype('abnormal')+ptitle('OIL COOLER')+
+plabel('Indications')+pbullets([plight('OIL COOLER')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Transmission and Combining Gearbox Temperature','CHECK'],
+  ['If increasing — OIL COOLER Switch','SECONDARY'],
+  ['Transmission and Combining Gearbox Temperature and Pressure','CHECK'],
+  ['If temperatures and pressure are out of limits — Land as soon as possible.','']
+])+pnote('The secondary oil cooler blower is bleed air driven from the engines. Operation at reduced power results in decreased bleed air flow. Prolonged operation may cause the combining gearbox and/or the main transmission to exceed allowable oil temperature. When operating on secondary cooler blower, increasing engine power will provide increased bleed air to the blower for additional C-Box and main transmission oil cooling. An approach to landing should be planned accordingly.');
+
+// ── GEN OVERHEAT ─────────────────────────────
+PROCS['gen-hot'] = ptype('abnormal')+ptitle('GENERATOR OVERHEAT')+
+plabel('Indications')+pbullets([plight('GEN 1 HOT',true)+' and '+plight('GEN 2 HOT',true)+' lights illuminate.'])+
+plabel('Actions')+psteps([
+  ['Affected Generator','OFF'],
+  ['NON ESNTL BUS CONTROL Switch','ON']
+])+pnote('Electrical loads may have to be reduced to remain below maximum continuous limits.');
+
+// ── GENERATOR FAILURE ────────────────────────
+PROCS['gen-fail'] = ptype('emergency')+ptitle('ELECTRICAL SYSTEM FAILURES')+
+psub('SINGLE GENERATOR FAILURE')+
+plabel('Indications')+pbullets(['MASTER CAUTION light illuminates.',plight('GEN')+' caution light illuminates.',plight('INV 1')+' or '+plight('INV 2')+' caution light illuminates (possibly if respective battery bus switch trips due to ground fault).','Ammeter and voltmeter indications.'])+
+plabel('Procedures')+psteps([
+  ['Ammeter and Voltmeter','CHECK'],
+  ['GENERATOR NO. 1/NO. 2 Switch (affected generator)','RESET, THEN ON'],
+  ['If generator resets — Continue flight.',''],
+  ['If generator fails to reset — GENERATORS Switch','OFF'],
+  ['Applicable Battery Bus Switch','LEAVE IN OFF POSITION IF SWITCH WAS TRIPPED OFF'],
+  ['NON ESNTL BUS CONTROL Switch','ON (IF DESIRED)']
+])+
+psub('DUAL GENERATOR FAILURE')+
+plabel('Procedures')+psteps([
+  ['GENERATOR Switches','RESET, THEN ON (INDIVIDUALLY)'],
+  ['If generators(s) reset — Verify BATTERY BUS Switches','ON'],
+  ['If generator(s) does not reset — Land as soon as possible.','']
+])+
+psub('ELECTRICAL FIRE')+
+pwarn('Exercise care when using hand portable fire extinguishers in cockpit due to the possibility of disabling the crew or restricting their visibility due to fogging effect of extinguisher agent.')+
+pcaut('SCAS and AARS will disengage with no electrical power. FBW elevator will lock in position. If IFR at time of failure, attain VMC as soon as possible.')+
+pnote('Flight can be maintained without electrical power, however, most instruments will not operate. To shut down engines, one battery must be ON to power engine idle stops and main fuel valves.')+
+plabel('Procedures')+psteps([
+  ['GENERATOR Switches','OFF'],
+  ['INVERTER Switches','OFF'],
+  ['Follow procedure for smoke and fume elimination.',''],
+  ['Unnecessary Equipment','OFF'],
+  ['If fire is no longer evident — GENERATOR Switches','ON (INDIVIDUALLY)'],
+  ['Necessary Equipment (DC)','ON'],
+  ['INVERTER Switches','ON (INDIVIDUALLY)'],
+  ['Necessary Equipment (AC)','ON'],
+  ['If fire evident during steps 5–8 — Suspect equipment','OFF'],
+  ['Suspect equipment circuit breaker(s)','PULL'],
+  ['Land as soon as practical.',''],
+  ['If fire persists — GENERATOR Switches','OFF'],
+  ['BATTERY Switches','AS REQUIRED'],
+  ['Land as soon as possible.',''],
+  ['Helicopter','SHUTDOWN']
+]);
+
+// ── BUS FEEDER ───────────────────────────────
+PROCS['bus-feeder'] = ptype('abnormal')+ptitle('BUS FEEDER')+
+plabel('Indications')+pbullets([plight('BUS FEEDER')+' warning light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Bus feeder circuit breaker(s) popped.',''],
+  ['Correct before next flight.','']
+]);
+
+// ── INVERTER ─────────────────────────────────
+PROCS['inverter'] = ptype('abnormal')+ptitle('INVERTER FAILURE')+
+psub('SINGLE INVERTER FAILURE')+
+plabel('Indications')+pbullets([plight('INV 1')+' or '+plight('INV 2')+' caution light illuminates.',plight('ELEV 1')+' or '+plight('ELEV 2')+' caution light (momentary illumination along with AFCS CAUTION lights).'])+
+plabel('Procedures')+psteps([
+  ['Check caution panel to determine which inverter failed.',''],
+  ['INV PWR and INV FEED circuit breakers','CHECK IN'],
+  ['If inverter fails to reset — Failed INVERTER Switch','OFF']
+])+pnote('ELEV 1 will temporarily illuminate if INV 1 fails. ELEV 2 will temporarily illuminate if INV 2 fails. ELEV lights will not remain illuminated since elevator system will re-engage after automatic inverter switch over occurs.')+
+pnote('If AC power is interrupted while SCAS is engaged, wait 30 seconds before re-engaging SCAS.')+
+psub('DUAL INVERTER FAILURE')+
+plabel('Indications')+pbullets([plight('INV 1')+', '+plight('INV 2')+', and '+plight('26 VAC')+' caution lights illuminate.',plight('ELEV 1')+' or '+plight('ELEV 2')+' caution lights illuminated, with AFCS CAUTION lights.','Loss of SCAS, AARS, and nav instrument functions. Elevator will lock in position at time of dual failure.','Loss of attitude indicators and HSIs.'])+
+plabel('Procedures')+psteps([
+  ['INV PWR and INV FEED circuit breakers','CHECK IN'],
+  ['If inverters fail to reset — INVERTER Switches','OFF'],
+  ['Airspeed','DUAL ELEVATOR FAILURE V<sub>NE</sub> OR LOWER'],
+  ['Altitude — Climb or descend to attain VMC conditions.','AS REQUIRED'],
+  ['Land as soon as practical.','']
+])+pnote('If AC power is interrupted while SCAS is engaged, wait 30 seconds before re-engaging SCAS.');
+
+// ── BATTERY SYSTEM ────────────────────────────
+PROCS['batt-sys'] = ptype('abnormal')+ptitle('BATTERY SYSTEM')+
+plabel('Warning may occur due to')+pbullets(['Cell imbalance in battery.','Defective charger monitor.','Battery temperature above 145°F.'])+
+plabel('Indications')+pbullets([plight('NO 1 BATT SYS')+' or '+plight('NO 2 BATT SYS')+' warning light illuminates.'])+
+plabel('Actions')+psteps([['BATTERY Switch (affected battery)','OFF']])+
+pnote('A hot battery (above 155°) will illuminate respective BATT HOT and BATT SYS lights. Battery shall be checked and serviced in accordance with manufacturer\'s instructions.');
+
+// ── BATTERY TEMPERATURE ───────────────────────
+PROCS['batt-temp'] = ptype('emergency')+ptitle('BATTERY TEMPERATURE')+
+plabel('Indications')+pbullets([plight('BATT 1 HOT',true)+' or '+plight('BATT 2 HOT',true)+' warning light illuminates.'])+
+plabel('Actions')+psteps([
+  ['BATTERY Switch (affected battery)','OFF'],
+  ['If light does not extinguish — Land as soon as possible.','']
+])+pnote('Battery shall be checked and serviced in accordance with manufacturer\'s instructions.');
+
+// ── HYDRAULIC SYSTEM ─────────────────────────
+PROCS['hydraulic'] = ptype('emergency')+ptitle('HYDRAULIC SYSTEM FAILURES')+
+psub('SINGLE HYDRAULIC SYSTEM FAILURE')+
+plabel('Indications')+pbullets(['MASTER CAUTION light illuminates.',plight('NO.1 HYD')+' or '+plight('NO.2 HYD')+' caution light illuminates.','Hydraulic pressure (affected system) below 2000 psi.','Hydraulic temperatures (affected system) above 116°C.','Grinding or howling noise.','At ambient temperature of -10°C or less, additional forces will be required to displace pedals.'])+
+plabel('Procedures')+psteps([
+  ['HYD SYS Switch (affected system)','OFF'],
+  ['Land as soon as practical. Land into the wind.','']
+])+
+psub('HIGH HYDRAULIC TEMPERATURE')+
+plabel('Indications')+pbullets([plight('NO.1 HYD')+' or '+plight('NO.2 HYD')+' light illuminates.'])+
+psteps([['HYD SYS Switch (affected system)','OFF'],['Land as soon as practical. Land into the wind.','']])+
+psub('LOW HYDRAULIC PRESSURE')+
+plabel('Indications')+pbullets([plight('NO.1 HYD')+' or '+plight('NO.2 HYD')+' light illuminates.'])+
+psteps([['HYD SYS Switch (affected system)','OFF'],['Land as soon as practical. Land into the wind.','']])+
+psub('DUAL HYDRAULIC SYSTEM FAILURE')+
+plabel('Indications')+pbullets(['MASTER CAUTION light.',plight('NO.1 HYD')+' or '+plight('NO.2 HYD')+' caution light illuminates.','Hydraulic pressure (both systems) below 2000 psi; or temperatures above 116°C.','High control forces. Control feedback.'])+
+psteps([
+  ['Airspeed','MAINTAIN'],
+  ['HYD SYS Switches','OFF'],
+  ['If either hydraulic system is restored — follow SINGLE HYDRAULIC SYSTEM FAILURE procedures.',''],
+  ['Landing area','SELECT A LONG HARD SURFACE'],
+  ['Restraint harness','LOCK'],
+  ['Perform sliding landing to touch down at no less than 60 knots.','']
+])+
+psub('HYDRAULIC ACTUATOR SERVO VALVE MALFUNCTION')+
+pnote('The malfunctioning system may be tuned on for landing, provided the system temperature remains within operating limits.')+
+plabel('Indications')+pbullets(['Stiffness in control movement in directions affected by failure.','Bypass Valve Indicator light (affected servo) illuminated.','Possible disengagement of SCAS and AARS.'])+
+psteps([
+  ['Avoid abrupt control movement or maneuvers.',''],
+  ['Turn off the affected hydraulic system if temperature exceeds limits.',''],
+  ['Land as soon as possible.','']
+])+
+psub('HYDRAULIC ACTUATOR BYPASS VALVE MALFUNCTION')+
+plabel('Indication')+pbullets(['Bypass Valve Indicator light illuminated without accompanying stiffness in controls.'])+
+psteps([['Land as soon as possible.','']]);
+
+// ── UTILITY HYD ──────────────────────────────
+PROCS['utility-hyd'] = ptype('emergency')+ptitle('UTILITY HYDRAULIC SYSTEM')+
+psub('UTILITY HYDRAULIC SYSTEM FAILURE')+
+plabel('Indications')+pbullets(['MASTER CAUTION light illuminated.',plight('UTILITY HYD')+' and/or '+plight('OIL COOLER')+' caution light(s) illuminate(s).'])+
+plabel('Procedures')+psteps([
+  ['OIL COOLER Switch','SECONDARY'],
+  ['CABIN HEATER Switch','OFF'],
+  ['Transmission and gearbox oil temperature','MONITOR'],
+  ['Land as soon as practical if temps remain normal.',''],
+  ['Land as soon as possible if temps exceed limits.','']
+])+pnote('The secondary oil cooler blower is bleed air driven from the engines. Operation at reduced power results in decreased bleed air flow. Prolonged operation may cause the combining gearbox and/or the main transmission to exceed allowable oil temperatures.')+
+psub('UTILITY HYDRAULIC PRESSURE/TEMPERATURE OUT OF LIMITS')+
+plabel('Indications')+pbullets([plight('UTILITY HYD')+' light illuminates.'])+
+psteps([
+  ['OIL COOLER Switch','SECONDARY'],
+  ['Transmission and combining gearbox temperature','MONITOR'],
+  ['If rise indicated — Heater Switch','OFF']
+]);
+
+// ── HTR AIR LINES ────────────────────────────
+PROCS['htr-air-lines'] = ptype('abnormal')+ptitle('HEATER MIXING VALVE FAILURE')+
+plabel('Indications')+pbullets([plight('HTR AIR LINES')+' warning light illuminates.'])+
+plabel('Actions')+psteps([['CABIN HEATER Switch','OFF']]);
+
+// ── BLOWER OFF ───────────────────────────────
+PROCS['blower-off'] = ptype('abnormal')+ptitle('PARTICLE SEPARATOR BLOWER')+
+plabel('Indications')+pbullets([plight('BLOWER OFF')+' warning light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Monitor engine instruments.',''],
+  ['Correct prior to next flight.','']
+]);
+
+// ── WSHLD HTR ────────────────────────────────
+PROCS['wshld-htr'] = ptype('abnormal')+ptitle('WINDSHIELD OVERHEAT')+
+plabel('Indications')+pbullets([plight('PILOT WSHLD HTR')+' or '+plight('COPILOT WSHLD HTR')+' light illuminates.'])+
+plabel('Actions')+psteps([['HEATED WINDSHIELD Switch (affect windshield)','OFF']])+
+psub('CRACKED WINDSHIELD')+
+plabel('Procedures')+psteps([
+  ['Airspeed','100 KIAS OR LESS'],
+  ['If cracked impairs crew vision — Land as soon as practical.','']
+]);
+
+// ── CAUT PNL ─────────────────────────────────
+PROCS['caut-pnl'] = ptype('abnormal')+ptitle('CAUTION PANEL INOPERATIVE')+
+plabel('Indications')+pbullets([plight('CAUT PNL')+' light illuminates.'])+
+plabel('Actions')+psteps([
+  ['CAUT PNL circuit breaker','CHECK IN'],
+  ['If circuit breaker will not reset — CAUTION PNL FAIL circuit breaker','PULL — Verify red MASTER CAUTION light extinguishes.'],
+  ['Scan instruments more frequently.',''],
+  ['Land as soon as practical.',''],
+  ['Correct prior to next flight.','']
+]);
+
+// ── DOOR LOCK ─────────────────────────────────
+PROCS['door-lock'] = ptype('abnormal')+ptitle('DOOR LOCK')+
+plabel('Indications')+pbullets([plight('DOOR LOCK')+' light illuminates.'])+
+plabel('Actions')+psteps([['Check door(s) closed and locked.','']]);
+
+// ── ROTOR BRAKE ───────────────────────────────
+PROCS['rotor-brake'] = ptype('emergency')+ptitle('ROTOR BRAKE')+
+plabel('Indications')+pbullets([plight('ROTOR BRAKE',true)+' warning light illuminates.'])+
+plabel('Actions')+psteps([
+  ['Rotor brake handle','ENSURE HANDLE IN DETENT POSITION'],
+  ['If light does not extinguish — Land as soon as possible.','']
+]);
+
+// ── AFCS ──────────────────────────────────────
+PROCS['afcs'] = ptype('abnormal')+ptitle('AFCS MALFUNCTIONS')+
+psub('SCAS FAILURE — AARS NOT ENGAGED')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates.','Pitch/roll/yaw attitude change.','Flight control annunciator light illuminated above SCAS ENGA light.'])+
+plabel('Procedures')+psteps([
+  ['Attitude','ADJUST CYCLIC TO LEVEL HELICOPTER'],
+  ['SCAS AC and DC circuit breakers','CHECK IN'],
+  ['SCAS','RE-ENGAGE'],
+  ['If channel will not re-engage, continue flight with operative channels, if VMC.',''],
+  ['If IMC, engage AARS. Avoid using force TRIM REL button — it will result in momentary loss of AARS.',''],
+  ['If heading and altitude hold modes are not engaged, use ATTD TRIM switch "beep" to fly pitch and/or roll.','']
+])+pnote('If circuit breakers are reset, wait 30 seconds before engaging SCAS.')+
+psub('SCAS FAILURE — AARS ENGAGED (PITCH AND/OR ROLL AND/OR YAW)')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates.','Flight control annunciator light (P and/or R) illuminates.','Yaw oscillations if yaw SCAS failed.'])+
+psteps([
+  ['SCAS AC and DC circuit breakers','CHECK IN'],
+  ['SCAS','RE-ENGAGE'],
+  ['If channel will not re-engage — Avoid using TRIM REL button.',''],
+  ['Engage HDG SEL function and utilize HDG set command for heading changes.',''],
+  ['Exercise care in using ATTD TRIM switch so that inadvertent pilot stick motions are not made.','']
+])+
+psub('AARS FAILURE (SINGLE CHANNEL)')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates.','Attitude change.','Flight Control Annunciator light (P or R) illuminated above AARS ENGA light.'])+
+psteps([
+  ['Attitude','ADJUST'],
+  ['AARS AC and DC circuit breakers','CHECK IN'],
+  ['AARS','RE-ENGAGE'],
+  ['If channel will not re-engage — Continue flight with operative channel. Use cyclic force TRIM REL button to fly inoperative axis.','']
+])+
+psub('AARS FAILURE — LOSS OF PILOT/COPILOT ATTITUDE GYRO OR 155 VAC BUS')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates.','Attitude change.','Attitude gyro OFF flag visible.','AARS ENGA light extinguishes.','Flight control annunciator lights (P and R) illuminate.'])+
+psteps([
+  ['Attitude','ADJUST'],
+  ['INST PWR and AS SYS 1 and 2 circuit breakers','CHECK IN'],
+  ['If flag biases from view — Re-engage AARS.',''],
+  ['If flag remains visible — Continue flight in SCAS mode using operative gyro.','']
+])+
+psub('AARS FAILURE — CAUSED BY LOSS OF INVERTER 1')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates. Flight control annunciator lights (P and R) illuminate.','Attitude change.',plight('INV 1')+' caution light illuminated.','AARS ENGA light extinguishes.'])+
+psteps([
+  ['Attitude','ADJUST'],
+  ['Re-engage AARS.',''],
+  ['Continue flight.','']
+]);
+
+// ── A/S 3 ─────────────────────────────────────
+PROCS['as3'] = ptype('abnormal')+ptitle('A/S 3 FAILURE')+
+plabel('Indications')+pbullets([plight('A/S 3')+' annunciator light illuminated.',plight('AFCS CAUTION')+' light illuminated.'])+
+plabel('Procedures')+psteps([['A/S 3 Reset Switch','RESET']])+
+pnote('With failure of Airspeed System 3, a subsequent failure of another airspeed system will result in elevator locking in position. If this occurs, follow dual FBW system failure procedures.');
+
+// ── ELEV / FBW ────────────────────────────────
+PROCS['elev'] = ptype('abnormal')+ptitle('FLY-BY-WIRE ELEVATOR SYSTEM FAILURE')+
+plabel('Indications')+pbullets([plight('AFCS CAUTION')+' light illuminates.','Flight control annunciator light '+plight('ELEV 1')+', '+plight('ELEV 2')+', or '+plight('A/S 3')+' illuminated.','Improper pitch attitude for flight condition (for dual elevator failure).','Elevator position indicator inoperative or not functioning properly.'])+
+psub('SINGLE FBW SYSTEM FAILURE')+
+plabel('Procedures')+psteps([
+  ['ELEV 1, ELEV 2 AC and DC circuit breakers','CHECK IN'],
+  ['If affected system is not returned to normal — ELEV SYS 1/SYS 2 PWR Switch (affected system)','OFF, THEN ON'],
+  ['Wait for normal engage time.',''],
+  ['If failed system does not re-engage — ELEV SYS 1/SYS 2 PWR Switch (affected system)','OFF'],
+  ['Airspeed','SINGLE ELEVATOR FAILURE V<sub>NE</sub> OR LOWER']
+])+
+psub('DUAL FBW SYSTEM FAILURE')+psteps([
+  ['INV PWR and INV FEED circuit breakers','CHECK IN'],
+  ['If inverters fail to reset — INVERTER Switches','OFF'],
+  ['Airspeed','DUAL ELEVATOR FAILURE V<sub>NE</sub> OR LOWER'],
+  ['Altitude — Climb or descend to attain VMC conditions.','AS REQUIRED'],
+  ['Land as soon as practical.','']
+]);
+
+// ── TAIL ROTOR FAILURES ───────────────────────
+PROCS['tail-rotor'] = ptype('emergency')+ptitle('TAIL ROTOR FAILURES')+
+psub('COMPLETE LOSS OF TAIL ROTOR THRUST')+
+'<p style="font-size:0.9rem;line-height:1.5;margin-bottom:6px;">Failure involving a break in the drive system — tail rotor stops turning and delivers no thrust. In powered flight, will result in nose swinging right (left side slip) and usually a roll of the fuselage. Nose down tucking will also be present.</p>'+
+plabel('Corrective Action — Hovering')+pbullets(['Chop throttles (twist grips) immediately.','Make a hovering autorotation landing.','A slight rotation can be expected on touchdown.'])+
+plabel('Corrective Action — Climb/Level Flight/Power Drive')+pbullets(['Chop throttles and lower collective pitch immediately.','Establish glide speed slightly above normal autorotation approach speed.','Once aligned for landing, use pulse collective technique to maintain heading.'])+
+pnote('By moving the collective upward abruptly, you create more load on the rotor. Do not hold the collective up — RPM will decrease. The pulse should be rapid (up and down) and not used at low altitudes.')+
+psub('FIXED PITCH FAILURES')+
+'<p style="font-size:0.9rem;line-height:1.5;">Characterized by lack of directional response when pedal is pushed, or pedals in locked position. Do not attempt maximum pedal force. Fly helicopter to suitable landing area using combinations of engine torque, rotor RPM, and airspeed to correct yaw.</p>'+
+psub('MAIN DRIVESHAFT FAILURE')+
+pwarn('Failure of the main driveshaft will result in complete loss of power to the main rotor. Autorotative flight procedures must be established IMMEDIATELY. Failure to react immediately will result in loss of control.')+
+plabel('Indications')+pbullets(['Left yaw.','Rapid decrease in N<sub>R</sub>.',plight('ROTOR RPM',true)+' warning light with audio.','Possible increase in noise — overspeeding engine turbines, CBOX, or driveshaft breakage.'])+
+psteps([
+  ['Collective','AS REQUIRED — Establish autorotation descent.'],
+  ['Airspeed','ESTABLISH minimum rate of descent or maximum glide.'],
+  ['Throttles','OFF, if time permits'],
+  ['Controls','AS REQUIRED FOR AUTOROTATIVE LANDING']
+])+pnote('The engine will flameout if power turbine speed (N<sub>P</sub>) reaches or exceeds 117%.');
+
+// ── ANTI-ICE ─────────────────────────────────
+PROCS['anti-ice'] = ptype('abnormal')+ptitle('ANTI-ICE ON')+
+plabel('Indication')+pbullets([plight('ANTI-ICE ON')+' light illuminates — indicates that engine anti-ice is active.'])+
+'<p style="font-size:0.9rem;color:#aaa;">No abnormal procedure required unless anti-ice is NOT commanded on. If illuminated unexpectedly, monitor engine performance and check anti-ice switches.</p>';
+
+// ── ENG ANTI-ICE ─────────────────────────────
+PROCS['eng-anti-ice'] = ptype('abnormal')+ptitle('ENGINE INLET ANTI-ICE')+
+plabel('Indication')+pbullets([plight('ENG 1 INLET ANTI-ICE')+' or '+plight('ENG 2 INLET ANTI-ICE')+' light illuminates — indicates that inlet anti-ice is active.'])+
+'<p style="font-size:0.9rem;color:#aaa;">Advisory light only. Illuminates when anti-ice is selected ON. No abnormal action required unless illuminating unexpectedly.</p>';
+
+// ── CARGO HOOK ───────────────────────────────
+PROCS['cargo-hook'] = ptype('abnormal')+ptitle('CARGO HOOK')+
+plabel('Indications')+pbullets([plight('CARGO HOOK ARM')+' — indicates hook is armed.',plight('CARGO HOOK OPEN')+' — indicates hook is open / load has been released.'])+
+'<p style="font-size:0.9rem;color:#aaa;">Verify hook status is as commanded. If CARGO HOOK OPEN illuminates unexpectedly during flight with load attached, load may have been jettisoned — adjust aircraft attitude/power accordingly.</p>';
+
+// ── HOIST ────────────────────────────────────
+PROCS['hoist'] = ptype('abnormal')+ptitle('HOIST 20 FT WARNING')+
+plabel('Indication')+pbullets([plight('HOIST 20 FT WARN')+' light illuminates — hoist cable is within 20 feet of fully retracted.'])+
+'<p class="proc-dev">Refer to hoist operations section of the RFM for specific procedures.</p>';
+
+// ── FLOATS ───────────────────────────────────
+PROCS['floats'] = ptype('abnormal')+ptitle('FLOATS ARM')+
+plabel('Indication')+pbullets([plight('FLOATS ARM')+' light illuminates — float inflation system is armed.'])+
+'<p class="proc-dev">Verify float arm switch position is as commanded. Refer to float operations supplement for procedures.</p>';
+
+// ── SPARE / BRAKES / EXT POWER ───────────────
+PROCS['spare'] = '<p class="proc-dev">SPARE — No procedure assigned to this light position.</p>';
+PROCS['brakes'] = ptype('abnormal')+ptitle('BRAKES')+
+plabel('Indication')+pbullets([plight('BRAKES')+' light illuminates.'])+
+'<p class="proc-dev">Check parking brake handle position. Ensure brakes are released for flight. Refer to RFM for specific brake system procedures.</p>';
+PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illuminates when external power is connected. No abnormal procedure.</p>';
+
+</script>
+
+<!-- SW registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js', {scope: './'})
+      .then(function(r){ console.log('[SW] registered'); })
+      .catch(function(e){ console.warn('[SW] failed', e); });
+  });
+}
 </script>
 </body>
 </html>
