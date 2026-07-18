@@ -1,21 +1,22 @@
 {
-    "name": "Tanking App",
-    "short_name": "Tanking",
-    "description": "Bell 214 tanking payload calculator v5.2",
+    "name": "Bell 214ST CWP Reference",
+    "short_name": "214ST CWP",
+    "description": "Bell 214ST Caution Warning Panel Quick Reference",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "orientation": "any",
+    "background_color": "#111111",
+    "theme_color": "#111111",
     "icons": [
         {
-            "src": "tank.png",
+            "src": "icon.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "tank.png",
+            "src": "icon.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
