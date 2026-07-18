@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tanking">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="tank.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Tanking app</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            background: #fff; color: #000;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            position: fixed; width: 100%; height: 100%; overflow: hidden;
+        }
+        .page { width: 100%; padding: 10px; display: none; height: 100vh; position: absolute; top: 0; left: 0; background: #fff; z-index: 10; overflow-y: auto; }
+        #calc-page { display: block; z-index: 20; }
+
+        h2 { text-align: center; margin: 4px 0 8px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        button { font-weight: bold; border-radius: 6px; border: 2px solid #000; text-transform: uppercase; touch-action: manipulation; cursor: pointer; }
+        .btn-nav { background: #000; color: #fff; padding: 14px; width: 100%; font-size: 1.2rem; border-radius: 10px; margin-top: 10px; }
+
+        /* ── CALC PAGE ── */
+        .preset-row { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; justify-content: space-between; }
+        .btn-preset { padding: 12px 10px; background: #f0f0f0; font-size: 0.85rem; width: auto; white-space: nowrap; }
+        .btn-manual { flex: 0 0 auto; padding: 10px 8px; background: #fff; font-size: 0.7rem; border: 2px solid #000; border-radius: 6px; font-weight: bold; text-decoration: none; color: #000; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+
+        .input-block { border: 2px solid #000; border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: #fff; }
+        .input-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid #ddd; }
+        .input-row:last-child { border-bottom: none; }
+        input[type="number"] { background: #f5f5f5; border: 2px solid #000; border-radius: 4px; font-size: 1.1rem; font-weight: bold; padding: 4px; text-align: right; width: 100px; font-family: inherit; outline: none; }
+
+        .fuel-section { border: 2px solid #000; border-radius: 8px; padding: 15px; margin-bottom: 8px; background: #fff; }
+        .fuel-header-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .fuel-label-text { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
+        .fuel-big-p1 { font-size: 2.8rem; font-weight: bold; line-height: 1; }
+
+        .timer-row { display: flex; align-items: center; border: 2px solid #000; border-radius: 8px; margin-bottom: 6px; padding: 6px; gap: 4px; }
+        .time-display { flex: 0 0 78px; font-family: 'Courier New', Courier, monospace; font-size: 1.05rem; font-weight: bold; text-align: right; }
+        .timer-label { font-size: 0.6rem; font-weight: bold; width: 45px; text-transform: uppercase; line-height: 1; }
+        .btn-timer { height: 60px; font-size: 0.8rem; }
+
+        .val-xl-v198 { font-size: 3.5rem; font-weight: bold; display: inline-block; line-height: 1; }
+        .unit-xl { font-size: 1.8rem; font-weight: bold; margin-left: 5px; }
+        .bubble-v198 { border: 2px solid #000; border-radius: 10px; margin-bottom: 6px; padding: 8px; text-align: center; background: #fff; }
+        .dec-small { display: block; font-size: 1.1rem; color: #333; margin-top: 2px; font-weight: 500; }
+
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 20px; background: #ddd; border-radius: 10px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; background: #000; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #000; }
+        input[type="range"].slider-compact { height: 12px; }
+        input[type="range"].slider-compact::-webkit-slider-thumb { width: 28px; height: 28px; border-width: 2px; }
+        body.dark input[type="range"].slider-compact::-webkit-slider-thumb { box-shadow: 0 0 0 1px #888; }
+
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; margin-top: 10px; }
+        .log-table th, .log-table td { border: 1px solid #000; padding: 4px 2px; text-align: center; }
+
+        /* GPS button states */
+        #gps-btn { transition: background 0.2s; }
+        #gps-btn.gps-off      { background: #cc0000 !important; color: #fff !important; }
+        #gps-btn.gps-waiting  { background: #ff9900 !important; color: #000 !important; }
+        #gps-btn.gps-live     { background: #00cc00 !important; color: #000 !important; }
+
+        /* Confirm / alert overlay */
+        #confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9998; justify-content: center; align-items: center; }
+        #confirm-overlay.show { display: flex; }
+        #confirm-box { background: #fff; border: 2px solid #000; border-radius: 12px; padding: 24px; text-align: center; width: min(300px, 88vw); }
+        #confirm-box p { margin: 0 0 16px 0; font-weight: bold; font-size: 0.9rem; line-height: 1.4; }
+        #confirm-box .btn-row { display: flex; gap: 10px; }
+        #confirm-box button { flex: 1; padding: 12px; border: 2px solid #000; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
+
+        /* Toast */
+        #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: 10px 22px; border-radius: 10px; font-size: 0.9rem; z-index: 9999; white-space: nowrap; pointer-events: none; }
+
+        /* ── FUEL ENDURANCE BOX (2x size) ── */
+        .bingo-row { margin-bottom: 8px; }
+        .bingo-box { border: 3px solid #000; border-radius: 14px; padding: 16px 14px; background: #fff; }
+        .bingo-box.warn { background: #ffeb00; }
+        .bingo-box.warn-red { background: #ff3300; color: #fff; }
+        .bingo-box.warn-red .bingo-reserve { color: #ffdddd; }
+        .fuel-section.warn { background: #ffeb00; }
+        .fuel-section.warn-red { background: #ff3300; color: #fff; }
+        .bubble-v198.warn { background: #ffeb00 !important; }
+        .bubble-v198.warn-red { background: #ff3300 !important; color: #fff; }
+        body.dark .bubble-v198.warn { background: #7a6e00 !important; color: #fff; }
+        body.dark .bubble-v198.warn-red { background: #8b1a00 !important; color: #fff; }
+        .bingo-header-row { display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+        .bingo-title { font-size: 1.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
+        .bingo-time-row { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-bottom: 6px; }
+        .bingo-endur-label { font-size: 0.75rem; font-weight: bold; color: #555; text-transform: uppercase; white-space: nowrap; }
+        .bingo-time { font-size: 1.9rem; font-weight: bold; }
+        .bingo-reserve { font-size: 0.75rem; color: #555; font-weight: bold; white-space: nowrap; }
+        .bingo-plan-row { display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 8px; }
+        .bingo-plan-label { font-size: clamp(0.85rem, 4vw, 1.1rem); font-weight: bold; white-space: nowrap; }
+        .bingo-plan-row select { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; border: 2px solid #000; border-radius: 4px; font-family: inherit; padding: 2px 4px; }
+        .bingo-plan-range { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; white-space: nowrap; }
+        .bingo-plan-value { font-size: clamp(1rem, 4.6vw, 1.3rem); font-weight: bold; white-space: nowrap; }
+        #ttb-row.warn, #ttb-row-dup.warn { background: #ffeb00; }
+        #ttb-row.warn-red, #ttb-row-dup.warn-red { background: #ff3300; }
+        #ttb-row.warn-red .bingo-plan-label,
+        #ttb-row.warn-red .bingo-plan-value,
+        #ttb-row-dup.warn-red .bingo-plan-label,
+        #ttb-row-dup.warn-red .bingo-plan-value { color: #fff; }
+
+        /* ── Fuel Calc toggle ── */
+        body.fuelcalc-off #fuelcalc-items,
+        body.fuelcalc-off #ls-range-bingo-dup { display: none !important; }
+
+        /* ── GS GAUGE ── */
+        .gs-gauge-outer { width: 100%; display: flex; justify-content: center; align-items: center; }
+        .gs-gauge-outer svg { width: 100%; height: auto; max-height: 38vh; display: block; }
+        @media (orientation: landscape) and (min-width: 768px) {
+            .gs-gauge-outer svg { max-height: 55vh; }
+        }
+        /* Same stacked order as portrait (fuel/payload -> bingo -> gauge),
+           just sized to fit a wide-short landscape viewport instead of a tall one. */
+        /* ── LANDSCAPE LAYOUT ── */
+        @media (orientation: landscape) and (min-width: 768px) {
+            #flight-page { overflow-y: auto; }
+            .ls-topbar { display: flex !important; }
+            .ls-fuel-payload { display: flex !important; gap: 6px; }
+            .ls-fuel-payload > .bubble-v198 { flex: 1; }
+            .ls-gauge-wrap { width: 100% !important; }
+            .ls-landscape-only { display: block !important; }
+        }
+
+        /* ── DARK MODE ── */
+        body.dark { background: #1a1a1a; color: #f0f0f0; }
+        body.dark .page { background: #1a1a1a; }
+        body.dark h2 { color: #f0f0f0; }
+        body.dark button { border-color: #555; }
+        body.dark .btn-nav { background: #333; border-color: #555; }
+        body.dark .btn-preset { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
+        body.dark .btn-manual { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
+        body.dark .input-block { background: #252525; border-color: #555; }
+        body.dark .input-row { border-bottom-color: #444; }
+        body.dark input[type="number"] { background: #333; border-color: #555; color: #f0f0f0; }
+        body.dark .fuel-section { background: #252525; border-color: #555; }
+        body.dark .bubble-v198 { background: #252525; border-color: #555; }
+        body.dark .bingo-box { background: #252525; border-color: #555; }
+        body.dark .bingo-box.warn, body.dark .fuel-section.warn { background: #7a6e00; color: #fff; }
+        body.dark .bingo-box.warn-red, body.dark .fuel-section.warn-red { background: #8b1a00; color: #fff; }
+        body.dark .bingo-reserve { color: #aaa; }
+        body.dark .bingo-endur-label { color: #aaa; }
+        body.dark .bingo-plan-row select { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
+        body.dark #ttb-row.warn, body.dark #ttb-row-dup.warn { background: #7a6e00; }
+        body.dark #ttb-row.warn-red, body.dark #ttb-row-dup.warn-red { background: #8b1a00; }
+        body.dark .dec-small { color: #aaa; }
+        body.dark .timer-row { border-color: #555; }
+        body.dark .timer-row[style*="background:#eef"] { background: #1e2535 !important; }
+        body.dark .bubble-v198[style*="background:#f0f0f0"] { background: #2a2a2a !important; }
+        body.dark .bubble-v198[style*="background:#eef"] { background: #1e2535 !important; }
+        body.dark input[type="range"] { background: #444; }
+        body.dark input[type="range"]::-webkit-slider-thumb { background: #f0f0f0; border-color: #1a1a1a; box-shadow: 0 0 0 2px #888; }
+        body.dark .log-table th, body.dark .log-table td { border-color: #555; }
+        body.dark #confirm-box { background: #252525; border-color: #555; color: #f0f0f0; }
+        body.dark select { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
+        body.dark #gs-gauge-svg path[stroke="#ddd"] { stroke: #444; }
+        body.dark .gs-tick-line { stroke: #ccc; }
+        body.dark #toast { background: #444; }
+        /* ── SETUP PAGE ── */
+        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .setup-btn { width: 100%; padding: 18px 10px; font-size: 0.95rem; border-radius: 10px; border: 2px solid #000; font-weight: bold; text-transform: uppercase; background: #f0f0f0; color: #000; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; min-height: 80px; }
+        .setup-btn-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .setup-section-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 18px 0 8px 2px; }
+        body.dark .setup-btn { background: #2a2a2a; color: #f0f0f0; border-color: #555; }
+        body.dark .setup-section-label { color: #888; }
+    </style>
+</head>
+<body>
+
+<!-- ── CALC PAGE ── -->
+<div id="calc-page" class="page">
+    <h2 id="app-title"></h2>
+
+    <div class="preset-row">
+        <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn-preset" style="background:#444; color:#fff; padding:12px 14px;" onclick="showPage('setup-page')">&#9881; SETUP</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+            <button class="btn-preset" onclick="applyPreset('214B')">Bell 214B</button>
+            <button class="btn-preset" onclick="applyPreset('214ST')">Bell 214 ST</button>
+            <button class="btn-preset" onclick="openUH60()">UH-60</button>
+        </div>
+    </div>
+
+    <div class="input-block">
+        <div class="input-row"><span>Max Gross Weight</span><input type="number" id="max-gross" value="17500" oninput="updateWB(); saveSettings();"></div>
+        <div class="input-row"><span>A/C Empty Weight</span><input type="number" id="empty-weight" value="10000" oninput="updateWB(); saveSettings();"></div>
+        <div class="input-row"><span>Crew + Gear</span><input type="number" id="crew-gear" value="400" oninput="updateWB(); saveSettings();"></div>
+    </div>
+
+    <div class="fuel-section">
+        <div class="fuel-header-row">
+            <span class="fuel-label-text">FUEL</span>
+            <div class="fuel-big-p1" id="fuel-display">2,750 lbs</div>
+        </div>
+        <input type="range" id="fuel-slider" min="0" max="3000" step="50" value="2750" oninput="updateWB(); saveSettings();">
+    </div>
+
+    <div class="bubble-v198">
+        <div style="background:#000; color:#fff; padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">USEFUL PAYLOAD</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+            <div><small style="font-weight:bold;">LBS</small><div id="res-lbs" style="font-size:1.8rem; font-weight:bold;">--</div></div>
+            <div style="border-left:1px solid #ddd;"><small style="font-weight:bold;">LITERS</small><div id="res-liters" style="font-size:1.8rem; font-weight:bold;">--</div></div>
+        </div>
+    </div>
+
+    <button class="btn-nav" style="background:#28a745;" onclick="showPage('timer-page')">GO START</button>
+    <div id="update-status" style="text-align:center; font-size:0.7rem; color:#888; margin-top:4px;"></div>
+</div>
+
+<!-- ── TIMER PAGE ── -->
+<div id="timer-page" class="page">
+    <h2>FLIGHT TIMER</h2>
+
+    <div class="timer-row">
+        <span class="timer-label">ENG</span>
+        <button class="btn-timer" style="background:#0f0; flex:2;" id="eng-start" onclick="startT('eng')">START</button>
+        <button class="btn-timer" style="background:#f00; color:#fff; flex:2;" id="eng-stop" onclick="stopT('eng')" disabled>STOP</button>
+        <button class="btn-timer" style="background:#ccc; flex:1;" onclick="resetRow('eng')">RST</button>
+        <div class="time-display" id="eng-disp">00:00:00</div>
+    </div>
+    <div class="timer-row" style="background:#eef;">
+        <span class="timer-label">FLT</span>
+        <button class="btn-timer" style="background:#0f0; flex:2;" id="fl-start" onclick="startT('fl')">START</button>
+        <button class="btn-timer" style="background:#f00; color:#fff; flex:2;" id="fl-stop" onclick="stopT('fl')" disabled>STOP</button>
+        <button class="btn-timer" style="background:#ccc; flex:1;" onclick="resetRow('fl')">RST</button>
+        <div class="time-display" id="fl-disp">00:00:00</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;">
+        <div class="bubble-v198" style="background:#f0f0f0;">
+            <small style="font-weight:bold;">ENG RUN</small><br>
+            <span id="e-ts" style="font-size:0.7rem;">--:-- to --:--</span>
+            <span id="e-hms" style="display:block; border-top:1px solid #999; margin-top:4px; font-weight:bold;">00:00:00</span>
+            <span class="dec-small" id="e-dec">0.00 hr</span>
+        </div>
+        <div class="bubble-v198" style="background:#eef;">
+            <small style="font-weight:bold;">FLIGHT</small><br>
+            <span id="f-ts" style="font-size:0.7rem;">--:-- to --:--</span>
+            <span id="f-hms" style="display:block; border-top:1px solid #999; margin-top:4px; font-weight:bold;">00:00:00</span>
+            <span class="dec-small" id="f-dec">0.00 hr</span>
+        </div>
+    </div>
+
+    <div style="display:flex; gap:5px; margin-top:10px;">
+        <button style="background:#444; color:#fff; flex:1.5; height:50px;" onclick="goBack()">BACK</button>
+        <button style="background:#007bff; color:#fff; flex:1; height:50px;" onclick="saveLog()">SAVE</button>
+        <button style="background:#666; color:#fff; flex:1; height:50px;" onclick="showLog()">LOGS</button>
+    </div>
+
+    <button class="btn-nav" style="background:#dc3545; height:50px; margin-top:15px;" onclick="resetAllTimers()">RESET</button>
+    <button class="btn-nav" style="background:#008800; height:60px; display:flex; align-items:center; justify-content:center; margin-top:8px;" onclick="initFlightPage()">GO FLY</button>
+</div>
+
+<!-- ── FLIGHT PAGE ── -->
+<div id="flight-page" class="page" style="flex-direction:column;">
+
+    <!-- Top bar: [BACK | SETUP | FUELBURN] ... [AC LABEL] ... [GPS] -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:3px; width:100%;">
+        <div style="display:flex; align-items:center; gap:3px; flex-shrink:1; min-width:0;">
+            <button style="background:#d9534f; color:#fff; height:44px; padding:0 7px; font-size:0.65rem; flex-shrink:0;" onclick="leaveFlight()">BACK</button>
+            <button style="background:#444; color:#fff; height:44px; padding:0 7px; font-size:0.65rem; flex-shrink:0;" onclick="showPage('setup-page')">&#9881; SETUP</button>
+            <button id="fuelcalc-btn" onclick="toggleFuelCalc()" style="height:44px; padding:0 6px; font-size:0.65rem; background:#333; color:#fff; border-color:#555; flex-shrink:1;">BINGO CALC</button>
+        </div>
+        <div id="flight-ac-label" style="font-size:1rem; font-weight:bold; text-align:center; text-transform:uppercase; letter-spacing:1px; flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 4px;">Bell 214B</div>
+        <div style="display:flex; align-items:center; gap:3px; flex-shrink:1; min-width:0;">
+            <button id="gps-btn" class="gps-off" style="height:44px; padding:0 6px; font-size:0.65rem; flex-shrink:1;" onclick="toggleGPS()">GPS OFF</button>
+        </div>
+    </div>
+
+    <!-- Flight timer -->
+    <div class="bubble-v198" style="padding:6px; text-align:center;">
+        <small style="font-weight:bold; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">FLIGHT TIMER</small><br>
+        <span id="flight-timer-main" style="font-family:monospace; font-size:2.4rem; font-weight:bold;">00:00:00</span>
+    </div>
+
+    <!-- Main content: stacked in both portrait and landscape (gauge always below fuel/bingo) -->
+    <div class="ls-main" style="display:block;">
+
+        <!-- LEFT COLUMN: fuel/payload/bingo (full width in both orientations) -->
+        <div class="ls-col-left" style="display:block;">
+
+            <!-- FUEL LOAD + PAYLOAD side by side in landscape, stacked in portrait -->
+            <div class="ls-fuel-payload" style="display:block;">
+                <div class="bubble-v198" id="fly-fuel-box" style="position:relative;">
+                    <div style="position:absolute; top:4px; left:6px; text-align:left;">
+                        <label style="font-size:0.75rem; font-weight:bold; display:block; line-height:1.2;">BURN lbs/hr</label>
+                        <select id="burn-rate-select" onchange="updateBingo(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
+                            <option value="600">600</option><option value="650">650</option><option value="700">700</option>
+                            <option value="750">750</option><option value="800">800</option><option value="850">850</option>
+                            <option value="900">900</option><option value="950">950</option><option value="1000">1000</option>
+                        </select>
+                    </div>
+                    <small style="font-weight:bold;">FUEL LOAD</small><br>
+                    <div style="display:flex; align-items:baseline; justify-content:center; gap:4px;">
+                        <span class="val-xl-v198" id="fly-fuel-lbs">--</span>
+                        <span class="unit-xl">Lbs</span>
+                    </div>
+                    <div style="height:6px;"></div>
+                    <input type="range" id="fly-fuel-slider" min="0" max="3000" step="50" oninput="curFuel=parseFloat(this.value); updateBingo();">
+                    <!-- ENDURANCE always visible, below slider — single constrained line -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-top:10px; margin-bottom:2px; width:100%; overflow:hidden;">
+                        <!-- ENDURANCE block -->
+                        <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+                            <span style="font-size:0.6rem; font-weight:bold; text-transform:uppercase; white-space:nowrap; color:#555;">TOTAL ENDURANCE</span>
+                            <span id="bingo-time" style="font-size:clamp(1.2rem,5.5vw,2rem); font-weight:bold; white-space:nowrap; line-height:1.1;">--h:--m</span>
+                            <span style="font-size:0.6rem; font-weight:bold; white-space:nowrap; color:#555;">To Empty</span>
+                        </div>
+                        <!-- divider -->
+                        <div style="width:1px; background:#ccc; align-self:stretch; flex-shrink:0;"></div>
+                        <!-- BINGO IN block -->
+                        <div id="bingo-in-always-row" style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+                            <span style="font-size:0.6rem; font-weight:bold; text-transform:uppercase; white-space:nowrap; color:#555;">BINGO IN</span>
+                            <span id="bingo-in-always" style="font-size:clamp(1.2rem,5.5vw,2rem); font-weight:bold; white-space:nowrap; line-height:1.1;">--:--</span>
+                            <span id="bingo-in-basis" style="font-size:0.6rem; color:#000; font-weight:normal; white-space:nowrap; line-height:1.3;">--Nm@--kts</span>
+                        </div>
+                    </div>
+                    <!-- Fuel Calc items below slider, inside fuel box -->
+                    <div id="fuelcalc-items" style="margin-top:6px; border-top:1px solid #ccc; padding-top:8px;">
+                        <!-- Operational Endurance (+500lb spare) -->
+                        <div style="display:flex; align-items:baseline; justify-content:center; gap:6px; margin-bottom:6px;">
+                            <span style="font-size:0.7rem; font-weight:bold; text-transform:uppercase; color:#555;">OPERATIONAL ENDURANCE</span>
+                            <span id="op-endurance" style="font-size:1.8rem; font-weight:bold;">--h:--m</span>
+                            <span style="font-size:0.65rem; font-weight:bold; color:#555;">(+500lb spare)</span>
+                        </div>
+                        <div id="fuelplan-row" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                            <span style="font-size:0.85rem; font-weight:bold;">Fuel Plan GS</span>
+                            <select id="fuel-plan-gs" onchange="saveFuelPlanGS(); updateBingo();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
+                                <option value="60">60kts</option>
+                                <option value="70">70kts</option>
+                                <option value="80">80kts</option>
+                                <option value="90">90kts</option>
+                                <option value="100" selected>100kts</option>
+                                <option value="110">110kts</option>
+                                <option value="120">120kts</option>
+                                <option value="130">130kts</option>
+                                <option value="actual">ACTUAL</option>
+                            </select>
+                            <span style="font-size:0.85rem; font-weight:bold; white-space:nowrap;">Range <span id="bingo-range-dist" style="font-size:2.3rem; font-weight:bold;">--</span>Nm</span>
+                        </div>
+                        <div id="ttb-row" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:6px; padding:4px; border-radius:6px;">
+                            <span style="font-size:0.85rem; font-weight:bold;">Dist to fuel</span>
+                            <select id="dist-to-fuel" onchange="updateBingo(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;">
+                                <option value="10">10</option><option value="20">20</option><option value="30">30</option>
+                                <option value="40">40</option><option value="50">50</option><option value="60">60</option>
+                                <option value="70">70</option><option value="80">80</option><option value="90">90</option>
+                                <option value="100" selected>100</option><option value="110">110</option><option value="120">120</option>
+                                <option value="130">130</option><option value="140">140</option><option value="150">150</option>
+                                <option value="160">160</option><option value="170">170</option><option value="180">180</option>
+                                <option value="190">190</option><option value="200">200</option><option value="210">210</option>
+                                <option value="220">220</option><option value="230">230</option><option value="240">240</option>
+                                <option value="250">250</option><option value="260">260</option><option value="270">270</option>
+                                <option value="280">280</option><option value="290">290</option><option value="300">300</option>
+                            </select>
+                            <span style="font-size:0.85rem; font-weight:bold;">Nm &nbsp; Bingo in</span>
+                            <span id="time-to-bingo" style="font-size:2.3rem; font-weight:bold;">--:--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bubble-v198">
+                    <small style="font-weight:bold;">PAYLOAD</small><br>
+                    <div style="display:flex; align-items:baseline; justify-content:center; gap:4px;">
+                        <span class="val-xl-v198" id="fly-ltr">--</span>
+                        <span class="unit-xl">Ltrs</span>
+                    </div>
+
+                    <!-- Landscape-only duplicate of Range + Bingo-in, shown below Payload -->
+                    <div id="ls-range-bingo-dup" class="ls-landscape-only" style="margin-top:10px; border-top:1px solid #ccc; padding-top:8px; display:none;">
+                        <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-size:1.2rem; font-weight:bold; white-space:nowrap;">Range <span id="bingo-range-dist-dup" style="font-size:3.5rem; font-weight:bold;">--</span>Nm</span>
+                        </div>
+                        <div id="ttb-row-dup" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:6px; padding:4px; border-radius:6px;">
+                            <span style="font-size:1.2rem; font-weight:bold;">Bingo in</span>
+                            <span id="time-to-bingo-dup" style="font-size:3.5rem; font-weight:bold;">--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end left col -->
+
+        <!-- RIGHT COLUMN: GS gauge — sits BELOW the left column, full width, ~2x height -->
+        <div class="ls-col-right" style="display:block;">
+            <div class="ls-gauge-wrap gs-gauge-outer" style="position:relative;">
+                <div style="position:absolute; top:4px; left:6px; text-align:left; z-index:5;">
+                    <label style="font-size:0.75rem; font-weight:bold; display:block; line-height:1.2;">TARGET GS</label>
+                    <select id="gs-target-select" onchange="updateGSUI(); saveSettings();" style="font-size:1.2rem; font-weight:bold; border:2px solid #000; border-radius:4px; font-family:inherit; padding:2px 6px;"></select>
+                </div>
+                <svg id="gs-gauge-svg" viewBox="0 0 200 135" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background arc (full sweep, grey) -->
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#ddd" stroke-width="14" stroke-linecap="round"/>
+                    <!-- Yellow arc (full sweep) -->
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#ffcc00" stroke-width="14" stroke-linecap="round"/>
+                    <!-- Green zone: centre ±3 kts (±27°) -->
+                    <path id="gs-green-arc" d="M 100 20 A 80 80 0 0 1 143.2 31.8" fill="none" stroke="#00cc44" stroke-width="14" transform="rotate(-27 100 100)"/>
+                    <path id="gs-green-arc2" d="M 100 20 A 80 80 0 0 0 56.8 31.8" fill="none" stroke="#00cc44" stroke-width="14" transform="rotate(27 100 100)"/>
+                    <!-- Tick marks -->
+                    <g id="gs-tick-group" stroke="#000" stroke-width="1.5"></g>
+                    <!-- Scale labels: positioned above/outside their tick marks -->
+                    <text x="8"   y="103"  text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-min-val">--</text>
+                    <text x="100" y="10"   text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-tgt-val">--</text>
+                    <text x="192" y="103"  text-anchor="middle" font-size="9" font-weight="bold" fill="#000" id="gs-max-val">--</text>
+                    <!-- Digital speed readout -->
+                    <text x="100" y="88" text-anchor="middle" font-size="48" font-weight="bold" fill="#000" id="fly-gs-svg">0</text>
+                    <!-- Needle -->
+                    <g id="needle-group" style="transform:rotate(0deg); transform-origin:100px 100px; transition:transform 0.2s linear;">
+                        <line x1="100" y1="100" x2="100" y2="20" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="100" cy="100" r="5" fill="#333"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        <!-- end right col -->
+
+    </div>
+    <!-- end ls-main -->
+
+</div>
+
+<!-- ── SETUP PAGE ── -->
+<div id="setup-page" class="page">
+    <h2>&#9881; SETUP</h2>
+
+    <p class="setup-section-label">App</p>
+    <div class="setup-grid">
+        <button class="setup-btn" onclick="showPage('manual-page')">
+            <span class="setup-btn-icon">&#9432;</span>
+            <span>Manual</span>
+        </button>
+        <button class="setup-btn" onclick="forceUpdate()">
+            <span class="setup-btn-icon">&#8635;</span>
+            <span>Update App</span>
+        </button>
+    </div>
+
+    <p class="setup-section-label">Tools</p>
+    <div class="setup-grid">
+        <button class="setup-btn" onclick="openRefuelCalc()">
+            <span class="setup-btn-icon">&#9981;</span>
+            <span>Refuel Calc</span>
+        </button>
+        <button class="setup-btn" onclick="openAeronetCalc()">
+            <span class="setup-btn-icon">&#9981;</span>
+            <span>Aeronet</span>
+        </button>
+    </div>
+
+    <p class="setup-section-label">Display</p>
+    <div class="setup-grid">
+        <button class="setup-btn" id="setup-dark-btn" onclick="toggleDark()">
+            <span class="setup-btn-icon">🌙</span>
+            <span id="setup-dark-label">Dark Mode</span>
+        </button>
+        <button class="setup-btn" id="setup-wake-btn" onclick="toggleWakeLock()">
+            <span class="setup-btn-icon">☀</span>
+            <span id="setup-wake-label">Keep Awake</span>
+        </button>
+    </div>
+
+    <p class="setup-section-label">GPS</p>
+    <div class="setup-grid">
+        <button class="setup-btn" onclick="forceGPSPermission()">
+            <span class="setup-btn-icon">&#128205;</span>
+            <span>GPS Permission</span>
+        </button>
+    </div>
+
+    <div style="height:20px;"></div>
+    <button class="btn-nav" style="background:#444;" onclick="goBack()">&#8592; BACK</button>
+</div>
+<!-- ── REFUEL CALC PAGE ── -->
+<div id="refuel-page" class="page">
+    <h2>&#9981; REFUEL CALC</h2>
+
+    <div class="fuel-section">
+        <div class="fuel-header-row">
+            <span class="fuel-label-text">DESIRED FUEL</span>
+            <div class="fuel-big-p1" id="refuel-desired-display">-- lbs</div>
+        </div>
+        <input type="range" id="refuel-desired-slider" min="0" max="3000" step="50" value="0" oninput="updateRefuelCalc()">
+    </div>
+
+    <div class="fuel-section">
+        <div class="fuel-header-row">
+            <span class="fuel-label-text">ACTUAL FUEL (IN TANK)</span>
+            <div class="fuel-big-p1" id="refuel-actual-display">-- lbs</div>
+        </div>
+        <input type="range" id="refuel-actual-slider" min="0" max="3000" step="50" value="0" oninput="updateRefuelCalc()">
+    </div>
+
+    <div class="bubble-v198">
+        <div style="background:#000; color:#fff; padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">FUEL REQUIRED</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+            <div><small style="font-weight:bold;">LBS</small><div id="refuel-req-lbs" style="font-size:1.8rem; font-weight:bold;">--</div></div>
+            <div style="border-left:1px solid #ddd;"><small style="font-weight:bold;">LITERS</small><div id="refuel-req-liters" style="font-size:1.8rem; font-weight:bold;">--</div></div>
+        </div>
+        <div style="font-size:0.65rem; color:#888; text-align:center; margin-top:6px;">Jet-A @ 20&deg;C, 0.800 kg/L</div>
+    </div>
+
+    <div style="border-top:1px solid #ccc; margin-top:20px; padding-top:16px;">
+        <div class="fuel-section">
+            <div style="text-align:center; font-weight:bold; margin-bottom:10px;">LBS to Liters converter</div>
+            <div class="fuel-header-row">
+                <span class="fuel-label-text">LBS &#8596; LITERS</span>
+                <div class="fuel-big-p1" id="lbsltr-display">0 lbs</div>
+            </div>
+            <input type="range" id="lbsltr-slider" min="0" max="3000" step="50" value="0" oninput="updateLbsLtr()">
+            <div class="fuel-big-p1" style="text-align:center; margin-top:6px;" id="lbsltr-liters-display">0 L</div>
+        </div>
+    </div>
+
+    <button style="background:#444; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem; margin-top:20px;" onclick="goBack()">&#8592; BACK</button>
+</div>
+
+<!-- ── AERONET DAILY FUEL INPUT PAGE ── -->
+<div id="aeronet-page" class="page">
+    <h2>&#9981; Aeronet daily fuel input</h2>
+
+    <div class="fuel-section">
+        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">Start of Day fuel</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; margin-bottom:4px;">
+            <div style="text-align:center;"><small style="font-weight:bold;">LBS</small><div class="fuel-big-p1" id="aeronet-start-lbs">0</div></div>
+            <div style="text-align:center; border-left:1px solid #ccc;"><small style="font-weight:bold;">LITERS</small><div class="fuel-big-p1" id="aeronet-start-liters">0</div></div>
+        </div>
+        <input type="range" class="slider-compact" id="aeronet-start-slider" min="0" max="3000" step="50" value="0" oninput="updateAeronetFuel()">
+    </div>
+
+    <div class="fuel-section" style="margin-top:8px;">
+        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">End of Day Fuel</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; margin-bottom:4px;">
+            <div style="text-align:center;"><small style="font-weight:bold;">LBS</small><div class="fuel-big-p1" id="aeronet-end-lbs">0</div></div>
+            <div style="text-align:center; border-left:1px solid #ccc;"><small style="font-weight:bold;">LITERS</small><div class="fuel-big-p1" id="aeronet-end-liters">0</div></div>
+        </div>
+        <input type="range" class="slider-compact" id="aeronet-end-slider" min="0" max="3000" step="50" value="0" oninput="updateAeronetFuel()">
+    </div>
+
+    <div style="border-top:1px solid #ccc; margin-top:10px; padding-top:8px;">
+        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">fuel Added (LITERS)</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-weight:bold;">Fuel 1</label>
+            <input type="number" inputmode="numeric" id="aeronet-fuel1" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-weight:bold;">Fuel 2</label>
+            <input type="number" inputmode="numeric" id="aeronet-fuel2" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-weight:bold;">Fuel 3</label>
+            <input type="number" inputmode="numeric" id="aeronet-fuel3" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-weight:bold;">Fuel 4</label>
+            <input type="number" inputmode="numeric" id="aeronet-fuel4" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label style="font-weight:bold;">Fuel 5</label>
+            <input type="number" inputmode="numeric" id="aeronet-fuel5" min="0" step="1" value="0" oninput="updateAeronetTotal()" style="width:110px; padding:6px; font-size:1.1rem; text-align:right; border:1px solid #ccc; border-radius:6px;">
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+        <button onclick="clearAeronetReceipts()" style="background:#A1A1A1; color:#000; border:2px solid #000; border-radius:10px; font-weight:bold; font-size:1rem;">CLEAR</button>
+        <div class="bubble-v198" style="margin-bottom:0;">
+            <div style="background:#fff; color:#000 padding:4px; font-size:0.8rem; margin-bottom:5px; font-weight:bold;">Total Fuel Added</div>
+            <div class="fuel-big-p1" id="aeronet-total-liters" style="font-size:2rem;">0 L</div>
+        </div>
+    </div>
+
+    <button style="background:#000; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem; margin-top:10px;" onclick="goBack()">&#8592; BACK</button>
+</div>
+
+<!-- ── MANUAL PAGE (loaded inside app) ── -->
+<div id="manual-page" class="page" style="padding:0;">
+    <button style="background:#444; color:#fff; width:100%; padding:14px; border:none; border-radius:0; font-weight:bold; font-size:1rem;" onclick="goBack()">&#8592; EXIT MANUAL</button>
+    <iframe id="manual-frame" src="manual.html" style="width:100%; height:calc(100% - 50px); border:none; display:block;"></iframe>
+</div>
+
+<!-- ── LOG PAGE ── -->
+<div id="log-page" class="page">
+    <button onclick="goBack()" style="background:#28a745; color:#fff; width:100%; padding:16px; margin-bottom:12px; border:2px solid #000; border-radius:8px; font-weight:bold;">BACK</button>
+    <table class="log-table">
+        <thead>
+            <tr><th>Date</th><th>Reg</th><th>Eng Block</th><th>HH:MM</th><th>Eng</th><th>Flt Block</th><th>HH:MM</th><th>Flt</th></tr>
+        </thead>
+        <tbody id="log-body"></tbody>
+    </table>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:15px;">
+        <button style="background:#217346; color:#fff; padding:12px; border-radius:8px; border:2px solid #000; font-weight:bold;" onclick="exportData('csv')">SAVE .CSV</button>
+        <button style="background:#444; color:#fff; padding:12px; border-radius:8px; border:2px solid #000; font-weight:bold;" onclick="exportData('txt')">SAVE .TXT</button>
+    </div>
+    <button class="btn-nav" style="background:#dc3545; margin-top:25px;" onclick="confirmClear()">DELETE ALL</button>
+</div>
+
+<!-- ── CONFIRM / ALERT OVERLAY ── -->
+<div id="confirm-overlay">
+    <div id="confirm-box">
+        <p id="confirm-text">Confirm action?</p>
+        <div class="btn-row">
+            <button id="confirm-yes" style="background:#dc3545; color:#fff;">YES</button>
+            <button id="confirm-no"  style="background:#ccc;">NO</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast"></div>
+
+<!-- ── RICKROLL OVERLAY ── -->
+<div id="rickroll-overlay" style="display:none; position:fixed; inset:0; background:#000; z-index:99999; flex-direction:column; align-items:center; justify-content:center;">
+    <video id="rickroll-video" playsinline style="width:100%; height:100%; object-fit:contain;"></video>
+    <button onclick="closeRickroll()" style="position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.6); color:#fff; border:2px solid #fff; border-radius:8px; font-size:1.1rem; font-weight:bold; padding:8px 18px; z-index:100000;">✕ CLOSE</button>
+</div>
+
+<script>
+    // ── App version — change this ONE line to update everywhere ───────────────
+    var APP_VERSION = 'V10.4';
+    document.getElementById('app-title').textContent = 'Tanking app ' + APP_VERSION;
+    document.title = 'Tanking app ' + APP_VERSION;
+    // ── Service Worker ────────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            // updateViaCache: 'none' is critical — without it the browser is allowed
+            // to serve sw.js itself from HTTP cache on registration, which means a
+            // force-update can wipe every cache yet still reinstall the OLD worker
+            // script a moment later. This guarantees the worker file is always
+            // fetched from the network.
+            navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' })
+                .then(function(r) { console.log('[SW] registered:', r.scope); })
+                .catch(function(e) { console.warn('[SW] failed:', e); });
+        });
+    }
+
+    // Let the manual page's own Exit button (clicked inside the iframe) close back to wherever manual was opened from
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'EXIT_MANUAL') {
+            goBack();
+        }
+        if (e.data && e.data.type === 'FORCE_UPDATE_DONE') {
+            finishForceUpdate();
+        }
+    });
+
+    // ── (1) Force Update ─────────────────────────────────────────────────────
+    // Wipes every cache this app owns, unregisters the old service worker,
+    // re-registers a fresh one, then hard-reloads bypassing the HTTP cache too.
+    function forceUpdate() {
+        showDialog("Update app now?\n\nThis re-downloads all files from scratch and clears the offline cache.", function() {
+            runForceUpdate();
+        }, null);
+    }
+
+    function runForceUpdate() {
+        var status = document.getElementById('update-status');
+        if (status) status.textContent = 'Clearing cache…';
+
+        // Step 1: Unregister ALL service workers so nothing can intercept the reload
+        var unregister = ('serviceWorker' in navigator)
+            ? navigator.serviceWorker.getRegistrations().then(function(regs) {
+                return Promise.all(regs.map(function(r) { return r.unregister(); }));
+              })
+            : Promise.resolve();
+
+        // Step 2: Wipe every Cache Storage bucket (SW offline cache)
+        var clearCaches = ('caches' in window)
+            ? caches.keys().then(function(keys) {
+                return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+              })
+            : Promise.resolve();
+
+        // Step 3: Wipe all IndexedDB databases
+        // NOTE: localStorage is intentionally NEVER touched here — that's where
+        // per-aircraft settings (settings_214B / settings_214ST), the flight log,
+        // and dark-mode preference live. Force Update must overwrite every app
+        // file but must never wipe user settings.
+        var clearIDB = new Promise(function(resolve) {
+            if (!window.indexedDB || !indexedDB.databases) { resolve(); return; }
+            indexedDB.databases().then(function(dbs) {
+                var dels = dbs.map(function(db) {
+                    return new Promise(function(res) {
+                        var req = indexedDB.deleteDatabase(db.name);
+                        req.onsuccess = req.onerror = req.onblocked = res;
+                    });
+                });
+                Promise.all(dels).then(resolve).catch(resolve);
+            }).catch(resolve);
+        });
+
+        Promise.all([unregister, clearCaches, clearIDB]).then(function() {
+            if (status) status.textContent = 'Downloading fresh files…';
+
+            // Step 4: Force-fetch every asset with no-store so the browser
+            // pulls directly from the server and cannot serve anything cached.
+            var bust = '?nocache=' + Date.now();
+            var assets = [
+                './index.html', './sw.js', './manifest.json',
+                './manual.html', './tank.png'
+            ];
+            return Promise.all(assets.map(function(url) {
+                return fetch(url + bust, {
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+                }).catch(function() {});
+            }));
+        }).then(function() {
+            if (status) status.textContent = 'Saving & reloading…';
+
+            // Step 5: Hard navigate back to this same page — just strip any existing
+            // query string and add a fresh bust token. No path manipulation needed.
+            var cleanUrl = window.location.origin + window.location.pathname;
+            window.location.replace(cleanUrl + '?t=' + Date.now());
+        }).catch(function(err) {
+            console.warn('[Update] fallback reload, error:', err);
+            // Last-resort: at minimum hard-reload
+            window.location.reload(true);
+        });
+    }
+
+    function openUH60() {
+        var overlay = document.getElementById('rickroll-overlay');
+        var video   = document.getElementById('rickroll-video');
+        overlay.style.display = 'flex';
+        video.src = 'rickroll.mp4';
+        video.currentTime = 0;
+        video.play();
+        if (overlay.requestFullscreen) overlay.requestFullscreen();
+        else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
+    }
+
+    function closeRickroll() {
+        var overlay = document.getElementById('rickroll-overlay');
+        var video   = document.getElementById('rickroll-video');
+        video.pause();
+        video.src = '';
+        video.load();
+        overlay.style.display = 'none';
+        if (document.exitFullscreen) document.exitFullscreen().catch(function(){});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+
+    // no-op — kept so any stray SW FORCE_UPDATE_DONE messages don't throw
+    function finishForceUpdate() {}
+
+    // ── Setup Page ────────────────────────────────────────────────────────────
+    function updateSetupButtons() {
+        var isDark = document.body.classList.contains('dark');
+        var darkBtn = document.getElementById('setup-dark-btn');
+        var darkLbl = document.getElementById('setup-dark-label');
+        if (darkBtn && darkLbl) {
+            darkLbl.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            darkBtn.querySelector('.setup-btn-icon').textContent = isDark ? '☀' : '🌙';
+        }
+        var wakeBtn = document.getElementById('setup-wake-btn');
+        var wakeLbl = document.getElementById('setup-wake-label');
+        if (wakeBtn && wakeLbl) {
+            var awake = !!wakeLock;
+            wakeLbl.textContent = awake ? 'Awake (ON)' : 'Keep Awake';
+            wakeBtn.querySelector('.setup-btn-icon').textContent = awake ? '🔆' : '☀';
+        }
+    }
+
+
+    // ── Toast ─────────────────────────────────────────────────────────────────
+    function showToast(msg, duration) {
+        duration = duration || 2500;
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, duration);
+    }
+
+    // ── Confirm / info dialog ─────────────────────────────────────────────────
+    function showDialog(msg, yesCallback, noCallback) {
+        document.getElementById('confirm-text').innerText = msg;
+        var overlay = document.getElementById('confirm-overlay');
+        var yesBtn  = document.getElementById('confirm-yes');
+        var noBtn   = document.getElementById('confirm-no');
+        if (yesCallback === null) {
+            yesBtn.textContent = 'OK';
+            yesBtn.style.background = '#000';
+            yesBtn.style.color = '#fff';
+            noBtn.style.display = 'none';
+        } else {
+            yesBtn.textContent = 'YES';
+            yesBtn.style.background = '#dc3545';
+            yesBtn.style.color = '#fff';
+            noBtn.style.display = '';
+        }
+        overlay.classList.add('show');
+        yesBtn.onclick = function() {
+            overlay.classList.remove('show');
+            noBtn.style.display = '';
+            if (yesCallback) yesCallback();
+        };
+        noBtn.onclick = function() {
+            overlay.classList.remove('show');
+            if (noCallback) noCallback();
+        };
+    }
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    var timers = {
+        eng:  { elapsed:0, start:null, blockStart:null, blockEnd:null, interval:null, running:false },
+        fl:   { elapsed:0, start:null, interval:null, running:false, tsS:null, tsE:null }
+    };
+    var curFuel = 2750, burnRef = null, flyTick = null, curGS = 0, watchID = null;
+
+    // ── (3) Settings: per-aircraft persistence ────────────────────────────────
+    // Key: 'settings_214B' and 'settings_214ST'
+    // Stores: maxGross, emptyWeight, crewGear, fuel, burn, gsTarget
+    var currentAircraft = '214B';  // tracks which preset was last applied
+
+    function saveSettings() {
+        var key = 'settings_' + currentAircraft;
+        var distEl = document.getElementById('dist-to-fuel');
+        var s = {
+            maxGross:    document.getElementById('max-gross').value,
+            emptyWeight: document.getElementById('empty-weight').value,
+            crewGear:    document.getElementById('crew-gear').value,
+            fuel:        document.getElementById('fuel-slider').value,
+            burn:        document.getElementById('burn-rate-select').value,
+            gsTarget:    document.getElementById('gs-target-select').value,
+            distToFuel:  distEl ? distEl.value : undefined
+        };
+        localStorage.setItem(key, JSON.stringify(s));
+    }
+
+    function loadSettings(aircraft) {
+        var key = 'settings_' + aircraft;
+        var raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+    }
+
+    // ── Presets ───────────────────────────────────────────────────────────────
+    // Default values per aircraft type (used if no saved settings)
+    var defaults = {
+        '214B':  { maxGross: 16000, emptyWeight: 8000,  crewGear: 400, fuel: 2500, burn: 1000, gsTarget: 18 },
+        '214ST': { maxGross: 17500, emptyWeight: 10000, crewGear: 400, fuel: 2750, burn: 800,  gsTarget: 18 }
+    };
+
+    function applyPreset(aircraft) {
+        currentAircraft = aircraft;
+        localStorage.setItem('lastAircraft', aircraft);
+        var saved = loadSettings(aircraft);
+        var d     = saved || defaults[aircraft];
+        document.getElementById('max-gross').value     = d.maxGross;
+        document.getElementById('empty-weight').value  = d.emptyWeight;
+        document.getElementById('crew-gear').value     = d.crewGear;
+        document.getElementById('fuel-slider').value   = d.fuel;
+        document.getElementById('burn-rate-select').value = d.burn;
+        if (d.gsTarget) {
+            document.getElementById('gs-target-select').value = d.gsTarget;
+        }
+        var distEl = document.getElementById('dist-to-fuel');
+        if (distEl && d.distToFuel !== undefined) distEl.value = d.distToFuel;
+        // Update flight page aircraft label
+        var lbl = document.getElementById('flight-ac-label');
+        if (lbl) lbl.textContent = aircraft === '214ST' ? 'Bell 214ST' : 'Bell 214B';
+        updateWB();
+        updateGSUI();
+    }
+
+    // ── W&B calc ──────────────────────────────────────────────────────────────
+    function updateWB() {
+        var mg    = parseFloat(document.getElementById('max-gross').value)    || 0;
+        var empty = parseFloat(document.getElementById('empty-weight').value) || 0;
+        var crew  = parseFloat(document.getElementById('crew-gear').value)    || 0;
+        curFuel   = parseFloat(document.getElementById('fuel-slider').value);
+        var p     = mg - (empty + crew + curFuel);
+        document.getElementById('fuel-display').innerText  = curFuel.toLocaleString() + ' lbs';
+        document.getElementById('res-lbs').innerText       = p < 0 ? "OVER"  : Math.round(p).toLocaleString();
+        document.getElementById('res-liters').innerText    = p < 0 ? "0"     : Math.round(p * 0.4536).toLocaleString();
+    }
+
+     // ── Refuel Calculator ─────────────────────────────────────────────────────
+	    // Jet-A reference density is ~0.804 kg/L at 15°C (ASTM D1655). Corrected
+	    // for a typical 20°C fuel temperature that works out to ~0.800 kg/L,
+	    // which also matches the standard industry planning figure of 0.8 kg/L.
+	    // Good for quick ramp math - for certified W&B use the density on the
+	    // actual fuel slip/BOL.
+	    var JETA_KG_PER_LITER_20C = 0.800;
+	    function lbsToLitersJetA20C(lbs) {
+	        return (lbs * 0.453592) / JETA_KG_PER_LITER_20C;
+	    }
+
+	    function openRefuelCalc() {
+	        // Desired fuel starts from whatever is set on the main (page one)
+	        // fuel slider - that's the flight's planned load.
+	        var pageOneFuel = parseFloat(document.getElementById('fuel-slider').value) || 0;
+	        document.getElementById('refuel-desired-slider').value = pageOneFuel;
+	        // Actual fuel (what's currently in the tank) has no app source to
+	        // pull from - it's read off the aircraft gauge each time - so just
+	        // remember whatever was last entered here.
+	        var lastActual = parseFloat(localStorage.getItem('refuelActualLbs'));
+	        document.getElementById('refuel-actual-slider').value = isNaN(lastActual) ? 0 : lastActual;
+	        showPage('refuel-page');
+	        updateRefuelCalc();
+	        updateLbsLtr();
+	    }
+
+	    function updateRefuelCalc() {
+	        var desired = parseFloat(document.getElementById('refuel-desired-slider').value) || 0;
+	        var actual  = parseFloat(document.getElementById('refuel-actual-slider').value) || 0;
+	        localStorage.setItem('refuelActualLbs', actual);
+
+	        document.getElementById('refuel-desired-display').innerText = desired.toLocaleString() + ' lbs';
+	        document.getElementById('refuel-actual-display').innerText  = actual.toLocaleString() + ' lbs';
+
+	        var req = desired - actual;
+	        var lbsEl = document.getElementById('refuel-req-lbs');
+	        var ltrEl = document.getElementById('refuel-req-liters');
+	        if (req >= 0) {
+	            lbsEl.innerText = Math.round(req).toLocaleString();
+	            ltrEl.innerText = Math.round(lbsToLitersJetA20C(req)).toLocaleString();
+	        } else {
+	            lbsEl.innerText = 'DEFUEL ' + Math.round(-req).toLocaleString();
+	            ltrEl.innerText = Math.round(lbsToLitersJetA20C(-req)).toLocaleString();
+	        }
+	    }
+
+
+	    function updateLbsLtr() {
+	        var lbs = parseFloat(document.getElementById('lbsltr-slider').value) || 0;
+	        document.getElementById('lbsltr-display').innerText = lbs.toLocaleString() + ' lbs';
+	        document.getElementById('lbsltr-liters-display').innerText = Math.round(lbsToLitersJetA20C(lbs)).toLocaleString() + ' L';
+	    }
+
+	    var AERONET_FUEL_IDS = ['aeronet-fuel1','aeronet-fuel2','aeronet-fuel3','aeronet-fuel4','aeronet-fuel5'];
+	    var AERONET_FUEL_KEYS = ['aeronetFuel1','aeronetFuel2','aeronetFuel3','aeronetFuel4','aeronetFuel5'];
+
+	    function openAeronetCalc() {
+	        var lastStart = parseFloat(localStorage.getItem('aeronetStartLbs'));
+	        var lastEnd = parseFloat(localStorage.getItem('aeronetEndLbs'));
+	        document.getElementById('aeronet-start-slider').value = isNaN(lastStart) ? 0 : lastStart;
+	        document.getElementById('aeronet-end-slider').value = isNaN(lastEnd) ? 0 : lastEnd;
+	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
+	            var v = parseFloat(localStorage.getItem(AERONET_FUEL_KEYS[i]));
+	            document.getElementById(AERONET_FUEL_IDS[i]).value = isNaN(v) ? 0 : v;
+	        }
+	        showPage('aeronet-page');
+	        updateAeronetFuel();
+	        updateAeronetTotal();
+	    }
+
+	    function updateAeronetFuel() {
+	        var startLbs = parseFloat(document.getElementById('aeronet-start-slider').value) || 0;
+	        var endLbs = parseFloat(document.getElementById('aeronet-end-slider').value) || 0;
+	        localStorage.setItem('aeronetStartLbs', startLbs);
+	        localStorage.setItem('aeronetEndLbs', endLbs);
+	        document.getElementById('aeronet-start-lbs').innerText = startLbs.toLocaleString();
+	        document.getElementById('aeronet-start-liters').innerText = Math.round(lbsToLitersJetA20C(startLbs)).toLocaleString();
+	        document.getElementById('aeronet-end-lbs').innerText = endLbs.toLocaleString();
+	        document.getElementById('aeronet-end-liters').innerText = Math.round(lbsToLitersJetA20C(endLbs)).toLocaleString();
+	    }
+
+	    function updateAeronetTotal() {
+	        var total = 0;
+	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
+	            var v = parseFloat(document.getElementById(AERONET_FUEL_IDS[i]).value) || 0;
+	            localStorage.setItem(AERONET_FUEL_KEYS[i], v);
+	            total += v;
+	        }
+	        document.getElementById('aeronet-total-liters').innerText = Math.round(total).toLocaleString() + ' L';
+	    }
+
+	    function clearAeronetReceipts() {
+	        // Only zeroes the 5 fuel-added receipts - Start/End Fuel sliders
+	        // are left exactly as they are.
+	        for (var i = 0; i < AERONET_FUEL_IDS.length; i++) {
+	            document.getElementById(AERONET_FUEL_IDS[i]).value = 0;
+	        }
+	        updateAeronetTotal();
+	    }
+
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function getTimeStr(d) { return (d ? new Date(d) : new Date()).toTimeString().slice(0,5); }
+    function format(ms) {
+        var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+        return [h,m,sec].map(function(v){return v.toString().padStart(2,'0');}).join(':');
+    }
+    function formatShort(ms) {
+        var s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+        return [h,m].map(function(v){return v.toString().padStart(2,'0');}).join(':');
+    }
+
+    // ── Page navigation ───────────────────────────────────────────────────────
+    // Real back-stack: every forward navigation (showPage) pushes the page you
+    // were just on. goBack() pops the stack and returns you there - works for
+    // any depth (flight -> setup -> aeronet -> back -> setup -> back -> flight),
+    // not just one remembered level.
+    var _navStack = [];
+
+    function _currentPageId() {
+        var cur = Array.from(document.querySelectorAll('.page')).find(function(p) {
+            return getComputedStyle(p).display !== 'none';
+        });
+        return cur ? cur.id : null;
+    }
+
+    function _switchToPage(id) {
+        cancelAnimationFrame(flyTick);
+        document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
+        document.getElementById(id).style.display = (id === 'flight-page') ? 'flex' : 'block';
+        if (id === 'setup-page') updateSetupButtons();
+        setTimeout(function() { if (typeof fitActivePage === 'function') fitActivePage(); }, 80);
+    }
+
+    function showPage(id) {
+        var cur = _currentPageId();
+        if (cur && cur !== id) _navStack.push(cur);
+        _switchToPage(id);
+    }
+
+    function goBack() {
+        var prev = _navStack.pop() || 'calc-page'; // safety fallback if the stack is ever empty
+        _switchToPage(prev);
+    }
+
+    // ── Timers ────────────────────────────────────────────────────────────────
+    function startT(id) {
+        if (timers[id].running) return;
+        timers[id].running = true;
+        timers[id].start   = Date.now() - timers[id].elapsed;
+        if (id === 'fl' && !timers.fl.tsS) timers.fl.tsS = getTimeStr();
+        if (id === 'eng' && !timers.eng.blockStart) timers.eng.blockStart = Date.now();
+        timers[id].interval = setInterval(function() {
+            timers[id].elapsed = Date.now() - timers[id].start;
+            document.getElementById(id+'-disp').innerText = format(timers[id].elapsed);
+            updateStats();
+        }, 1000);
+        document.getElementById(id+'-start').disabled = true;
+        document.getElementById(id+'-stop').disabled  = false;
+    }
+
+    function stopT(id) {
+        timers[id].running = false;
+        clearInterval(timers[id].interval);
+        if (id === 'fl') timers.fl.tsE = getTimeStr();
+        if (id === 'eng') timers.eng.blockEnd = Date.now();
+        document.getElementById(id+'-start').disabled = false;
+        document.getElementById(id+'-stop').disabled  = true;
+        updateStats();
+    }
+
+    function resetRow(id) {
+        stopT(id); timers[id].elapsed = 0;
+        document.getElementById(id+'-disp').innerText = "00:00:00";
+        if (id === 'fl') { timers.fl.tsS = null; timers.fl.tsE = null; }
+        if (id === 'eng') { timers.eng.blockStart = null; timers.eng.blockEnd = null; }
+        updateStats();
+    }
+
+    function resetAllTimers() {
+        showDialog("Reset ALL current timers?", function() {
+            ['eng','fl'].forEach(resetRow);
+        }, null);
+    }
+
+    function updateStats() {
+        var eMs = (timers.eng.blockEnd || (timers.eng.blockStart ? Date.now() : 0)) - (timers.eng.blockStart || 0);
+        document.getElementById('e-hms').innerText = format(Math.max(0, eMs));
+        document.getElementById('e-dec').innerText = (eMs/3600000).toFixed(2) + " hr";
+        document.getElementById('e-ts').innerText  = (timers.eng.blockStart ? getTimeStr(timers.eng.blockStart) : "--:--") + " to " + (timers.eng.blockEnd ? getTimeStr(timers.eng.blockEnd) : "--:--");
+        document.getElementById('f-hms').innerText = format(timers.fl.elapsed);
+        document.getElementById('f-dec').innerText = (timers.fl.elapsed/3600000).toFixed(2) + " hr";
+        document.getElementById('f-ts').innerText  = (timers.fl.tsS || "--:--") + " to " + (timers.fl.tsE || "--:--");
+    }
+
+    // ── Save / Log ────────────────────────────────────────────────────────────
+    function saveLog() {
+        var lastReg = localStorage.getItem('lastAcReg') || '';
+        var reg = prompt("Aircraft registration (e.g. N1234):", lastReg);
+        if (reg === null) reg = lastReg; // cancelled — keep previous default, don't block the save
+        reg = reg.trim().toUpperCase();
+        localStorage.setItem('lastAcReg', reg);
+
+        var engMs = (timers.eng.blockEnd || (timers.eng.blockStart ? Date.now() : 0)) - (timers.eng.blockStart || 0);
+        var entry = {
+            date: new Date().toLocaleDateString(),
+            reg:  reg,
+            eb:   document.getElementById('e-ts').innerText,
+            ehms: formatShort(engMs),
+            eh:   (engMs/3600000).toFixed(2),
+            fb:   document.getElementById('f-ts').innerText,
+            fhms: formatShort(timers.fl.elapsed),
+            fh:   (timers.fl.elapsed/3600000).toFixed(2)
+        };
+        var log = JSON.parse(localStorage.getItem('hLogV36') || '[]');
+        log.push(entry);
+        localStorage.setItem('hLogV36', JSON.stringify(log));
+        showToast("✓ Flight Saved");
+    }
+
+    function showLog() {
+        showPage('log-page');
+        var log   = JSON.parse(localStorage.getItem('hLogV36') || '[]').reverse();
+        var tbody = document.getElementById('log-body');
+        tbody.innerHTML = '';
+        if (!log.length) { tbody.innerHTML = '<tr><td colspan="8">No logs.</td></tr>'; return; }
+        var html = '', dailyE = 0, dailyF = 0, lastDate = log[0].date, dayHtml = '';
+        log.forEach(function(e, i) {
+            if (e.date !== lastDate) {
+                html += dayHtml + '<tr style="background:#f0f0f0;font-weight:bold;"><td colspan="4">TOTAL ' + lastDate + '</td><td>' + dailyE.toFixed(2) + '</td><td colspan="2"></td><td>' + dailyF.toFixed(2) + '</td></tr>';
+                dayHtml = ''; dailyE = 0; dailyF = 0; lastDate = e.date;
+            }
+            dayHtml += '<tr><td>' + e.date + '</td><td>' + (e.reg || '') + '</td><td>' + e.eb + '</td><td>' + e.ehms + '</td><td>' + e.eh + '</td><td>' + e.fb + '</td><td>' + e.fhms + '</td><td>' + e.fh + '</td></tr>';
+            dailyE += parseFloat(e.eh);
+            dailyF += parseFloat(e.fh);
+            if (i === log.length - 1) {
+                html += dayHtml + '<tr style="background:#f0f0f0;font-weight:bold;"><td colspan="4">TOTAL ' + lastDate + '</td><td>' + dailyE.toFixed(2) + '</td><td colspan="2"></td><td>' + dailyF.toFixed(2) + '</td></tr>';
+            }
+        });
+        tbody.innerHTML = html;
+    }
+
+    function confirmClear() {
+        showDialog("Delete ALL logs? Cannot be undone.", function() {
+            localStorage.removeItem('hLogV36');
+            showLog();
+            showToast("All logs deleted");
+        }, null);
+    }
+
+    function exportData(type) {
+        var log = JSON.parse(localStorage.getItem('hLogV36') || '[]');
+        if (!log.length) { showToast("No logs found."); return; }
+        var content, ext, mime;
+        if (type === 'csv') {
+            content = "Date,Reg,Eng Block,Eng HHMM,Eng Dec,Flt Block,Flt HHMM,Flt Dec\n" +
+                log.map(function(e){return [e.date,(e.reg||''),e.eb,e.ehms,e.eh,e.fb,e.fhms,e.fh].join(',');}).join('\n');
+            ext = ".csv"; mime = "text/csv";
+        } else {
+            content = "HELI LOG\n" +
+                log.map(function(e){return e.date+(e.reg ? " ["+e.reg+"]" : "")+" | ENG: "+e.eb+" ["+e.ehms+"] ("+e.eh+"h) | FLT: "+e.fb+" ["+e.fhms+"] ("+e.fh+"h)";}).join('\n');
+            ext = ".txt"; mime = "text/plain";
+        }
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([content],{type:mime}));
+        a.download = "HeliLog_" + new Date().toISOString().slice(0,10) + ext;
+        a.click();
+    }
+
+    // ── (2) Fuel Calc ──────────────────────────────────────────────────────────
+    // Endurance = time remaining before landing with 500 lbs reserve
+    // usable fuel = curFuel - 500 (reserve)
+    // time available = usable / burn_rate  (hours) -> shown as HHhr : MMmin
+    // Range = time * planned GS (chosen via dropdown, or live GPS GS if "ACTUAL")
+    // Box turns bright yellow once remaining fuel drops to 700 lbs or below.
+    var BINGO_RESERVE = 500; // lbs
+    var BINGO_WARN_RED = 500;    // lbs remaining → red
+    var BINGO_WARN_YELLOW = 800; // lbs remaining → yellow
+
+    function saveFuelPlanGS() {
+        var sel = document.getElementById('fuel-plan-gs');
+        if (sel) localStorage.setItem('fuelPlanGS', sel.value);
+    }
+
+    function loadFuelPlanGS() {
+        var sel = document.getElementById('fuel-plan-gs');
+        if (!sel) return;
+        var saved = localStorage.getItem('fuelPlanGS');
+        sel.value = saved || '100';
+    }
+
+    function updateBingo() {
+        var burn = parseFloat(document.getElementById('burn-rate-select').value) || 800;
+        var fuel = curFuel;
+        var usable = fuel - BINGO_RESERVE;
+        var box = document.getElementById('fly-fuel-box') || document.getElementById('calc-fuel-section');
+        var planSel = document.getElementById('fuel-plan-gs');
+        var planVal = planSel ? planSel.value : '100';
+        var planGS  = (planVal === 'actual') ? curGS : parseFloat(planVal);
+
+        // ── TOTAL ENDURANCE: all fuel on board at burn rate (always calculated) ──
+        var hrsTotal  = fuel / burn;
+        var minsTotal = Math.round(hrsTotal * 60);
+        var hT = Math.floor(minsTotal / 60), mT = minsTotal % 60;
+        document.getElementById('bingo-time').innerText = String(hT).padStart(2,'0') + 'h:' + String(mT).padStart(2,'0') + 'm';
+
+        // ── OPERATIONAL ENDURANCE: fuel minus 500lb reserve, floors at 0 ─────
+        var opMins = Math.round(Math.max(0, usable) / burn * 60);
+        var hO = Math.floor(opMins / 60), mO = opMins % 60;
+        var opEl = document.getElementById('op-endurance');
+        if (opEl) opEl.innerText = String(hO).padStart(2,'0') + 'h:' + String(mO).padStart(2,'0') + 'm';
+
+        // ── Range (based on operational endurance) ────────────────────────────
+        var hrsOp = Math.max(0, usable) / burn;
+        document.getElementById('bingo-range-dist').innerText = Math.round(hrsOp * planGS);
+        var rangeDup1 = document.getElementById('bingo-range-dist-dup');
+        if (rangeDup1) rangeDup1.innerText = Math.round(hrsOp * planGS);
+
+        // ── Time to Bingo ──────────────────────────────────────────────────────
+        // How long you can still wait (burning fuel at the chosen burn rate)
+        // before departure, and still reach "distance to fuel" at the chosen
+        // planned GS with exactly 500lbs reserve remaining on arrival.
+        var distEl = document.getElementById('dist-to-fuel');
+        var dist   = distEl ? parseFloat(distEl.value) || 0 : 0;
+        var ttbEl  = document.getElementById('time-to-bingo');
+        var ttbRow = document.getElementById('ttb-row');
+        var ttbElDup  = document.getElementById('time-to-bingo-dup');
+        var ttbRowDup = document.getElementById('ttb-row-dup');
+        var ttbAlways    = document.getElementById('bingo-in-always');
+        var ttbAlwaysRow = document.getElementById('bingo-in-always-row');
+        if (ttbEl) {
+            if (!planGS || planGS <= 0) {
+                ttbEl.innerText = '--:--';
+                if (ttbRow) { ttbRow.classList.remove('warn','warn-red'); }
+                if (ttbElDup) ttbElDup.innerText = '--:--';
+                if (ttbRowDup) { ttbRowDup.classList.remove('warn','warn-red'); }
+                if (ttbAlways) ttbAlways.innerText = '--:--';
+                if (ttbAlwaysRow) { ttbAlwaysRow.style.background = ''; ttbAlwaysRow.style.color = ''; }
+                var basisEl0 = document.getElementById('bingo-in-basis');
+                if (basisEl0) basisEl0.innerText = '--Nm@--kts';
+            } else {
+                var transitHrs  = dist / planGS;
+                var fuelNeeded  = transitHrs * burn + BINGO_RESERVE;
+                var rawTtbHrs   = (fuel - fuelNeeded) / burn; // can go negative — already past bingo
+                var ttbHrs      = rawTtbHrs;
+                if (ttbHrs < 0) ttbHrs = 0;
+                var ttbMins = Math.round(ttbHrs * 60);
+                var th = Math.floor(ttbMins / 60), tm = ttbMins % 60;
+                var ttbStr = String(th).padStart(2,'0') + ':' + String(tm).padStart(2,'0');
+                ttbEl.innerText = ttbStr;
+                if (ttbElDup) ttbElDup.innerText = ttbStr;
+                if (ttbAlways) ttbAlways.innerText = ttbStr;
+                var basisEl = document.getElementById('bingo-in-basis');
+                if (basisEl) basisEl.innerText = dist + 'Nm@' + Math.round(planGS) + 'kts';
+                if (ttbAlwaysRow) {
+                    if (rawTtbHrs <= 0) {
+                        ttbAlwaysRow.style.background = '#ff3300'; ttbAlwaysRow.style.color = '#fff';
+                        ttbAlwaysRow.style.borderRadius = '6px'; ttbAlwaysRow.style.padding = '2px 8px 2px 10px';
+                    } else if (rawTtbHrs <= 0.25) {
+                        ttbAlwaysRow.style.background = '#ffeb00'; ttbAlwaysRow.style.color = '#000';
+                        ttbAlwaysRow.style.borderRadius = '6px'; ttbAlwaysRow.style.padding = '2px 8px 2px 10px';
+                    } else {
+                        ttbAlwaysRow.style.background = ''; ttbAlwaysRow.style.color = '';
+                        ttbAlwaysRow.style.borderRadius = ''; ttbAlwaysRow.style.padding = ''; ttbAlwaysRow.style.paddingLeft = '12px';
+                    }
+                }
+
+                if (ttbRow) {
+                    if (rawTtbHrs <= 0) {
+                        ttbRow.classList.add('warn-red');
+                        ttbRow.classList.remove('warn');
+                    } else if (rawTtbHrs <= 0.25) { // 15 minutes
+                        ttbRow.classList.add('warn');
+                        ttbRow.classList.remove('warn-red');
+                    } else {
+                        ttbRow.classList.remove('warn','warn-red');
+                    }
+                }
+                if (ttbRowDup) {
+                    if (rawTtbHrs <= 0) {
+                        ttbRowDup.classList.add('warn-red');
+                        ttbRowDup.classList.remove('warn');
+                    } else if (rawTtbHrs <= 0.25) { // 15 minutes
+                        ttbRowDup.classList.add('warn');
+                        ttbRowDup.classList.remove('warn-red');
+                    } else {
+                        ttbRowDup.classList.remove('warn','warn-red');
+                    }
+                }
+            }
+        }
+
+        if (fuel <= BINGO_WARN_RED) {
+            box.classList.add('warn-red');
+            box.classList.remove('warn');
+        } else if (fuel <= BINGO_WARN_YELLOW) {
+            box.classList.add('warn');
+            box.classList.remove('warn-red');
+        } else {
+            box.classList.remove('warn');
+            box.classList.remove('warn-red');
+        }
+    }
+
+    // ── (4) Landscape layout switch ───────────────────────────────────────────
+    // Gauge always sits BELOW the fuel/payload/bingo block, full width — same
+    // stacking order in landscape as portrait, just sized to fit the screen.
+    function applyLayoutMode() {
+        var isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 768;
+        var fuelPayload = document.querySelector('.ls-fuel-payload');
+        var gaugeWrap   = document.querySelector('.ls-gauge-wrap');
+        var gaugeSvg    = gaugeWrap ? gaugeWrap.querySelector('svg') : null;
+
+        if (isLandscape) {
+            // Fuel + payload side by side to save vertical space
+            fuelPayload.style.display = 'flex';
+            fuelPayload.style.gap     = '6px';
+            if (gaugeSvg) { gaugeSvg.style.width = '100%'; gaugeSvg.style.maxHeight = '60vh'; }
+        } else {
+            // Portrait — stacked single column
+            fuelPayload.style.display = 'block';
+            if (gaugeSvg) { gaugeSvg.style.width = '100%'; gaugeSvg.style.maxHeight = ''; }
+        }
+    }
+
+    window.addEventListener('resize',        applyLayoutMode);
+    window.addEventListener('orientationchange', function() {
+        setTimeout(applyLayoutMode, 150);
+    });
+
+    // ── (5) iPad / tablet no-scroll auto-fit ────────────────────────────────
+    // Detects tablet-class screens (iPad and similar) and scales the active
+    // page's inner content down just enough that it fits the viewport with
+    // zero scroll, centered horizontally and vertically. Works for both
+    // display:block and display:flex pages. Runs on load, resize,
+    // orientation change, and whenever the visible page changes.
+    function isTabletScreen() {
+        var w = window.innerWidth, h = window.innerHeight;
+        var longSide = Math.max(w, h);
+        var isIOSTouch = navigator.maxTouchPoints > 1 &&
+            /Mac|iPad|iPhone|iPod/.test(navigator.platform || navigator.userAgent);
+        // iPads (and tablet-sized touch screens generally) have a long side
+        // roughly 1024–1400pt. Phones are smaller; desktops aren't touch.
+        return isIOSTouch && longSide >= 950 && longSide <= 1400;
+    }
+
+    function resetFit(el) {
+        el.style.transform       = '';
+        el.style.transformOrigin = '';
+        el.style.position        = '';
+        el.style.left            = '';
+        el.style.top             = '';
+        el.style.width           = '';
+        el.style.height          = '';
+        el.style.margin          = '';
+    }
+
+    function fitActivePage() {
+        var pages = document.querySelectorAll('.page');
+        var active = null;
+        for (var i = 0; i < pages.length; i++) {
+            if (getComputedStyle(pages[i]).display !== 'none') { active = pages[i]; break; }
+        }
+        // Always reset every page first so hidden pages don't keep stale styles
+        for (var j = 0; j < pages.length; j++) { resetFit(pages[j]); }
+        if (!active) return;
+        if (!isTabletScreen()) return;
+
+        // Measure natural (unscaled) content size
+        var naturalW = active.scrollWidth  || active.offsetWidth;
+        var naturalH = active.scrollHeight || active.offsetHeight;
+        var availW   = window.innerWidth;
+        var availH   = window.innerHeight;
+
+        if (naturalH <= availH && naturalW <= availW) return; // already fits
+
+        var scale = Math.min(availW / naturalW, availH / naturalH);
+        scale = Math.max(Math.min(scale, 1), 0.4); // clamp 0.4–1.0
+
+        // Fix the page at a known size/position, then scale it from its own
+        // center. Using position:fixed + left/top 50% + translate(-50%,-50%)
+        // centers correctly regardless of the page's own display mode
+        // (block or flex), so it can't drift to one side.
+        active.style.position        = 'fixed';
+        active.style.left            = '50%';
+        active.style.top             = '50%';
+        active.style.width           = naturalW + 'px';
+        active.style.height          = naturalH + 'px';
+        active.style.margin          = '0';
+        active.style.transformOrigin = 'center center';
+        active.style.transform       = 'translate(-50%, -50%) scale(' + scale + ')';
+    }
+
+    window.addEventListener('load', function() { setTimeout(fitActivePage, 50); });
+    window.addEventListener('resize', function() { setTimeout(fitActivePage, 50); });
+    window.addEventListener('orientationchange', function() { setTimeout(fitActivePage, 200); });
+
+    // ── Flight page ───────────────────────────────────────────────────────────
+    function initFlightPage() {
+        if (!timers.fl.running) startT('fl');
+        showPage('flight-page');
+        document.getElementById('fly-fuel-slider').value = curFuel;
+        burnRef = Date.now();
+        applyLayoutMode();
+        startGPS();
+        wakeWanted = true;
+        requestWakeLock();
+
+        function loop() {
+            var now  = Date.now();
+            var rate = parseFloat(document.getElementById('burn-rate-select').value);
+            curFuel -= ((now - burnRef) / 3600000) * rate;
+            burnRef  = now;
+            if (curFuel < 0) curFuel = 0;
+            var mg    = parseFloat(document.getElementById('max-gross').value)    || 0;
+            var empty = parseFloat(document.getElementById('empty-weight').value) || 0;
+            var crew  = parseFloat(document.getElementById('crew-gear').value)    || 0;
+            var p     = mg - (empty + crew + curFuel);
+            document.getElementById('fly-ltr').innerText      = p < 0 ? "0" : Math.round(p * 0.4536).toLocaleString();
+            document.getElementById('fly-fuel-lbs').innerText = Math.round(curFuel).toLocaleString();
+            document.getElementById('flight-timer-main').innerText = format(timers.fl.elapsed);
+            updateGSUI();
+            updateBingo();
+            flyTick = requestAnimationFrame(loop);
+        }
+        flyTick = requestAnimationFrame(loop);
+    }
+
+    function leaveFlight() {
+        stopGPS();
+        releaseWakeLock();
+        goBack();
+    }
+
+    // ── Screen Wake Lock (iPad must not sleep while flying) ────────────────────
+    var wakeLock = null;
+    var wakeWanted = false;
+
+    function setWakeBtn(active) {
+        var btn = document.getElementById('wake-btn');
+        if (!btn) return;
+        btn.textContent  = active ? '☀ AWAKE' : '⏾ SLEEP OK';
+        btn.style.background = active ? '#28a745' : '#333';
+    }
+
+    function requestWakeLock() {
+        if (!('wakeLock' in navigator)) { setWakeBtn(false); return; }
+        navigator.wakeLock.request('screen').then(function(lock) {
+            wakeLock = lock;
+            setWakeBtn(true);
+            if (typeof updateSetupButtons === 'function') updateSetupButtons();
+            lock.addEventListener('release', function() {
+                wakeLock = null;
+                setWakeBtn(false);
+                if (typeof updateSetupButtons === 'function') updateSetupButtons();
+            });
+        }).catch(function() { setWakeBtn(false); });
+    }
+
+    function releaseWakeLock() {
+        wakeWanted = false;
+        if (wakeLock) { wakeLock.release(); wakeLock = null; }
+        setWakeBtn(false);
+        if (typeof updateSetupButtons === 'function') updateSetupButtons();
+    }
+
+    function toggleWakeLock() {
+        if (wakeLock) {
+            releaseWakeLock();
+        } else {
+            wakeWanted = true;
+            requestWakeLock();
+        }
+    }
+
+    // iOS/Android release the lock automatically when the page is backgrounded
+    // (app switch, screen lock). Silently re-acquire it once the flight page
+    // is visible again, if the pilot still wants it on.
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && wakeWanted && !wakeLock) {
+            requestWakeLock();
+        }
+    });
+
+    // ── Fuel Calc toggle ─────────────────────────────────────────────────────
+    // When OFF: the whole Fuel Calc block — Endurance, Fuel Plan GS + Range,
+    // and Dist-to-fuel + Bingo-in (portrait row and its landscape duplicate)
+    // — is hidden via the body.fuelcalc-off CSS rule. Fuel load, burn rate,
+    // and payload stay visible either way.
+    function setFuelCalcBtn(enabled) {
+        var btn = document.getElementById('fuelcalc-btn');
+        if (!btn) return;
+        btn.style.background = enabled ? '#28a745' : '#333';
+        btn.style.color = enabled ? '#fff' : '#aaa';
+    }
+
+    function applyFuelCalc(enabled) {
+        document.body.classList.toggle('fuelcalc-off', !enabled);
+        setFuelCalcBtn(enabled);
+        // Content height changed — rescale the active page so it still fits
+        // the screen with no scroll (matters most in landscape on iPad).
+        setTimeout(function() { if (typeof fitActivePage === 'function') fitActivePage(); }, 50);
+    }
+
+    function toggleFuelCalc() {
+        var enabled = document.body.classList.contains('fuelcalc-off'); // currently off -> turning on
+        localStorage.setItem('fuelCalcEnabled', enabled ? '1' : '0');
+        applyFuelCalc(enabled);
+    }
+
+
+    // ── GPS ───────────────────────────────────────────────────────────────────
+    function setGPSBtn(state, label) {
+        var btn = document.getElementById('gps-btn');
+        btn.className = 'gps-' + state;
+        btn.innerText = label;
+    }
+
+    function startGPS() {
+        if (watchID !== null) return;
+        if (!navigator.geolocation) { setGPSBtn('off', 'NO GPS'); return; }
+        setGPSBtn('waiting', 'GPS...');
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+                if (result.state === 'denied') {
+                    setGPSBtn('off', 'GPS DENIED');
+                    showDialog("Location access is denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app or Safari → set to \"While Using\".\n\nAndroid: Settings → Apps → Browser → Permissions → Location → Allow.", null, null);
+                } else {
+                    doWatchPosition();
+                }
+            }).catch(function() { doWatchPosition(); });
+        } else {
+            doWatchPosition();
+        }
+    }
+
+    function doWatchPosition() {
+        watchID = navigator.geolocation.watchPosition(
+            function(pos) {
+                curGS = (pos.coords.speed || 0) * 1.94384;
+                setGPSBtn('live', 'GPS LIVE');
+                updateGSUI();
+            },
+            function(err) {
+                watchID = null;
+                if (err.code === 1) {
+                    setGPSBtn('off', 'GPS DENIED');
+                    showDialog("Location access denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app → set to \"While Using\".\n\nThen tap GPS OFF to try again.", null, null);
+                } else if (err.code === 2) {
+                    setGPSBtn('off', 'NO SIGNAL');
+                } else {
+                    setGPSBtn('off', 'GPS ERR');
+                }
+            },
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+        );
+    }
+
+    function stopGPS() {
+        if (watchID !== null) { navigator.geolocation.clearWatch(watchID); watchID = null; }
+        curGS = 0;
+        setGPSBtn('off', 'GPS OFF');
+    }
+
+    function toggleGPS() {
+        if (watchID !== null) { stopGPS(); } else { startGPS(); }
+    }
+
+    // ── (3) Force GPS permission ─────────────────────────────────────────────
+    // A website/app can never re-open the browser's native permission dialog
+    // once the user has explicitly denied it — that's an OS/browser security
+    // rule, not something this code can override. What this CAN do:
+    //  - If permission has never been asked (state "prompt"), calling
+    //    getCurrentPosition() right now triggers that native prompt immediately.
+    //  - If it's already "denied", the only fix is in OS/browser settings, so
+    //    open the settings instructions instead of pretending to "force" it.
+    function forceGPSPermission() {
+        if (!navigator.geolocation) {
+            showDialog("This device/browser has no GPS support.", null, null);
+            return;
+        }
+        var settingsMsg = "Location access is denied.\n\niOS: Settings → Privacy & Security → Location Services → find this app (or Safari) → set to \"While Using\".\n\nAndroid: Settings → Apps → this app/browser → Permissions → Location → Allow.\n\nAfter changing it, come back and tap PERMIT again.";
+
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+                if (result.state === 'denied') {
+                    showDialog(settingsMsg, null, null);
+                } else {
+                    // "prompt" or "granted" — asking again either shows the native
+                    // dialog or simply confirms access and starts the GPS watch.
+                    setGPSBtn('waiting', 'GPS...');
+                    doWatchPosition();
+                }
+            }).catch(function() {
+                // Permissions API unsupported (e.g. some iOS Safari versions) —
+                // just attempt the request; the browser will prompt if needed.
+                setGPSBtn('waiting', 'GPS...');
+                doWatchPosition();
+            });
+        } else {
+            setGPSBtn('waiting', 'GPS...');
+            doWatchPosition();
+        }
+    }
+
+    // ── GS gauge ──────────────────────────────────────────────────────────────
+    // Arc: center radius=80, stroke-width=14, so outer edge = 80-7=73 from center (r=73), inner edge = 80+7=87 from center (r=87)
+    // In SVG coords: center is (100,100), top of arc outer edge is y=100-73=27, inner edge y=100-87=13
+    // Ticks should span only the arc band: from r=73 (outer) to r=87 (inner), i.e. y=27 to y=13
+    (function drawGSTicks() {
+        var g = document.getElementById('gs-tick-group');
+        if (!g) return;
+        for (var i = -90; i <= 90; i += 9) {
+            var l = document.createElementNS('http://www.w3.org/2000/svg','line');
+            l.setAttribute('x1','100'); l.setAttribute('y1','13');
+            l.setAttribute('x2','100'); l.setAttribute('y2','27');
+            l.setAttribute('stroke','#000');
+            l.setAttribute('stroke-width','1.5');
+            l.setAttribute('transform','rotate('+i+' 100 100)');
+            g.appendChild(l);
+        }
+    })();
+
+    function updateGSUI() {
+        var tgt = parseFloat(document.getElementById('gs-target-select').value);
+        document.getElementById('gs-min-val').textContent = Math.max(0, tgt - 10);
+        document.getElementById('gs-tgt-val').textContent = tgt;
+        document.getElementById('gs-max-val').textContent = tgt + 10;
+        document.getElementById('fly-gs-svg').textContent = Math.round(curGS);
+        var diff = curGS - tgt;
+        var deg  = Math.min(90, Math.max(-90, diff * 9));
+        var ng = document.getElementById('needle-group');
+        if (ng) ng.style.transform = 'rotate(' + deg + 'deg)';
+        // colour the digital readout
+        var gsText = document.getElementById('fly-gs-svg');
+        if (gsText) gsText.setAttribute('fill', document.body.classList.contains('dark') ? '#e0e0e0' : '#000');
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    // Build GS selector
+    var gsS = document.getElementById('gs-target-select');
+    for (var i = 0; i <= 30; i++) {
+        var o = document.createElement('option');
+        o.value = i; o.innerText = i;
+        if (i === 18) o.selected = true;
+        gsS.appendChild(o);
+    }
+
+    // ── Dark Mode ─────────────────────────────────────────────────────────────
+    function applyDark(isDark) {
+        document.body.classList.toggle('dark', isDark);
+        var btn = document.getElementById('dark-toggle-btn');
+        if (btn) {
+            btn.textContent = isDark ? '☀ LIGHT' : '🌙 DARK';
+            btn.style.background = isDark ? '#c8a800' : '#333';
+            btn.style.color = isDark ? '#000' : '#fff';
+        }
+        var svgColor = isDark ? '#e0e0e0' : '#000';
+        var ticks = document.getElementById('gs-tick-group');
+        if (ticks) Array.from(ticks.querySelectorAll('line')).forEach(function(l) { l.setAttribute('stroke', svgColor); });
+        ['gs-min-val','gs-tgt-val','gs-max-val'].forEach(function(id) { var el = document.getElementById(id); if (el) el.setAttribute('fill', svgColor); });
+        var needle = document.querySelector('#needle-group line');
+        var needleDot = document.querySelector('#needle-group circle');
+        var nc = isDark ? '#ccc' : '#333';
+        if (needle) needle.setAttribute('stroke', nc);
+        if (needleDot) needleDot.setAttribute('fill', nc);
+        var gaugeSvg = document.getElementById('gs-gauge-svg');
+        if (gaugeSvg) { var paths = gaugeSvg.querySelectorAll('path'); if (paths[0]) paths[0].setAttribute('stroke', isDark ? '#444' : '#ddd'); }
+        if (typeof updateSetupButtons === 'function') updateSetupButtons();
+    }
+
+    function toggleDark() {
+        var isDark = !document.body.classList.contains('dark');
+        localStorage.setItem('darkMode', isDark ? '1' : '0');
+        applyDark(isDark);
+    }
+
+    // Load last used aircraft settings on startup
+    // Default to 214B if nothing saved
+    applyPreset(localStorage.getItem('lastAircraft') || '214B');
+    updateWB();
+    loadFuelPlanGS();
+    updateGSUI();
+    updateBingo();
+    applyLayoutMode();
+    // Restore dark mode preference
+    applyDark(localStorage.getItem('darkMode') === '1');
+    // Restore fuel calc preference (default ON)
+    applyFuelCalc(localStorage.getItem('fuelCalcEnabled') !== '0');
+</script>
+</body>
+</html>
