@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="214ST CWP">
+<meta name="apple-mobile-web-app-title" content="C/W Reference">
 <meta name="theme-color" content="#111111">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<title>Bell 214ST — CWP Quick Reference</title>
+<title>Aircraft C/W Panel Quick Reference v1.1</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;overflow:hidden;}
@@ -24,10 +24,26 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 .btn-back{background:#c00;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-weight:bold;font-size:0.85rem;cursor:pointer;flex-shrink:0;}
 .btn-back:active{opacity:0.7;}
 
-/* ── HOME PAGE ── */
+/* ── LANDING PAGE ── */
+#landing{overflow-y:auto;align-items:center;justify-content:flex-start;padding:0 16px 24px;}
+.land-title{text-align:center;padding:28px 8px 4px;font-size:1.3rem;font-weight:bold;color:#ff0;letter-spacing:2px;width:100%;}
+.land-ver{text-align:center;font-size:0.7rem;color:#555;padding-bottom:24px;width:100%;}
+.land-label{font-size:0.7rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:center;width:100%;}
+.ac-btn{width:100%;max-width:420px;padding:22px 16px;margin-bottom:14px;border-radius:10px;border:2px solid #ffcc00;background:#1a1500;color:#ffcc00;font-size:1.2rem;font-weight:bold;text-transform:uppercase;letter-spacing:2px;cursor:pointer;text-align:center;}
+.ac-btn:active{opacity:0.7;}
+.ac-btn.placeholder{border-color:#333;background:#111;color:#444;cursor:default;}
+.ac-btn.placeholder span{display:block;font-size:0.65rem;color:#333;text-transform:none;letter-spacing:0;margin-top:4px;}
+.disclaimer{width:100%;max-width:420px;margin-top:8px;padding:12px 14px;border:1px solid #333;border-radius:8px;background:#0d0d0d;}
+.disclaimer h4{margin:0 0 6px;font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:1px;}
+.disclaimer p{margin:0;font-size:0.72rem;color:#555;line-height:1.6;}
+.upd-btn-land{width:100%;max-width:420px;margin-top:18px;padding:14px 16px;border-radius:8px;border:2px solid #3399ff;background:#0a1a3a;color:#66aaff;font-size:0.9rem;font-weight:bold;cursor:pointer;text-align:center;letter-spacing:1px;}
+.upd-btn-land:active{opacity:0.7;}
+.upd-status-land{display:block;font-size:0.65rem;color:#3399ff;margin-top:4px;font-weight:normal;letter-spacing:0;}
+
+/* ── CWP HOME PAGE ── */
 #home{overflow-y:auto;}
-.home-title{text-align:center;padding:10px 8px 4px;font-size:1.1rem;font-weight:bold;color:#ff0;letter-spacing:2px;}
-.home-sub{text-align:center;font-size:0.75rem;color:#aaa;padding-bottom:8px;}
+.home-title{text-align:center;padding:8px 8px 2px;font-size:0.95rem;font-weight:bold;color:#ff0;letter-spacing:2px;}
+.home-sub{text-align:center;font-size:0.7rem;color:#aaa;padding-bottom:6px;}
 
 /* ── CWP SVG PANEL ── */
 #cwp-wrap{width:100%;overflow-x:auto;overflow-y:auto;flex:1;padding:6px 4px;}
@@ -93,11 +109,45 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 <body>
 
 <!-- ══════════════════════════════════════════
-     HOME PAGE — CWP PANEL
+     LANDING PAGE — AIRCRAFT SELECTION
 ════════════════════════════════════════════ -->
-<div id="home" class="page active">
-  <div class="home-title">BELL 214ST</div>
-  <div class="home-sub">Caution / Warning Panel — Quick Reference · Tap a light for procedures</div>
+<div id="landing" class="page active">
+  <div class="land-title">Aircraft C/W Panel<br>Quick Reference</div>
+  <div class="land-ver">v1.1 · Doc No: MA3424-NORM · Dec 2018</div>
+
+  <div class="land-label">Select Aircraft</div>
+
+  <!-- Bell 214ST -->
+  <button class="ac-btn" onclick="selectAircraft('214st')">Bell 214ST</button>
+
+  <!-- Bell 214B placeholder -->
+  <button class="ac-btn placeholder" disabled>
+    Bell 214B
+    <span>C/W panel content under development</span>
+  </button>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <h4>Disclaimer</h4>
+    <p>This C/W reference is intended as a memory aid only. It is not to be relied upon for in-flight critical decision making. Always refer to the approved POH/RFM — these must always take precedence.</p>
+  </div>
+
+  <!-- Update button -->
+  <button class="upd-btn-land" onclick="forceUpdate()">
+    ⟳ CHECK FOR UPDATES
+    <span class="upd-status-land" id="upd-status">TAP TO REFRESH ALL CONTENT</span>
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HOME PAGE — CWP PANEL (Bell 214ST)
+════════════════════════════════════════════ -->
+<div id="home" class="page">
+  <div class="hdr">
+    <button class="btn-back" onclick="showPage('landing')" style="background:#444;">◀</button>
+    <div class="hdr-title">Bell 214ST — C/W Panel</div>
+  </div>
+  <div class="home-sub" style="padding:4px 0 2px;text-align:center;font-size:0.68rem;color:#666;">Tap a light to view procedure</div>
   <div id="cwp-wrap">
 
 <!-- ══ CWP SVG ══
@@ -157,147 +207,156 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 </g>
 
 <!-- ════════════════════════
-     ROW 1 — MASTER CAUTION / ENG OUT
+     ROW 1 — MASTER CAUTION / ENG OUT  y=76 (14px gap after fire row ends at y=54)
 ════════════════════════ -->
 <!-- 1 ENG OUT -->
 <g class="cw-light cw-warn" onclick="showProc('eng-out')">
-  <rect x="140" y="62" width="80" height="26"/>
-  <text x="180" y="79" text-anchor="middle" font-size="9">1 ENG OUT</text>
+  <rect x="140" y="76" width="80" height="26"/>
+  <text x="180" y="93" text-anchor="middle" font-size="9">1 ENG OUT</text>
 </g>
 <!-- MASTER CAUTION -->
 <g class="cw-light cw-master" onclick="showProc('master-caution')">
-  <rect x="228" y="58" width="64" height="38"/>
-  <text x="260" y="72" text-anchor="middle" font-size="8">MASTER</text>
-  <text x="260" y="84" text-anchor="middle" font-size="9">CAUTION</text>
-  <text x="260" y="93" text-anchor="middle" font-size="6">PRESS TO RESET</text>
+  <rect x="228" y="72" width="64" height="38"/>
+  <text x="260" y="86" text-anchor="middle" font-size="8">MASTER</text>
+  <text x="260" y="98" text-anchor="middle" font-size="9">CAUTION</text>
+  <text x="260" y="107" text-anchor="middle" font-size="6">PRESS TO RESET</text>
 </g>
 <!-- 2 ENG OUT -->
 <g class="cw-light cw-warn" onclick="showProc('eng-out')">
-  <rect x="300" y="62" width="80" height="26"/>
-  <text x="340" y="79" text-anchor="middle" font-size="9">2 ENG OUT</text>
+  <rect x="300" y="76" width="80" height="26"/>
+  <text x="340" y="93" text-anchor="middle" font-size="9">2 ENG OUT</text>
 </g>
 
 <!-- ════════════════════════
-     ROW 2 — CARGO / HOIST / ROTOR
+     ROW 2 — CARGO / HOIST / ROTOR  y=114
 ════════════════════════ -->
 <!-- CARGO HOOK ARM -->
 <g class="cw-light cw-caut" onclick="showProc('cargo-hook')">
-  <rect x="140" y="100" width="80" height="26"/>
-  <text x="180" y="113" text-anchor="middle" font-size="8">CARGO HOOK</text>
-  <text x="180" y="123" text-anchor="middle" font-size="8">ARM</text>
+  <rect x="140" y="114" width="80" height="26"/>
+  <text x="180" y="127" text-anchor="middle" font-size="8">CARGO HOOK</text>
+  <text x="180" y="137" text-anchor="middle" font-size="8">ARM</text>
 </g>
 <!-- ROTOR RPM -->
 <g class="cw-light cw-rotor" onclick="showProc('rotor-rpm')">
-  <rect x="228" y="100" width="64" height="26"/>
-  <text x="260" y="117" text-anchor="middle" font-size="9">ROTOR RPM</text>
+  <rect x="228" y="114" width="64" height="26"/>
+  <text x="260" y="131" text-anchor="middle" font-size="9">ROTOR RPM</text>
 </g>
 <!-- HOIST 20 FT WARN -->
 <g class="cw-light cw-caut" onclick="showProc('hoist')">
-  <rect x="300" y="100" width="80" height="26"/>
-  <text x="340" y="113" text-anchor="middle" font-size="8">HOIST 20 FT</text>
-  <text x="340" y="123" text-anchor="middle" font-size="8">WARN</text>
+  <rect x="300" y="114" width="80" height="26"/>
+  <text x="340" y="127" text-anchor="middle" font-size="8">HOIST 20 FT</text>
+  <text x="340" y="137" text-anchor="middle" font-size="8">WARN</text>
 </g>
 
 <!-- ════════════════════════
-     ROW 3 — CARGO HOOK OPEN / FLOATS
+     ROW 3 — CARGO HOOK OPEN / FLOATS  y=144
 ════════════════════════ -->
 <!-- CARGO HOOK OPEN -->
 <g class="cw-light cw-caut" onclick="showProc('cargo-hook')">
-  <rect x="140" y="130" width="80" height="26"/>
-  <text x="180" y="143" text-anchor="middle" font-size="8">CARGO HOOK</text>
-  <text x="180" y="153" text-anchor="middle" font-size="8">OPEN</text>
+  <rect x="140" y="144" width="80" height="26"/>
+  <text x="180" y="157" text-anchor="middle" font-size="8">CARGO HOOK</text>
+  <text x="180" y="167" text-anchor="middle" font-size="8">OPEN</text>
 </g>
 <!-- FLOATS ARM -->
 <g class="cw-light cw-caut" onclick="showProc('floats')">
-  <rect x="300" y="130" width="80" height="26"/>
-  <text x="340" y="147" text-anchor="middle" font-size="9">FLOATS ARM</text>
+  <rect x="300" y="144" width="80" height="26"/>
+  <text x="340" y="161" text-anchor="middle" font-size="9">FLOATS ARM</text>
 </g>
 
 <!-- ════════════════════
-     ENG 1 SUB-PANEL (left side)  y=162
+     ENG SUB-PANEL — centered around x=260  y=176
+     Layout: [FP][AI][RESET BOX 94w][AI][FP]
+     Widths: 58+4+58+4+94+4+58+4+58 = 342  → left edge = 260-171 = 89
+     Right sub-panel mirrors left: OIL/ECU/BLOWER/VALVE right of center
 ════════════════════ -->
-<!-- FUEL PRESS L -->
+
+<!-- Row A: FUEL PRESS / ANTI-ICE / RESET / ANTI-ICE / FUEL PRESS -->
+<!-- FUEL PRESS L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-press')">
-  <rect x="10" y="162" width="58" height="28"/>
-  <text x="39" y="174" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="39" y="184" text-anchor="middle" font-size="8">PRESS</text>
+  <rect x="89" y="176" width="58" height="28"/>
+  <text x="118" y="188" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="118" y="198" text-anchor="middle" font-size="8">PRESS</text>
 </g>
-<!-- ANTI-ICE ON L -->
+<!-- ANTI-ICE L  x=151 -->
 <g class="cw-light cw-caut" onclick="showProc('anti-ice')">
-  <rect x="72" y="162" width="58" height="28"/>
-  <text x="101" y="174" text-anchor="middle" font-size="8">ANTI-ICE</text>
-  <text x="101" y="184" text-anchor="middle" font-size="8">ON</text>
+  <rect x="151" y="176" width="58" height="28"/>
+  <text x="180" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="180" y="198" text-anchor="middle" font-size="8">ON</text>
 </g>
-<!-- RESET/TEST panel center label -->
-<rect x="134" y="162" width="90" height="60" fill="#0d0d0d" stroke="#333" stroke-width="1" rx="2"/>
-<text x="179" y="177" text-anchor="middle" font-size="7" fill="#555">RESET</text>
-<text x="179" y="188" text-anchor="middle" font-size="7" fill="#555">TEST / PNL</text>
-<text x="179" y="199" text-anchor="middle" font-size="7" fill="#555">ENG  1  ENG</text>
-<text x="179" y="210" text-anchor="middle" font-size="7" fill="#555">BRT / DIM</text>
-
-<!-- ANTI-ICE ON R -->
+<!-- RESET/TEST center box  x=213  w=94 spans rows A-C -->
+<rect x="213" y="176" width="94" height="88" fill="#0d0d0d" stroke="#333" stroke-width="1" rx="2"/>
+<text x="260" y="196" text-anchor="middle" font-size="7" fill="#555">RESET</text>
+<text x="260" y="209" text-anchor="middle" font-size="7" fill="#555">TEST ◉ PNL</text>
+<text x="247" y="222" text-anchor="middle" font-size="6" fill="#555">ENG</text>
+<text x="273" y="222" text-anchor="middle" font-size="6" fill="#555">ENG</text>
+<text x="247" y="233" text-anchor="middle" font-size="6" fill="#555">1</text>
+<text x="273" y="233" text-anchor="middle" font-size="6" fill="#555">2</text>
+<text x="260" y="246" text-anchor="middle" font-size="6" fill="#555">BRT ◉ DIM</text>
+<!-- ANTI-ICE R  x=311 -->
 <g class="cw-light cw-caut" onclick="showProc('anti-ice')">
-  <rect x="228" y="162" width="58" height="28"/>
-  <text x="257" y="174" text-anchor="middle" font-size="8">ANTI-ICE</text>
-  <text x="257" y="184" text-anchor="middle" font-size="8">ON</text>
+  <rect x="311" y="176" width="58" height="28"/>
+  <text x="340" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="340" y="198" text-anchor="middle" font-size="8">ON</text>
 </g>
-<!-- FUEL PRESS R -->
+<!-- FUEL PRESS R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-press')">
-  <rect x="290" y="162" width="58" height="28"/>
-  <text x="319" y="174" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="319" y="184" text-anchor="middle" font-size="8">PRESS</text>
+  <rect x="373" y="176" width="58" height="28"/>
+  <text x="402" y="188" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="402" y="198" text-anchor="middle" font-size="8">PRESS</text>
 </g>
 
-<!-- ECU LOCKOUT L -->
+<!-- Row B: ECU LOCKOUT / OIL / [RESET BOX] / OIL / ECU LOCKOUT -->
+<!-- ECU LOCKOUT L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
-  <rect x="10" y="194" width="58" height="28"/>
-  <text x="39" y="206" text-anchor="middle" font-size="8">ECU</text>
-  <text x="39" y="216" text-anchor="middle" font-size="8">LOCKOUT</text>
+  <rect x="89" y="208" width="58" height="28"/>
+  <text x="118" y="220" text-anchor="middle" font-size="8">ECU</text>
+  <text x="118" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
 </g>
-<!-- OIL L -->
+<!-- OIL L  x=151 -->
 <g class="cw-light cw-caut" onclick="showProc('eng-oil')">
-  <rect x="72" y="194" width="58" height="28"/>
-  <text x="101" y="211" text-anchor="middle" font-size="9">OIL</text>
+  <rect x="151" y="208" width="58" height="28"/>
+  <text x="180" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
-<!-- OIL R -->
+<!-- OIL R  x=311 -->
 <g class="cw-light cw-caut" onclick="showProc('eng-oil')">
-  <rect x="228" y="194" width="58" height="28"/>
-  <text x="257" y="211" text-anchor="middle" font-size="9">OIL</text>
+  <rect x="311" y="208" width="58" height="28"/>
+  <text x="340" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
-<!-- ECU LOCKOUT R -->
+<!-- ECU LOCKOUT R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
-  <rect x="290" y="194" width="58" height="28"/>
-  <text x="319" y="206" text-anchor="middle" font-size="8">ECU</text>
-  <text x="319" y="216" text-anchor="middle" font-size="8">LOCKOUT</text>
+  <rect x="373" y="208" width="58" height="28"/>
+  <text x="402" y="220" text-anchor="middle" font-size="8">ECU</text>
+  <text x="402" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
 </g>
 
-<!-- FUEL VALVE L -->
+<!-- Row C: FUEL VALVE / BLOWER OFF / [RESET BOX] / BLOWER OFF / FUEL VALVE -->
+<!-- FUEL VALVE L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
-  <rect x="10" y="226" width="58" height="28"/>
-  <text x="39" y="238" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="39" y="248" text-anchor="middle" font-size="8">VALVE</text>
+  <rect x="89" y="240" width="58" height="28"/>
+  <text x="118" y="252" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="118" y="262" text-anchor="middle" font-size="8">VALVE</text>
 </g>
-<!-- BLOWER OFF L -->
+<!-- BLOWER OFF L  x=151 -->
 <g class="cw-light cw-caut" onclick="showProc('blower-off')">
-  <rect x="72" y="226" width="58" height="28"/>
-  <text x="101" y="238" text-anchor="middle" font-size="8">BLOWER</text>
-  <text x="101" y="248" text-anchor="middle" font-size="8">OFF</text>
+  <rect x="151" y="240" width="58" height="28"/>
+  <text x="180" y="252" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="180" y="262" text-anchor="middle" font-size="8">OFF</text>
 </g>
-<!-- BLOWER OFF R -->
+<!-- BLOWER OFF R  x=311 -->
 <g class="cw-light cw-caut" onclick="showProc('blower-off')">
-  <rect x="228" y="226" width="58" height="28"/>
-  <text x="257" y="238" text-anchor="middle" font-size="8">BLOWER</text>
-  <text x="257" y="248" text-anchor="middle" font-size="8">OFF</text>
+  <rect x="311" y="240" width="58" height="28"/>
+  <text x="340" y="252" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="340" y="262" text-anchor="middle" font-size="8">OFF</text>
 </g>
-<!-- FUEL VALVE R -->
+<!-- FUEL VALVE R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
-  <rect x="290" y="226" width="58" height="28"/>
-  <text x="319" y="238" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="319" y="248" text-anchor="middle" font-size="8">VALVE</text>
+  <rect x="373" y="240" width="58" height="28"/>
+  <text x="402" y="252" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="402" y="262" text-anchor="middle" font-size="8">VALVE</text>
 </g>
 
 <!-- divider line -->
-<line x1="10" y1="260" x2="510" y2="260" stroke="#333" stroke-width="1"/>
+<line x1="10" y1="274" x2="510" y2="274" stroke="#333" stroke-width="1"/>
 
 <!-- ════════════════════
      ROW — NO.1 FUEL TRANS  y=264
@@ -536,96 +595,127 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 </g>
 
 <!-- ════════════════════
-     AFCS ANNUNCIATORS  y=522
+     AFCS ANNUNCIATORS — centered around x=260
+     Total width: 44 + 4 + 44 + 4 + 44 + 4 + 24 + 4 + 24 + 4 + 52 + 4 + 52 + 4 + 52 + 4 + 52 = 420
+     Left edge: 260 - 210 = 50
+     Groups: [A/S3 44] [ELEV1/2 44] [PITCH/ROLL 44] [P/R 24+24] [4 green 52 each]
 ════════════════════ -->
+<!-- A/S 3  x=50 w=44 h=36 (double height) -->
 <g class="cw-light cw-annun" onclick="showProc('as3')">
-  <rect x="10" y="522" width="44" height="36"/>
-  <text x="32" y="538" text-anchor="middle" font-size="8">A/S 3</text>
+  <rect x="50" y="522" width="44" height="36"/>
+  <text x="72" y="535" text-anchor="middle" font-size="8">A/S</text>
+  <text x="72" y="548" text-anchor="middle" font-size="8">3</text>
 </g>
+<!-- ELEV 1  x=98 -->
 <g class="cw-light cw-annun" onclick="showProc('elev')">
-  <rect x="58" y="522" width="44" height="16"/>
-  <text x="80" y="533" text-anchor="middle" font-size="8">ELEV 1</text>
+  <rect x="98" y="522" width="44" height="16"/>
+  <text x="120" y="533" text-anchor="middle" font-size="8">ELEV 1</text>
 </g>
+<!-- ELEV 2  x=98 y=542 -->
 <g class="cw-light cw-annun" onclick="showProc('elev')">
-  <rect x="58" y="542" width="44" height="16"/>
-  <text x="80" y="553" text-anchor="middle" font-size="8">ELEV 2</text>
+  <rect x="98" y="542" width="44" height="16"/>
+  <text x="120" y="553" text-anchor="middle" font-size="8">ELEV 2</text>
 </g>
+<!-- PITCH  x=146 -->
 <g class="cw-light cw-annun" onclick="showProc('afcs')">
-  <rect x="106" y="522" width="44" height="16"/>
-  <text x="128" y="533" text-anchor="middle" font-size="8">PITCH</text>
+  <rect x="146" y="522" width="44" height="16"/>
+  <text x="168" y="533" text-anchor="middle" font-size="8">PITCH</text>
 </g>
+<!-- ROLL  x=146 y=542 -->
 <g class="cw-light cw-annun" onclick="showProc('afcs')">
-  <rect x="106" y="542" width="44" height="16"/>
-  <text x="128" y="553" text-anchor="middle" font-size="8">ROLL</text>
+  <rect x="146" y="542" width="44" height="16"/>
+  <text x="168" y="553" text-anchor="middle" font-size="8">ROLL</text>
 </g>
+<!-- P  x=194 -->
 <g class="cw-light cw-annun" onclick="showProc('afcs')">
-  <rect x="154" y="522" width="22" height="16"/>
-  <text x="165" y="533" text-anchor="middle" font-size="7">P</text>
+  <rect x="194" y="522" width="24" height="16"/>
+  <text x="206" y="533" text-anchor="middle" font-size="7">P</text>
 </g>
+<!-- R  x=222 -->
 <g class="cw-light cw-annun" onclick="showProc('afcs')">
-  <rect x="178" y="522" width="22" height="16"/>
-  <text x="189" y="533" text-anchor="middle" font-size="7">R</text>
+  <rect x="222" y="522" width="24" height="16"/>
+  <text x="234" y="533" text-anchor="middle" font-size="7">R</text>
 </g>
+<!-- Y  x=194 y=542 -->
 <g class="cw-light cw-annun" onclick="showProc('afcs')">
-  <rect x="154" y="542" width="46" height="16"/>
-  <text x="177" y="553" text-anchor="middle" font-size="7">Y</text>
+  <rect x="194" y="542" width="52" height="16"/>
+  <text x="220" y="553" text-anchor="middle" font-size="7">Y</text>
 </g>
-<!-- ALT HLD / HDG SEL / AARS / SCAS -->
+<!-- ALT HLD  x=250 -->
 <g class="cw-light cw-green" onclick="showProc('afcs')">
-  <rect x="212" y="522" width="48" height="36"/>
-  <text x="236" y="536" text-anchor="middle" font-size="7">ALT HLD</text>
-  <text x="236" y="548" text-anchor="middle" font-size="7">ENGA</text>
+  <rect x="250" y="522" width="52" height="36"/>
+  <text x="276" y="536" text-anchor="middle" font-size="7">ALT HLD</text>
+  <text x="276" y="549" text-anchor="middle" font-size="7">ENGA</text>
 </g>
+<!-- HDG SEL  x=306 -->
 <g class="cw-light cw-green" onclick="showProc('afcs')">
-  <rect x="264" y="522" width="48" height="36"/>
-  <text x="288" y="536" text-anchor="middle" font-size="7">HDG SEL</text>
-  <text x="288" y="548" text-anchor="middle" font-size="7">ENGA</text>
+  <rect x="306" y="522" width="52" height="36"/>
+  <text x="332" y="536" text-anchor="middle" font-size="7">HDG SEL</text>
+  <text x="332" y="549" text-anchor="middle" font-size="7">ENGA</text>
 </g>
+<!-- AARS  x=362 -->
 <g class="cw-light cw-green" onclick="showProc('afcs')">
-  <rect x="316" y="522" width="48" height="36"/>
-  <text x="340" y="536" text-anchor="middle" font-size="7">AARS</text>
-  <text x="340" y="548" text-anchor="middle" font-size="7">ENGA</text>
+  <rect x="362" y="522" width="52" height="36"/>
+  <text x="388" y="536" text-anchor="middle" font-size="7">AARS</text>
+  <text x="388" y="549" text-anchor="middle" font-size="7">ENGA</text>
 </g>
+<!-- SCAS  x=418 -->
 <g class="cw-light cw-green" onclick="showProc('afcs')">
-  <rect x="368" y="522" width="48" height="36"/>
-  <text x="392" y="536" text-anchor="middle" font-size="7">SCAS</text>
-  <text x="392" y="548" text-anchor="middle" font-size="7">ENGA</text>
+  <rect x="418" y="522" width="52" height="36"/>
+  <text x="444" y="536" text-anchor="middle" font-size="7">SCAS</text>
+  <text x="444" y="549" text-anchor="middle" font-size="7">ENGA</text>
 </g>
 
 <!-- ════════════════════
-     CHIP INDICATOR PANEL  y=568
+     CHIP INDICATOR PANEL  y=568  — fixed overlap, centered
+     Layout: [MAIN XMSN 64][T/R DRIVE 64] | CHIP INDICATOR circles | [CB1 34][CB2 34] / [CB SUMP 72]
+     MAIN XMSN at x=90 h=22, T/R DRIVE at x=90 y=614 h=22 — stacked with 2px gap
 ════════════════════ -->
-<rect x="80" y="568" width="360" height="60" fill="#0d0d0d" stroke="#555" stroke-width="1" rx="3"/>
-<text x="260" y="580" text-anchor="middle" font-size="8" fill="#888">ANNUNCIATOR INDEX</text>
+<rect x="60" y="566" width="400" height="72" fill="#0d0d0d" stroke="#555" stroke-width="1" rx="3"/>
+<text x="260" y="578" text-anchor="middle" font-size="8" fill="#888">ANNUNCIATOR INDEX</text>
 
+<!-- MAIN XMSN — top slot -->
 <g class="cw-light cw-caut" onclick="showProc('xmsn-chip')">
-  <rect x="90" y="583" width="64" height="28"/>
-  <text x="122" y="595" text-anchor="middle" font-size="8">MAIN</text>
-  <text x="122" y="605" text-anchor="middle" font-size="8">XMSN</text>
+  <rect x="70" y="581" width="70" height="22"/>
+  <text x="105" y="590" text-anchor="middle" font-size="7">MAIN</text>
+  <text x="105" y="600" text-anchor="middle" font-size="7">XMSN</text>
 </g>
+<!-- T/R DRIVE — bottom slot, no overlap -->
 <g class="cw-light cw-caut" onclick="showProc('tr-drive')">
-  <rect x="90" y="595" width="64" height="28"/>
-  <text x="122" y="607" text-anchor="middle" font-size="8">T/R</text>
-  <text x="122" y="617" text-anchor="middle" font-size="8">DRIVE</text>
+  <rect x="70" y="607" width="70" height="22"/>
+  <text x="105" y="616" text-anchor="middle" font-size="7">T/R</text>
+  <text x="105" y="626" text-anchor="middle" font-size="7">DRIVE</text>
 </g>
 
-<!-- CHIP INDICATOR label -->
-<text x="230" y="592" text-anchor="middle" font-size="8" fill="#666">CHIP INDICATOR</text>
-<circle cx="220" cy="602" r="8" fill="none" stroke="#555" stroke-width="1"/>
-<circle cx="240" cy="602" r="8" fill="none" stroke="#555" stroke-width="1"/>
-<text x="230" y="616" text-anchor="middle" font-size="7" fill="#555">PUSH TO CLEAR</text>
+<!-- CHIP INDICATOR circles (center) -->
+<text x="260" y="590" text-anchor="middle" font-size="7" fill="#666">CHIP INDICATOR</text>
+<circle cx="247" cy="604" r="9" fill="none" stroke="#555" stroke-width="1"/>
+<circle cx="271" cy="604" r="9" fill="none" stroke="#555" stroke-width="1"/>
+<text x="259" y="622" text-anchor="middle" font-size="6" fill="#555">PUSH TO CLEAR</text>
 
+<!-- CB 1  right side top -->
 <g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
-  <rect x="318" y="583" width="34" height="14"/>
-  <text x="335" y="593" text-anchor="middle" font-size="7">CB 1</text>
+  <rect x="354" y="581" width="46" height="22"/>
+  <text x="377" y="595" text-anchor="middle" font-size="8">CB 1</text>
 </g>
+<!-- CB 2  right side top -->
 <g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
-  <rect x="356" y="583" width="34" height="14"/>
-  <text x="373" y="593" text-anchor="middle" font-size="7">CB 2</text>
+  <rect x="404" y="581" width="46" height="22"/>
+  <text x="427" y="595" text-anchor="middle" font-size="8">CB 2</text>
 </g>
+<!-- CB SUMP  right side bottom spanning both -->
 <g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
-  <rect x="318" y="601" width="72" height="14"/>
-  <text x="354" y="611" text-anchor="middle" font-size="7">CB SUMP</text>
+  <rect x="354" y="607" width="96" height="22"/>
+  <text x="402" y="621" text-anchor="middle" font-size="8">CB SUMP</text>
+</g>
+
+<!-- ════════════════════
+     UPDATE BUTTON — styled as blue CW light
+════════════════════ -->
+<g class="cw-light" onclick="forceUpdate()" style="cursor:pointer;">
+  <rect x="178" y="648" width="164" height="36" fill="#0a1a3a" stroke="#3399ff" stroke-width="2" rx="4"/>
+  <text x="260" y="661" text-anchor="middle" font-size="8" fill="#66aaff" font-weight="bold">⟳ FORCE UPDATE</text>
+  <text x="260" y="675" text-anchor="middle" font-size="7" fill="#3399ff" id="upd-status-svg">TAP TO CHECK FOR UPDATES</text>
 </g>
 
 </svg>
@@ -650,12 +740,12 @@ function showProc(id) {
   if (!content) content = '<p class="proc-dev">Content under development for: ' + id + '</p>';
   document.getElementById('proc-scroll').innerHTML = content;
   document.getElementById('proc-hdr-title').textContent = PROC_TITLES[id] || id.toUpperCase();
-  document.getElementById('home').classList.remove('active');
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('proc-page').classList.add('active');
   document.getElementById('proc-scroll').scrollTop = 0;
 }
 function goHome() {
-  document.getElementById('proc-page').classList.remove('active');
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('home').classList.add('active');
 }
 
@@ -1393,13 +1483,77 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 
 </script>
 
-<!-- SW registration -->
+<!-- ── Service Worker + Update Logic ── -->
 <script>
+var _swReg = null;
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function selectAircraft(ac) {
+  if (ac === '214st') {
+    showPage('home');
+  }
+  // future: ac === '214b' → showPage('home-214b')
+}
+
+function setUpdStatus(msg) {
+  var el1 = document.getElementById('upd-status');
+  if (el1) el1.textContent = msg;
+  var el2 = document.getElementById('upd-status-svg');
+  if (el2) el2.textContent = msg;
+}
+
+function forceUpdate() {
+  setUpdStatus('CLEARING CACHE…');
+  if (_swReg && navigator.serviceWorker.controller) {
+    // Listen for DONE message from SW
+    navigator.serviceWorker.addEventListener('message', function handler(e) {
+      if (e.data && e.data.type === 'FORCE_UPDATE_DONE') {
+        navigator.serviceWorker.removeEventListener('message', handler);
+        setUpdStatus('UPDATED — RELOADING…');
+        setTimeout(function(){ window.location.reload(true); }, 800);
+      }
+    });
+    navigator.serviceWorker.controller.postMessage({ type: 'FORCE_UPDATE' });
+  } else {
+    // No SW controller yet — just hard reload
+    setUpdStatus('RELOADING…');
+    setTimeout(function(){ window.location.reload(true); }, 400);
+  }
+}
+
+// Register SW
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./sw.js', {scope: './'})
-      .then(function(r){ console.log('[SW] registered'); })
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(function(reg) {
+        _swReg = reg;
+        console.log('[SW] registered');
+        // Check for a waiting SW (update available)
+        if (reg.waiting) {
+          setUpdStatus('UPDATE AVAILABLE — TAP TO INSTALL');
+        }
+        reg.addEventListener('updatefound', function() {
+          var newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function() {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              setUpdStatus('UPDATE READY — TAP TO INSTALL');
+            }
+          });
+        });
+      })
       .catch(function(e){ console.warn('[SW] failed', e); });
+
+    // Listen for SW-initiated reload
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'FORCE_UPDATE_DONE') {
+        setUpdStatus('UPDATED — RELOADING…');
+        setTimeout(function(){ window.location.reload(true); }, 800);
+      }
+    });
   });
 }
 </script>
