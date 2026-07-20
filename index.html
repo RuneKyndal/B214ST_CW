@@ -113,18 +113,15 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 ════════════════════════════════════════════ -->
 <div id="landing" class="page active">
   <div class="land-title">Aircraft C/W Panel<br>Quick Reference</div>
-  <div class="land-ver">v1.1 · Doc No: MA3424-NORM · Dec 2018</div>
+  <div class="land-ver">v1.1</div>
 
   <div class="land-label">Select Aircraft</div>
 
   <!-- Bell 214ST -->
   <button class="ac-btn" onclick="selectAircraft('214st')">Bell 214ST</button>
 
-  <!-- Bell 214B placeholder -->
-  <button class="ac-btn placeholder" disabled>
-    Bell 214B
-    <span>C/W panel content under development</span>
-  </button>
+  <!-- Bell 214B -->
+  <button class="ac-btn" onclick="selectAircraft('214b')">Bell 214B</button>
 
   <!-- Disclaimer -->
   <div class="disclaimer">
@@ -701,18 +698,20 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 
 <script>
 // ── Navigation ──────────────────────────────
+function goHome() {
+  var from = document.getElementById('proc-page').dataset.from || 'home';
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(from).classList.add('active');
+}
 function showProc(id) {
   var content = PROCS[id];
   if (!content) content = '<p class="proc-dev">Content under development for: ' + id + '</p>';
   document.getElementById('proc-scroll').innerHTML = content;
   document.getElementById('proc-hdr-title').textContent = PROC_TITLES[id] || id.toUpperCase();
+  document.getElementById('proc-page').dataset.from = 'home';
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('proc-page').classList.add('active');
   document.getElementById('proc-scroll').scrollTop = 0;
-}
-function goHome() {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  document.getElementById('home').classList.add('active');
 }
 
 // ── Procedure titles ────────────────────────
@@ -1468,82 +1467,153 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
        Amber unlit = CAUTION (amber border, dark fill)
        Dark unlit = CAUTION dimmed
 -->
-<svg id="cwp-svg-b" viewBox="0 0 520 330" xmlns="http://www.w3.org/2000/svg">
-<rect x="0" y="0" width="520" height="330" fill="#0a0a0a" rx="6"/>
-<rect x="4" y="4" width="512" height="322" fill="#141414" rx="5" stroke="#333" stroke-width="1"/>
+<svg id="cwp-svg-b" viewBox="0 0 520 560" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="520" height="560" fill="#0a0a0a" rx="6"/>
+<rect x="4" y="4" width="512" height="552" fill="#141414" rx="5" stroke="#333" stroke-width="1"/>
 
-<!-- ROW 1 -->
-<g class="cw-light cw-caut" onclick="b214b('door-lock')"><rect x="10" y="10" width="118" height="28"/><text x="69" y="28" text-anchor="middle" font-size="8">DOOR LOCK</text></g>
-<g class="cw-light cw-caut" onclick="b214b('ext-power')"><rect x="132" y="10" width="118" height="28"/><text x="191" y="28" text-anchor="middle" font-size="8">EXT POWER</text></g>
-<g class="cw-light cw-warn" onclick="b214b('eng-oil-press')"><rect x="254" y="10" width="118" height="28"/><text x="313" y="22" text-anchor="middle" font-size="8">ENG</text><text x="313" y="32" text-anchor="middle" font-size="8">OIL PRESS</text></g>
-<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="376" y="10" width="118" height="28"/><text x="435" y="28" text-anchor="middle" font-size="8">SPARE</text></g>
+<!-- ═══ DECORATIVE BEZEL OUTLINE (matches photo) ═══ -->
+<!-- Outer bezel plate -->
+<rect x="8" y="52" width="504" height="420" fill="#1a1a18" stroke="#2a2a28" stroke-width="2" rx="4"/>
+<!-- Inner inset highlight -->
+<rect x="14" y="58" width="492" height="408" fill="none" stroke="#111110" stroke-width="2" rx="3"/>
+<!-- Inner inset light edge -->
+<rect x="15" y="59" width="490" height="406" fill="none" stroke="#3a3a38" stroke-width="1" rx="3"/>
+<!-- Corner screws -->
+<g fill="#222220" stroke="#444442" stroke-width="1">
+  <circle cx="22" cy="66" r="6"/><line x1="18" y1="66" x2="26" y2="66" stroke="#555" stroke-width="1"/><line x1="22" y1="62" x2="22" y2="70" stroke="#555" stroke-width="1"/>
+  <circle cx="498" cy="66" r="6"/><line x1="494" y1="66" x2="502" y2="66" stroke="#555" stroke-width="1"/><line x1="498" y1="62" x2="498" y2="70" stroke="#555" stroke-width="1"/>
+  <circle cx="22" cy="462" r="6"/><line x1="18" y1="462" x2="26" y2="462" stroke="#555" stroke-width="1"/><line x1="22" y1="458" x2="22" y2="466" stroke="#555" stroke-width="1"/>
+  <circle cx="498" cy="462" r="6"/><line x1="494" y1="462" x2="502" y2="462" stroke="#555" stroke-width="1"/><line x1="498" y1="458" x2="498" y2="466" stroke="#555" stroke-width="1"/>
+</g>
 
-<!-- ROW 2 -->
-<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="10" y="42" width="118" height="28"/><text x="69" y="60" text-anchor="middle" font-size="8">SPARE</text></g>
-<g class="cw-light cw-caut" onclick="b214b('dc-gen')"><rect x="132" y="42" width="118" height="28"/><text x="191" y="54" text-anchor="middle" font-size="8">DC</text><text x="191" y="64" text-anchor="middle" font-size="8">GENERATOR</text></g>
-<g class="cw-light cw-caut" onclick="b214b('eng-chip-det')"><rect x="254" y="42" width="118" height="28"/><text x="313" y="54" text-anchor="middle" font-size="8">ENG</text><text x="313" y="64" text-anchor="middle" font-size="8">CHIP DET</text></g>
-<g class="cw-light cw-caut" onclick="b214b('eng-anti-ice')"><rect x="376" y="42" width="118" height="28"/><text x="435" y="54" text-anchor="middle" font-size="8">ENG</text><text x="435" y="64" text-anchor="middle" font-size="8">ANTI-ICE ON</text></g>
+<!-- ═══ WARNING LIGHTS ROW — evenly spaced across full width ═══ -->
+<!-- 3 lights: each w=130, gaps = (520-3*130)/4 = 32.5 → x = 32, 196, 358 -->
+<g class="cw-light cw-warn" onclick="b214b('rpm')">
+  <rect x="32" y="10" width="130" height="34"/>
+  <text x="97" y="32" text-anchor="middle" font-size="12" font-weight="bold">RPM</text>
+</g>
+<g class="cw-light cw-fire" onclick="b214b('fire')">
+  <rect x="196" y="10" width="130" height="34"/>
+  <text x="261" y="32" text-anchor="middle" font-size="12" font-weight="bold">FIRE</text>
+</g>
+<g class="cw-light cw-warn" onclick="b214b('eng-out')">
+  <rect x="360" y="10" width="130" height="34"/>
+  <text x="425" y="32" text-anchor="middle" font-size="12" font-weight="bold">ENG OUT</text>
+</g>
 
-<!-- ROW 3 -->
-<g class="cw-light cw-caut" onclick="b214b('main-inverter')"><rect x="10" y="74" width="118" height="28"/><text x="69" y="86" text-anchor="middle" font-size="8">MAIN</text><text x="69" y="96" text-anchor="middle" font-size="8">INVERTER</text></g>
-<g class="cw-light cw-caut" onclick="b214b('stby-inverter')"><rect x="132" y="74" width="118" height="28"/><text x="191" y="86" text-anchor="middle" font-size="8">STBY</text><text x="191" y="96" text-anchor="middle" font-size="8">INVERTER</text></g>
-<g class="cw-light cw-caut" onclick="b214b('gov-manual')"><rect x="254" y="74" width="118" height="28"/><text x="313" y="92" text-anchor="middle" font-size="8">GOV MANUAL</text></g>
-<g class="cw-light cw-caut" onclick="b214b('fuel-filter')"><rect x="376" y="74" width="118" height="28"/><text x="435" y="92" text-anchor="middle" font-size="8">FUEL FILTER</text></g>
+<!-- ═══ MAIN LIGHT GRID — 4 cols × 10 rows inside bezel ═══ -->
+<!-- Col x: 20,144,268,392  w=118  row h=30  gap=10  first row y=66 -->
 
-<!-- ROW 4 -->
-<g class="cw-light cw-caut" onclick="b214b('batt-temp')"><rect x="10" y="106" width="118" height="28"/><text x="69" y="118" text-anchor="middle" font-size="8">BATTERY 1</text><text x="69" y="128" text-anchor="middle" font-size="8">TEMP</text></g>
-<g class="cw-light cw-warn" onclick="b214b('batt-hot')"><rect x="132" y="106" width="118" height="28"/><text x="191" y="118" text-anchor="middle" font-size="8">BATTERY 1</text><text x="191" y="128" text-anchor="middle" font-size="8">HOT</text></g>
-<g class="cw-light cw-caut" onclick="b214b('batt-temp')"><rect x="254" y="106" width="118" height="28"/><text x="313" y="118" text-anchor="middle" font-size="8">BATTERY 2</text><text x="313" y="128" text-anchor="middle" font-size="8">TEMP</text></g>
-<g class="cw-light cw-warn" onclick="b214b('batt-hot')"><rect x="376" y="106" width="118" height="28"/><text x="435" y="118" text-anchor="middle" font-size="8">BATTERY 2</text><text x="435" y="128" text-anchor="middle" font-size="8">HOT</text></g>
+<!-- ROW 1  y=66 -->
+<g class="cw-light cw-caut" onclick="b214b('door-lock')"><rect x="20" y="66" width="118" height="28"/><text x="79" y="84" text-anchor="middle" font-size="8">DOOR LOCK</text></g>
+<g class="cw-light cw-caut" onclick="b214b('ext-power')"><rect x="142" y="66" width="118" height="28"/><text x="201" y="84" text-anchor="middle" font-size="8">EXT POWER</text></g>
+<g class="cw-light cw-warn" onclick="b214b('eng-oil-press')"><rect x="264" y="66" width="118" height="28"/><text x="323" y="75" text-anchor="middle" font-size="8">ENG</text><text x="323" y="88" text-anchor="middle" font-size="8">OIL PRESS</text></g>
+<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="386" y="66" width="118" height="28"/><text x="445" y="84" text-anchor="middle" font-size="8">SPARE</text></g>
 
-<!-- ROW 5 -->
-<g class="cw-light cw-caut" onclick="b214b('xmsn-chip')"><rect x="10" y="138" width="118" height="28"/><text x="69" y="150" text-anchor="middle" font-size="8">XMSN</text><text x="69" y="160" text-anchor="middle" font-size="8">CHIP DET</text></g>
-<g class="cw-light cw-caut" onclick="b214b('chip-42')"><rect x="132" y="138" width="118" height="28"/><text x="191" y="150" text-anchor="middle" font-size="8">CHIP</text><text x="191" y="160" text-anchor="middle" font-size="8">42° BOX</text></g>
-<g class="cw-light cw-caut" onclick="b214b('chip-90')"><rect x="254" y="138" width="118" height="28"/><text x="313" y="150" text-anchor="middle" font-size="8">CHIP</text><text x="313" y="160" text-anchor="middle" font-size="8">90° BOX</text></g>
-<g class="cw-light cw-caut" onclick="b214b('chip-grbx')"><rect x="376" y="138" width="118" height="28"/><text x="435" y="152" text-anchor="middle" font-size="8">CHIP GRBX</text></g>
+<!-- ROW 2  y=98 -->
+<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="20" y="98" width="118" height="28"/><text x="79" y="116" text-anchor="middle" font-size="8">SPARE</text></g>
+<g class="cw-light cw-caut" onclick="b214b('dc-gen')"><rect x="142" y="98" width="118" height="28"/><text x="201" y="107" text-anchor="middle" font-size="8">DC</text><text x="201" y="120" text-anchor="middle" font-size="8">GENERATOR</text></g>
+<g class="cw-light cw-caut" onclick="b214b('eng-chip-det')"><rect x="264" y="98" width="118" height="28"/><text x="323" y="107" text-anchor="middle" font-size="8">ENG</text><text x="323" y="120" text-anchor="middle" font-size="8">CHIP DET</text></g>
+<g class="cw-light cw-caut" onclick="b214b('eng-anti-ice')"><rect x="386" y="98" width="118" height="28"/><text x="445" y="107" text-anchor="middle" font-size="8">ENG</text><text x="445" y="120" text-anchor="middle" font-size="8">ANTI-ICE ON</text></g>
 
-<!-- ROW 6 -->
-<g class="cw-light cw-warn" onclick="b214b('xmsn-oil-press')"><rect x="10" y="170" width="118" height="28"/><text x="69" y="182" text-anchor="middle" font-size="8">XMSN</text><text x="69" y="192" text-anchor="middle" font-size="8">OIL PRESS</text></g>
-<g class="cw-light cw-warn" onclick="b214b('press-42')"><rect x="132" y="170" width="118" height="28"/><text x="191" y="182" text-anchor="middle" font-size="8">PRESS</text><text x="191" y="192" text-anchor="middle" font-size="8">42° BOX</text></g>
-<g class="cw-light cw-warn" onclick="b214b('press-90')"><rect x="254" y="170" width="118" height="28"/><text x="313" y="182" text-anchor="middle" font-size="8">PRESS</text><text x="313" y="192" text-anchor="middle" font-size="8">90° BOX</text></g>
-<g class="cw-light cw-warn" onclick="b214b('grbx-oil-press')"><rect x="376" y="170" width="118" height="28"/><text x="435" y="182" text-anchor="middle" font-size="8">GRBX</text><text x="435" y="192" text-anchor="middle" font-size="8">OIL PRESS</text></g>
+<!-- ROW 3  y=130 -->
+<g class="cw-light cw-caut" onclick="b214b('main-inverter')"><rect x="20" y="130" width="118" height="28"/><text x="79" y="139" text-anchor="middle" font-size="8">MAIN</text><text x="79" y="152" text-anchor="middle" font-size="8">INVERTER</text></g>
+<g class="cw-light cw-caut" onclick="b214b('stby-inverter')"><rect x="142" y="130" width="118" height="28"/><text x="201" y="139" text-anchor="middle" font-size="8">STBY</text><text x="201" y="152" text-anchor="middle" font-size="8">INVERTER</text></g>
+<g class="cw-light cw-caut" onclick="b214b('gov-manual')"><rect x="264" y="130" width="118" height="28"/><text x="323" y="148" text-anchor="middle" font-size="8">GOV MANUAL</text></g>
+<g class="cw-light cw-caut" onclick="b214b('fuel-filter')"><rect x="386" y="130" width="118" height="28"/><text x="445" y="148" text-anchor="middle" font-size="8">FUEL FILTER</text></g>
 
-<!-- ROW 7 -->
-<g class="cw-light cw-warn" onclick="b214b('xmsn-oil-temp')"><rect x="10" y="202" width="118" height="28"/><text x="69" y="214" text-anchor="middle" font-size="8">XMSN</text><text x="69" y="224" text-anchor="middle" font-size="8">OIL TEMP</text></g>
-<g class="cw-light cw-caut" onclick="b214b('temp-42')"><rect x="132" y="202" width="118" height="28"/><text x="191" y="214" text-anchor="middle" font-size="8">TEMP</text><text x="191" y="224" text-anchor="middle" font-size="8">42° BOX</text></g>
-<g class="cw-light cw-caut" onclick="b214b('temp-90')"><rect x="254" y="202" width="118" height="28"/><text x="313" y="214" text-anchor="middle" font-size="8">TEMP</text><text x="313" y="224" text-anchor="middle" font-size="8">90° BOX</text></g>
-<g class="cw-light cw-warn" onclick="b214b('grbx-oil-temp')"><rect x="376" y="202" width="118" height="28"/><text x="435" y="214" text-anchor="middle" font-size="8">GRBX</text><text x="435" y="224" text-anchor="middle" font-size="8">OIL TEMP</text></g>
+<!-- ROW 4  y=162 -->
+<g class="cw-light cw-caut" onclick="b214b('batt-temp')"><rect x="20" y="162" width="118" height="28"/><text x="79" y="171" text-anchor="middle" font-size="8">BATTERY 1</text><text x="79" y="184" text-anchor="middle" font-size="8">TEMP</text></g>
+<g class="cw-light cw-warn" onclick="b214b('batt-hot')"><rect x="142" y="162" width="118" height="28"/><text x="201" y="171" text-anchor="middle" font-size="8">BATTERY 1</text><text x="201" y="184" text-anchor="middle" font-size="8">HOT</text></g>
+<g class="cw-light cw-caut" onclick="b214b('batt-temp')"><rect x="264" y="162" width="118" height="28"/><text x="323" y="171" text-anchor="middle" font-size="8">BATTERY 2</text><text x="323" y="184" text-anchor="middle" font-size="8">TEMP</text></g>
+<g class="cw-light cw-warn" onclick="b214b('batt-hot')"><rect x="386" y="162" width="118" height="28"/><text x="445" y="171" text-anchor="middle" font-size="8">BATTERY 2</text><text x="445" y="184" text-anchor="middle" font-size="8">HOT</text></g>
 
-<!-- ROW 8 -->
-<g class="cw-light cw-warn" onclick="b214b('rotor-brake')"><rect x="10" y="234" width="118" height="28"/><text x="69" y="246" text-anchor="middle" font-size="8">ROTOR</text><text x="69" y="256" text-anchor="middle" font-size="8">BRAKE</text></g>
-<g class="cw-light cw-caut" onclick="b214b('fuel-boost-l')"><rect x="132" y="234" width="118" height="28"/><text x="191" y="246" text-anchor="middle" font-size="8">LEFT FUEL</text><text x="191" y="256" text-anchor="middle" font-size="8">BOOST</text></g>
-<g class="cw-light cw-caut" onclick="b214b('fuel-low')"><rect x="254" y="234" width="118" height="28"/><text x="313" y="252" text-anchor="middle" font-size="8">FUEL LOW</text></g>
-<g class="cw-light cw-caut" onclick="b214b('fuel-boost-r')"><rect x="376" y="234" width="118" height="28"/><text x="435" y="246" text-anchor="middle" font-size="8">RIGHT FUEL</text><text x="435" y="256" text-anchor="middle" font-size="8">BOOST</text></g>
+<!-- ROW 5  y=194 -->
+<g class="cw-light cw-caut" onclick="b214b('xmsn-chip')"><rect x="20" y="194" width="118" height="28"/><text x="79" y="203" text-anchor="middle" font-size="8">XMSN</text><text x="79" y="216" text-anchor="middle" font-size="8">CHIP DET</text></g>
+<g class="cw-light cw-caut" onclick="b214b('chip-42')"><rect x="142" y="194" width="118" height="28"/><text x="201" y="203" text-anchor="middle" font-size="8">CHIP</text><text x="201" y="216" text-anchor="middle" font-size="8">42° BOX</text></g>
+<g class="cw-light cw-caut" onclick="b214b('chip-90')"><rect x="264" y="194" width="118" height="28"/><text x="323" y="203" text-anchor="middle" font-size="8">CHIP</text><text x="323" y="216" text-anchor="middle" font-size="8">90° BOX</text></g>
+<g class="cw-light cw-caut" onclick="b214b('chip-grbx')"><rect x="386" y="194" width="118" height="28"/><text x="445" y="210" text-anchor="middle" font-size="8">CHIP GRBX</text></g>
 
-<!-- ROW 9 -->
-<g class="cw-light cw-warn" onclick="b214b('rotor-brake')"><rect x="10" y="266" width="118" height="28"/><text x="69" y="278" text-anchor="middle" font-size="8">ROTOR</text><text x="69" y="288" text-anchor="middle" font-size="8">BRAKE</text></g>
-<g class="cw-light cw-warn" onclick="b214b('hydr-sys1')"><rect x="132" y="266" width="118" height="28"/><text x="191" y="284" text-anchor="middle" font-size="8">HYDR SYS 1</text></g>
-<g class="cw-light cw-caut" onclick="b214b('eng-duct-ovht')"><rect x="254" y="266" width="118" height="28"/><text x="313" y="278" text-anchor="middle" font-size="8">ENG</text><text x="313" y="288" text-anchor="middle" font-size="8">DUCT OVHT</text></g>
-<g class="cw-light cw-caut" onclick="b214b('hydr-sys2')"><rect x="376" y="266" width="118" height="28"/><text x="435" y="284" text-anchor="middle" font-size="8">HYDR SYS 2</text></g>
+<!-- ROW 6  y=226 -->
+<g class="cw-light cw-warn" onclick="b214b('xmsn-oil-press')"><rect x="20" y="226" width="118" height="28"/><text x="79" y="235" text-anchor="middle" font-size="8">XMSN</text><text x="79" y="248" text-anchor="middle" font-size="8">OIL PRESS</text></g>
+<g class="cw-light cw-warn" onclick="b214b('press-42')"><rect x="142" y="226" width="118" height="28"/><text x="201" y="235" text-anchor="middle" font-size="8">PRESS</text><text x="201" y="248" text-anchor="middle" font-size="8">42° BOX</text></g>
+<g class="cw-light cw-warn" onclick="b214b('press-90')"><rect x="264" y="226" width="118" height="28"/><text x="323" y="235" text-anchor="middle" font-size="8">PRESS</text><text x="323" y="248" text-anchor="middle" font-size="8">90° BOX</text></g>
+<g class="cw-light cw-warn" onclick="b214b('grbx-oil-press')"><rect x="386" y="226" width="118" height="28"/><text x="445" y="235" text-anchor="middle" font-size="8">GRBX</text><text x="445" y="248" text-anchor="middle" font-size="8">OIL PRESS</text></g>
 
-<!-- ROW 10 -->
-<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="10" y="298" width="118" height="28"/><text x="69" y="316" text-anchor="middle" font-size="8">SPARE</text></g>
-<g class="cw-light cw-warn" onclick="b214b('eng-ovspd')"><rect x="132" y="298" width="118" height="28"/><text x="191" y="310" text-anchor="middle" font-size="8">ENG</text><text x="191" y="320" text-anchor="middle" font-size="8">OVSPD TRIP</text></g>
-<g class="cw-light cw-caut" onclick="b214b('htr-air-lines')"><rect x="254" y="298" width="118" height="28"/><text x="313" y="310" text-anchor="middle" font-size="8">HTR</text><text x="313" y="320" text-anchor="middle" font-size="8">AIR LINES</text></g>
-<g class="cw-light cw-caut" onclick="b214b('eng-grbx-filter')"><rect x="376" y="298" width="118" height="28"/><text x="435" y="310" text-anchor="middle" font-size="8">ENG</text><text x="435" y="320" text-anchor="middle" font-size="8">GRBX FILTER</text></g>
+<!-- ROW 7  y=258 -->
+<g class="cw-light cw-warn" onclick="b214b('xmsn-oil-temp')"><rect x="20" y="258" width="118" height="28"/><text x="79" y="267" text-anchor="middle" font-size="8">XMSN</text><text x="79" y="280" text-anchor="middle" font-size="8">OIL TEMP</text></g>
+<g class="cw-light cw-caut" onclick="b214b('temp-42')"><rect x="142" y="258" width="118" height="28"/><text x="201" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="201" y="280" text-anchor="middle" font-size="8">42° BOX</text></g>
+<g class="cw-light cw-caut" onclick="b214b('temp-90')"><rect x="264" y="258" width="118" height="28"/><text x="323" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="323" y="280" text-anchor="middle" font-size="8">90° BOX</text></g>
+<g class="cw-light cw-warn" onclick="b214b('grbx-oil-temp')"><rect x="386" y="258" width="118" height="28"/><text x="445" y="267" text-anchor="middle" font-size="8">GRBX</text><text x="445" y="280" text-anchor="middle" font-size="8">OIL TEMP</text></g>
 
-<!-- WARNING LIGHTS (separate panel - smaller row below) -->
-<rect x="60" y="8" width="400" height="0" fill="none"/>
+<!-- ROW 8  y=290 -->
+<g class="cw-light cw-warn" onclick="b214b('rotor-brake')"><rect x="20" y="290" width="118" height="28"/><text x="79" y="299" text-anchor="middle" font-size="8">ROTOR</text><text x="79" y="312" text-anchor="middle" font-size="8">BRAKE</text></g>
+<g class="cw-light cw-caut" onclick="b214b('fuel-boost-l')"><rect x="142" y="290" width="118" height="28"/><text x="201" y="299" text-anchor="middle" font-size="8">LEFT FUEL</text><text x="201" y="312" text-anchor="middle" font-size="8">BOOST</text></g>
+<g class="cw-light cw-caut" onclick="b214b('fuel-low')"><rect x="264" y="290" width="118" height="28"/><text x="323" y="308" text-anchor="middle" font-size="8">FUEL LOW</text></g>
+<g class="cw-light cw-caut" onclick="b214b('fuel-boost-r')"><rect x="386" y="290" width="118" height="28"/><text x="445" y="299" text-anchor="middle" font-size="8">RIGHT FUEL</text><text x="445" y="312" text-anchor="middle" font-size="8">BOOST</text></g>
+
+<!-- ROW 9  y=322 -->
+<g class="cw-light cw-warn" onclick="b214b('rotor-brake')"><rect x="20" y="322" width="118" height="28"/><text x="79" y="331" text-anchor="middle" font-size="8">ROTOR</text><text x="79" y="344" text-anchor="middle" font-size="8">BRAKE</text></g>
+<g class="cw-light cw-warn" onclick="b214b('hydr-sys1')"><rect x="142" y="322" width="118" height="28"/><text x="201" y="340" text-anchor="middle" font-size="8">HYDR SYS 1</text></g>
+<g class="cw-light cw-caut" onclick="b214b('eng-duct-ovht')"><rect x="264" y="322" width="118" height="28"/><text x="323" y="331" text-anchor="middle" font-size="8">ENG</text><text x="323" y="344" text-anchor="middle" font-size="8">DUCT OVHT</text></g>
+<g class="cw-light cw-caut" onclick="b214b('hydr-sys2')"><rect x="386" y="322" width="118" height="28"/><text x="445" y="340" text-anchor="middle" font-size="8">HYDR SYS 2</text></g>
+
+<!-- ROW 10  y=354 -->
+<g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="20" y="354" width="118" height="28"/><text x="79" y="372" text-anchor="middle" font-size="8">SPARE</text></g>
+<g class="cw-light cw-warn" onclick="b214b('eng-ovspd')"><rect x="142" y="354" width="118" height="28"/><text x="201" y="363" text-anchor="middle" font-size="8">ENG</text><text x="201" y="376" text-anchor="middle" font-size="8">OVSPD TRIP</text></g>
+<g class="cw-light cw-caut" onclick="b214b('htr-air-lines')"><rect x="264" y="354" width="118" height="28"/><text x="323" y="363" text-anchor="middle" font-size="8">HTR</text><text x="323" y="376" text-anchor="middle" font-size="8">AIR LINES</text></g>
+<g class="cw-light cw-caut" onclick="b214b('eng-grbx-filter')"><rect x="386" y="354" width="118" height="28"/><text x="445" y="363" text-anchor="middle" font-size="8">ENG GRBX</text><text x="445" y="376" text-anchor="middle" font-size="8">FILTER</text></g>
+
+<!-- ═══ BOTTOM HARDWARE SECTION (matches photo) ═══ -->
+<!-- Bottom bezel plate darker area -->
+<rect x="8" y="388" width="504" height="80" fill="#111110" stroke="#2a2a28" stroke-width="1"/>
+
+<!-- BRT/DIM toggle (fat side-to-side like photo) - left side -->
+<!-- Labels -->
+<text x="58" y="406" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">BRT</text>
+<text x="102" y="406" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">DIM</text>
+<!-- Toggle base/bezel -->
+<rect x="55" y="408" width="54" height="22" fill="#1a1a18" stroke="#555" stroke-width="1" rx="3"/>
+<!-- Toggle knob (fat, currently left=BRT) -->
+<rect x="56" y="409" width="26" height="20" fill="#555552" stroke="#777" stroke-width="1" rx="2"/>
+<!-- Knob highlight -->
+<rect x="58" y="411" width="8" height="4" fill="#888" rx="1" opacity="0.5"/>
+<!-- Circular knob cap like photo -->
+<circle cx="69" cy="419" r="7" fill="#444442" stroke="#666" stroke-width="1.5"/>
+<circle cx="69" cy="419" r="4" fill="#333330" stroke="#555" stroke-width="1"/>
+
+<!-- "EDGE LIT PANEL" label center -->
+<text x="260" y="448" text-anchor="middle" font-size="9" fill="#444" font-weight="bold" letter-spacing="2">EDGE LIT PANEL</text>
+
+<!-- TEST push button - right side (matches photo: round button with two screws) -->
+<text x="420" y="406" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">T</text>
+<text x="420" y="416" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">E</text>
+<text x="420" y="426" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">S</text>
+<text x="420" y="436" text-anchor="middle" font-size="7" fill="#888" font-weight="bold">T</text>
+<!-- Button outer ring -->
+<circle cx="455" cy="420" r="20" fill="#1a1a18" stroke="#555" stroke-width="1.5"/>
+<!-- Button face -->
+<circle cx="455" cy="420" r="16" fill="#2a2a28" stroke="#444" stroke-width="1"/>
+<!-- Button highlight -->
+<circle cx="455" cy="420" r="12" fill="#222220" stroke="#333" stroke-width="1"/>
+<!-- Inner dot -->
+<circle cx="455" cy="420" r="4" fill="#333330" stroke="#555" stroke-width="1"/>
+<!-- Two screws flanking button (like photo) -->
+<circle cx="432" cy="404" r="4" fill="#1a1a18" stroke="#555" stroke-width="1"/>
+<line x1="430" y1="404" x2="434" y2="404" stroke="#777" stroke-width="0.8"/>
+<line x1="432" y1="402" x2="432" y2="406" stroke="#777" stroke-width="0.8"/>
+<circle cx="478" cy="404" r="4" fill="#1a1a18" stroke="#555" stroke-width="1"/>
+<line x1="476" y1="404" x2="480" y2="404" stroke="#777" stroke-width="0.8"/>
+<line x1="478" y1="402" x2="478" y2="406" stroke="#777" stroke-width="0.8"/>
+
+<!-- BACK TO MAIN PAGE BUTTON -->
+<g style="cursor:pointer;" onclick="showPage('landing')">
+  <rect x="178" y="478" width="164" height="36" fill="#1a1a1a" stroke="#555" stroke-width="1.5" rx="4"/>
+  <text x="260" y="491" text-anchor="middle" font-size="9" fill="#aaa" font-weight="bold">◀ MAIN PAGE</text>
+  <text x="260" y="505" text-anchor="middle" font-size="7" fill="#666">SELECT AIRCRAFT</text>
+</g>
 
 </svg>
-
-<!-- Warning lights row label -->
-<div style="text-align:center;font-size:0.65rem;color:#888;padding:4px 0;border-top:1px solid #222;margin-top:2px;">
-  WARNING LIGHTS (overhead panel) →
-  <span onclick="b214b('rpm')" style="cursor:pointer;color:#ff4444;font-weight:bold;margin:0 6px;">RPM</span>
-  <span onclick="b214b('fire')" style="cursor:pointer;color:#ff4444;font-weight:bold;margin:0 6px;">FIRE</span>
-  <span onclick="b214b('eng-out')" style="cursor:pointer;color:#ff4444;font-weight:bold;margin:0 6px;">ENG OUT</span>
-</div>
 
   </div>
 </div>
@@ -1551,208 +1621,325 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 <script>
 // ── 214B procedure titles ──
 var B214B_TITLES = {
-  'xmsn-oil-press': 'XMSN OIL PRESS',
-  'xmsn-oil-temp':  'XMSN OIL TEMP',
-  'eng-oil-press':  'ENGINE OIL PRESS',
-  'rotor-brake':    'ROTOR BRAKE',
-  'batt-hot':       'BATTERY HOT',
-  'batt-temp':      'BATTERY TEMP',
-  'press-42':       'PRESS 42° BOX',
-  'temp-42':        'TEMP 42° BOX',
-  'press-90':       'PRESS 90° BOX',
-  'temp-90':        'TEMP 90° BOX',
-  'grbx-oil-press': 'GRBX OIL PRESS',
-  'grbx-oil-temp':  'GRBX OIL TEMP',
-  'eng-duct-ovht':  'ENG DUCT OVHT',
-  'hydr-sys1':      'HYDR SYS 1',
-  'hydr-sys2':      'HYDR SYS 2',
-  'eng-ovspd':      'ENG OVSPD TRIP',
-  'main-inverter':  'MAIN INVERTER',
-  'stby-inverter':  'STBY INVERTER',
-  'gov-manual':     'GOV MANUAL',
-  'fuel-filter':    'FUEL FILTER',
-  'xmsn-chip':      'XMSN CHIP DET',
-  'chip-42':        'CHIP 42° BOX',
-  'chip-90':        'CHIP 90° BOX',
-  'chip-grbx':      'CHIP GRBX',
-  'fuel-boost-l':   'LEFT FUEL BOOST',
-  'fuel-boost-r':   'RIGHT FUEL BOOST',
-  'fuel-low':       'FUEL LOW',
-  'htr-air-lines':  'HTR AIR LINES',
-  'eng-grbx-filter':'ENG GRBX FILTER',
-  'eng-chip-det':   'ENG CHIP DET',
-  'eng-anti-ice':   'ENG ANTI-ICE ON',
-  'dc-gen':         'DC GENERATOR',
-  'door-lock':      'DOOR LOCK',
-  'ext-power':      'EXT POWER',
-  'rpm':            'RPM WARNING',
-  'fire':           'FIRE WARNING',
-  'eng-out':        'ENG OUT WARNING',
-  'spare':          'SPARE',
+  'xmsn-oil-press':  'XMSN OIL PRESS',
+  'xmsn-oil-temp':   'XMSN OIL TEMP',
+  'eng-oil-press':   'ENGINE OIL PRESS',
+  'rotor-brake':     'ROTOR BRAKE',
+  'batt-hot':        'BATTERY HOT',
+  'batt-temp':       'BATTERY TEMP',
+  'press-42':        'PRESS 42° BOX',
+  'temp-42':         'TEMP 42° BOX',
+  'press-90':        'PRESS 90° BOX',
+  'temp-90':         'TEMP 90° BOX',
+  'grbx-oil-press':  'GRBX OIL PRESS',
+  'grbx-oil-temp':   'GRBX OIL TEMP',
+  'eng-duct-ovht':   'ENG DUCT OVHT',
+  'hydr-sys1':       'HYDR SYS 1',
+  'hydr-sys2':       'HYDR SYS 2',
+  'eng-ovspd':       'ENG OVSPD TRIP',
+  'main-inverter':   'MAIN INVERTER',
+  'stby-inverter':   'STBY INVERTER',
+  'gov-manual':      'GOV MANUAL',
+  'fuel-filter':     'FUEL FILTER',
+  'xmsn-chip':       'XMSN CHIP DET',
+  'chip-42':         'CHIP 42° BOX',
+  'chip-90':         'CHIP 90° BOX',
+  'chip-grbx':       'CHIP GRBX',
+  'fuel-boost-l':    'LEFT FUEL BOOST',
+  'fuel-boost-r':    'RIGHT FUEL BOOST',
+  'fuel-low':        'FUEL LOW',
+  'htr-air-lines':   'HTR AIR LINES',
+  'eng-grbx-filter': 'ENG GRBX FILTER',
+  'rpm':             'RPM',
+  'fire':            'FIRE',
+  'eng-out':         'ENG OUT',
+  'door-lock':       'DOOR LOCK',
+  'ext-power':       'EXT POWER',
+  'dc-gen':          'DC GENERATOR',
+  'eng-chip-det':    'ENG CHIP DET',
+  'eng-anti-ice':    'ENG ANTI-ICE ON',
+  'spare':           'SPARE',
 };
 
-// ── 214B procedures (from BHT-214B1-FM-1 Section 3/4) ──
+// ── 214B procedures — verified 100% against BHT-214B1-FM-1 Rev.8 ──
+// Source: Sections 3 and 4, Warning and Caution Lights tables
+// Lights NOT listed in the FM show development notice only.
 var B214B_PROCS = {};
+var DEV = '<p class="proc-dev" style="padding:20px;color:#666;font-style:italic;">Procedure not listed in BHT-214B1-FM-1 Rev.8 Warning &amp; Caution Lights table.<br><br>Content under development — verify against your approved Flight Manual.</p>';
 
-function bf(label){ return '<span class="cw-light-ref">'+label+'</span>'; }
-function bw(label){ return '<span class="cw-light-ref red">'+label+'</span>'; }
+// ── WARNING LIGHTS (separate overhead panel) ──
 
-B214B_PROCS['xmsn-oil-press'] = ptype('abnormal')+ptitle('XMSN OIL PRESS')+
-  plabel('Fault')+pbullets(['Low transmission oil pressure.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Verify fault with gage reading.','Accomplish power on landing immediately.']);
-
-B214B_PROCS['xmsn-oil-temp'] = ptype('abnormal')+ptitle('XMSN OIL TEMP')+
-  plabel('Fault')+pbullets(['Excessive transmission oil temperature.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Verify fault with gage reading.','If light remains illuminated and temperature does not decrease within limits, land as soon as possible.']);
-
-B214B_PROCS['eng-oil-press'] = ptype('abnormal')+ptitle('ENGINE OIL PRESS')+
-  plabel('Fault')+pbullets(['Low engine oil pressure.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Verify fault with gage reading.','Land as soon as practical.']);
-
-B214B_PROCS['rotor-brake'] = ptype('abnormal')+ptitle('ROTOR BRAKE')+
-  plabel('Fault')+pbullets(['Puck(s) not fully retracted.'])+
-  plabel('Corrective Action')+pbullets(['Check handle — Off.','If light remains illuminated, land as soon as possible.']);
-
-B214B_PROCS['batt-hot'] = ptype('abnormal')+ptitle('BATTERY HOT')+
-  plabel('Fault')+pbullets(['Excessive battery (1 or 2) temperature.'])+
-  plabel('Corrective Action')+pbullets(['Check battery (1 or 2) — Off.','Land as soon as practical.']);
-
-B214B_PROCS['batt-temp'] = ptype('abnormal')+ptitle('BATTERY TEMP')+
-  plabel('Fault')+pbullets(['Excessive battery (1 or 2) temperature.'])+
-  plabel('Corrective Action')+pbullets(['Turn off affected battery switch.']);
-
-B214B_PROCS['press-42'] = ptype('abnormal')+ptitle('PRESS 42° BOX')+
-  plabel('Fault')+pbullets(['Low 42° intermediate gearbox oil pressure.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as possible.']);
-
-B214B_PROCS['temp-42'] = ptype('abnormal')+ptitle('TEMP 42° BOX')+
-  plabel('Fault')+pbullets(['Excessive 42° intermediate gearbox oil temperature.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','If light remains illuminated, land as soon as possible.']);
-
-B214B_PROCS['press-90'] = ptype('abnormal')+ptitle('PRESS 90° BOX')+
-  plabel('Fault')+pbullets(['Low tail rotor gearbox oil pressure.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as possible.']);
-
-B214B_PROCS['temp-90'] = ptype('abnormal')+ptitle('TEMP 90° BOX')+
-  plabel('Fault')+pbullets(['Excessive tail rotor gearbox oil temperature.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','If light remains illuminated, land as soon as possible.']);
-
-B214B_PROCS['grbx-oil-press'] = ptype('abnormal')+ptitle('GRBX OIL PRESS')+
-  plabel('Fault')+pbullets(['Low engine gearbox oil pressure.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Verify fault with gage reading.','Land as soon as possible.']);
-
-B214B_PROCS['grbx-oil-temp'] = ptype('abnormal')+ptitle('GRBX OIL TEMP')+
-  plabel('Fault')+pbullets(['Excessive engine gearbox oil temperature.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Verify fault with gage reading.','If light remains illuminated and temperature does not decrease within limits, land as soon as possible.']);
-
-B214B_PROCS['eng-duct-ovht'] = ptype('abnormal')+ptitle('ENG DUCT OVHT')+
-  plabel('Fault')+pbullets(['Reverse airflow in particle separator bypass. Flapper door is malfunctioning.'])+
-  plabel('Corrective Action')+pbullets(['In hovering flight, turn into relative wind.','Monitor EGT and gas producer tachometer.','If surging occurs, land and inspect flapper door.']);
-
-B214B_PROCS['hydr-sys1'] = ptype('abnormal')+ptitle('HYDR SYS 1')+
-  plabel('Fault')+pbullets(['Number 1 hydraulic system has failed.'])+
-  plabel('Corrective Action')+pbullets(['Verify failure by observing hydraulic system #1 pressure, loss of tail rotor control boost and loss of AFCS yaw channel.','Land as soon as practical.']);
-
-B214B_PROCS['hydr-sys2'] = ptype('abnormal')+ptitle('HYDR SYS 2')+
-  plabel('Fault')+pbullets(['Number 2 hydraulic system has failed.'])+
-  plabel('Corrective Action')+pbullets(['Verify failure by observing system #2 pressure, loss of AFCS pitch and roll channels.','Land as soon as practical.']);
-
-B214B_PROCS['eng-ovspd'] = ptype('abnormal')+ptitle('ENG OVSPD TRIP')+
-  plabel('Fault')+pbullets(['Engine overspeed trip has actuated.'])+
-  plabel('Corrective Action')+pbullets(['Reduce engine N2 speed to within limits.','If RPM will not decrease within limits, accomplish fuel control malfunction procedure.']);
-
-B214B_PROCS['main-inverter'] = ptype('abnormal')+ptitle('MAIN INVERTER')+
-  plabel('Fault')+pbullets(['Number 1 (Main) inverter has failed.'])+
-  plabel('Corrective Action')+pbullets(['Reset circuit breaker.','If main inverter is not restored, turn main inv switch off.','ACVM switch — Standby.']);
-
-B214B_PROCS['stby-inverter'] = ptype('abnormal')+ptitle('STBY INVERTER')+
-  plabel('Fault')+pbullets(['Number 2 (Standby) inverter has failed.'])+
-  plabel('Corrective Action')+pbullets(['Reset circuit breaker.','If standby inverter is not restored, Stby Inv switch — Off.']);
-
-B214B_PROCS['gov-manual'] = ptype('abnormal')+ptitle('GOV MANUAL')+
-  plabel('Fault')+pbullets(['Governor is in emergency mode.'])+
-  plabel('Corrective Action')+pbullets(['Engine RPM and EGT must be controlled with pilot\'s throttle.','Make slow changes in power settings to prevent compressor stalling.']);
-
-B214B_PROCS['fuel-filter'] = ptype('abnormal')+ptitle('FUEL FILTER')+
-  plabel('Fault')+pbullets(['Fuel filter is partially closed and is now by-passed. Possible fuel contamination.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
-
-B214B_PROCS['xmsn-chip'] = ptype('abnormal')+ptitle('XMSN CHIP DET')+
-  plabel('Fault')+pbullets(['Metal particles in transmission oil.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as practical.']);
-
-B214B_PROCS['chip-42'] = ptype('abnormal')+ptitle('CHIP 42° BOX')+
-  plabel('Fault')+pbullets(['Metal particles in 42° intermediate gearbox oil.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as practical.']);
-
-B214B_PROCS['chip-90'] = ptype('abnormal')+ptitle('CHIP 90° BOX')+
-  plabel('Fault')+pbullets(['Metal particles in tail rotor gearbox oil.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as practical.']);
-
-B214B_PROCS['chip-grbx'] = ptype('abnormal')+ptitle('CHIP GRBX')+
-  plabel('Fault')+pbullets(['Metal particles in engine gearbox.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as practical.']);
-
-B214B_PROCS['fuel-boost-l'] = ptype('abnormal')+ptitle('LEFT FUEL BOOST')+
-  plabel('Fault')+pbullets(['Left fuel boost pump has failed.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.','Observe fuel pressure.']);
-
-B214B_PROCS['fuel-boost-r'] = ptype('abnormal')+ptitle('RIGHT FUEL BOOST')+
-  plabel('Fault')+pbullets(['Right fuel boost pump has failed.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.','Observe fuel pressure.']);
-
-B214B_PROCS['fuel-low'] = ptype('abnormal')+ptitle('FUEL LOW')+
-  plabel('Fault')+pbullets(['Fuel quantity below 330 pounds.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
-
-B214B_PROCS['htr-air-lines'] = ptype('abnormal')+ptitle('HTR AIR LINES')+
-  plabel('Fault')+pbullets(['Excessive air temperature in heater air lines.'])+
-  plabel('Corrective Action')+pbullets(['Heater — Off.']);
-
-B214B_PROCS['eng-grbx-filter'] = ptype('abnormal')+ptitle('ENG GRBX FILTER')+
-  plabel('Fault')+pbullets(['Gearbox oil is by-passing filter.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
-
-B214B_PROCS['eng-chip-det'] = ptype('abnormal')+ptitle('ENG CHIP DET')+
-  plabel('Fault')+pbullets(['Metal particles detected in engine oil.'])+
-  plabel('Corrective Action')+pbullets(['Reduce power.','Land as soon as practical.']);
-
-B214B_PROCS['eng-anti-ice'] = ptype('abnormal')+ptitle('ENG ANTI-ICE ON')+
-  plabel('Indication')+pbullets(['Engine anti-ice is active — advisory only.'])+
-  plabel('Action')+pbullets(['No abnormal action required unless illuminating unexpectedly.']);
-
-B214B_PROCS['dc-gen'] = ptype('abnormal')+ptitle('DC GENERATOR')+
-  plabel('Fault')+pbullets(['DC generator failure.'])+
-  plabel('Corrective Action')+pbullets(['Check generator switch.','Reset as required.','Monitor electrical system.']);
-
-B214B_PROCS['door-lock'] = ptype('abnormal')+ptitle('DOOR LOCK')+
-  plabel('Action')+pbullets(['Check door(s) closed and locked.']);
-
-B214B_PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory. No abnormal action required.</p>';
-
-B214B_PROCS['rpm'] = ptype('emergency')+ptitle('RPM WARNING')+
-  plabel('Fault')+pbullets(['N2/NR RPM not within limits.'])+
+// PDF p.3-6A: RPM
+B214B_PROCS['rpm'] = ptype('emergency')+ptitle('RPM')+
+  plabel('Fault Condition')+pbullets(['N2/NR RPM not within limits.'])+
   plabel('Corrective Action')+pbullets(['Adjust engine RPM within limits.'])+
   pnote('The RPM warning light will be illuminated during autorotations in the approved 86 to 95% range at gross weights below 9500 pounds.');
 
-B214B_PROCS['fire'] = ptype('emergency')+ptitle('FIRE WARNING')+
-  plabel('Fault')+pbullets(['Fire in engine compartment.'])+
-  plabel('Corrective Action')+pbullets(['Confirm fire.','Fuel valve switch (on Overhead Fire Panel) — Close.','Fire extinguisher switch — Discharge.','Land as soon as possible.'])+
+// PDF p.3-6A: FIRE
+B214B_PROCS['fire'] = ptype('emergency')+ptitle('FIRE')+
+  plabel('Fault Condition')+pbullets(['Fire in engine compartment.'])+
+  plabel('Corrective Action')+pbullets([
+    'Confirm fire — fuel valve switch (on Overhead Fire Panel) — Close.',
+    'Fire extinguisher switch — Discharge.',
+    'Land as soon as possible.'
+  ])+
   psub('ENGINE FIRE DURING STARTING')+
-  pbullets(['Twist grip — Close.','Engine fuel switch — Off.','Starter — Continue to motor until flame is extinguished.','Complete engine shutdown.']);
+  '<p style="font-size:0.9rem;line-height:1.6;margin-bottom:8px;">An engine fire during starting will be caused by an overloading of fuel in the combustion chamber and a delayed ignition of the fuel, resulting in flame emitting from the tailpipe. To extinguish fire, proceed as follows:</p>'+
+  pbullets([
+    'Twist grip — Close.',
+    'Engine fuel switch — Off.',
+    'Starter — Continue to motor until flame is extinguished.',
+    'Complete engine shutdown.'
+  ]);
 
-B214B_PROCS['eng-out'] = ptype('emergency')+ptitle('ENG OUT WARNING')+
-  plabel('Fault')+pbullets(['Engine N1 abnormally low.'])+
-  plabel('Corrective Action')+pbullets(['Confirm failure by observing engine instruments.','Execute autorotation.']);
+// PDF p.3-6A: ENG OUT
+B214B_PROCS['eng-out'] = ptype('emergency')+ptitle('ENG OUT')+
+  plabel('Fault Condition')+pbullets(['Engine N1 abnormally low.'])+
+  plabel('Corrective Action')+pbullets([
+    'Confirm failure by observing engine instruments.',
+    'Execute autorotation.'
+  ]);
 
-B214B_PROCS['spare'] = '<p class="proc-dev">SPARE — No procedure assigned.</p>';
+// ── CAUTION PANEL LIGHTS ──
+
+// PDF p.3-3: XMSN OIL PRESS
+B214B_PROCS['xmsn-oil-press'] = ptype('abnormal')+ptitle('XMSN OIL PRESS')+
+  plabel('Fault Condition')+pbullets(['Low transmission oil pressure.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Verify fault with gage reading.',
+    'Accomplish power on landing immediately.'
+  ]);
+
+// PDF p.3-4: XMSN OIL TEMP
+B214B_PROCS['xmsn-oil-temp'] = ptype('abnormal')+ptitle('XMSN OIL TEMP')+
+  plabel('Fault Condition')+pbullets(['Excessive transmission oil temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Verify fault with gage reading.',
+    'If light remains illuminated and temperature does not decrease within limits, land as soon as possible.'
+  ]);
+
+// PDF p.3-4: ENGINE OIL PRESS
+B214B_PROCS['eng-oil-press'] = ptype('abnormal')+ptitle('ENGINE OIL PRESS')+
+  plabel('Fault Condition')+pbullets(['Low engine oil pressure.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Verify fault with gage reading.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.3-4: ROTOR BRAKE
+B214B_PROCS['rotor-brake'] = ptype('abnormal')+ptitle('ROTOR BRAKE')+
+  plabel('Fault Condition')+pbullets(['Puck(s) not fully retracted.'])+
+  plabel('Corrective Action')+pbullets([
+    'Check handle — Off.',
+    'If light remains illuminated, land as soon as possible.'
+  ]);
+
+// PDF p.3-4: BATTERY (1 OR 2) HOT
+B214B_PROCS['batt-hot'] = ptype('abnormal')+ptitle('BATTERY HOT')+
+  plabel('Fault Condition')+pbullets(['Excessive battery (1 or 2) temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Check battery (1 or 2) — Off.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.4-3: BATTERY (1 or 2) TEMP
+B214B_PROCS['batt-temp'] = ptype('abnormal')+ptitle('BATTERY TEMP')+
+  plabel('Fault Condition')+pbullets(['Excessive battery (1 or 2) temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Turn off affected battery switch.'
+  ]);
+
+// PDF p.3-4: PRESS 42° BOX
+B214B_PROCS['press-42'] = ptype('abnormal')+ptitle('PRESS 42° BOX')+
+  plabel('Fault Condition')+pbullets(['Low 42° intermediate gearbox oil pressure.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as possible.'
+  ]);
+
+// PDF p.3-4: TEMP 42° BOX
+B214B_PROCS['temp-42'] = ptype('abnormal')+ptitle('TEMP 42° BOX')+
+  plabel('Fault Condition')+pbullets(['Excessive 42° intermediate gearbox oil temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'If light remains illuminated, land as soon as possible.'
+  ]);
+
+// PDF p.3-5: PRESS 90° BOX
+B214B_PROCS['press-90'] = ptype('abnormal')+ptitle('PRESS 90° BOX')+
+  plabel('Fault Condition')+pbullets(['Low tail rotor gearbox oil pressure.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as possible.'
+  ]);
+
+// PDF p.3-5: TEMP 90° BOX
+B214B_PROCS['temp-90'] = ptype('abnormal')+ptitle('TEMP 90° BOX')+
+  plabel('Fault Condition')+pbullets(['Excessive tail rotor gearbox oil temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'If light remains illuminated, land as soon as possible.'
+  ]);
+
+// PDF p.3-5: GRBX OIL PRESS
+B214B_PROCS['grbx-oil-press'] = ptype('abnormal')+ptitle('GRBX OIL PRESS')+
+  plabel('Fault Condition')+pbullets(['Low engine gearbox oil pressure.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Verify fault with gage reading.',
+    'Land as soon as possible.'
+  ]);
+
+// PDF p.3-5: GRBX OIL TEMP
+B214B_PROCS['grbx-oil-temp'] = ptype('abnormal')+ptitle('GRBX OIL TEMP')+
+  plabel('Fault Condition')+pbullets(['Excessive engine gearbox oil temperature.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Verify fault with gage reading.',
+    'If light remains illuminated and temperature does not decrease within limits, land as soon as possible.'
+  ]);
+
+// PDF p.3-6: ENG DUCT OVHT
+B214B_PROCS['eng-duct-ovht'] = ptype('abnormal')+ptitle('ENG DUCT OVHT')+
+  plabel('Fault Condition')+pbullets(['Reverse airflow in particle separator bypass. Flapper door is malfunctioning.'])+
+  plabel('Corrective Action')+pbullets([
+    'In hovering flight, turn into relative wind.',
+    'Monitor EGT and gas producer tachometer.',
+    'If surging occurs, land and inspect flapper door.'
+  ]);
+
+// PDF p.3-6: HYDR SYS 1
+B214B_PROCS['hydr-sys1'] = ptype('abnormal')+ptitle('HYDR SYS 1')+
+  plabel('Fault Condition')+pbullets(['Number 1 hydraulic system has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Verify failure by observing hydraulic system #1 pressure, loss of tail rotor control boost and loss of AFCS yaw channel.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.3-6: HYDR SYS 2
+B214B_PROCS['hydr-sys2'] = ptype('abnormal')+ptitle('HYDR SYS 2')+
+  plabel('Fault Condition')+pbullets(['Number 2 hydraulic system has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Verify failure by observing system #2 pressure, loss of AFCS pitch and roll channels.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.3-6: ENG OVSPD TRIP
+B214B_PROCS['eng-ovspd'] = ptype('abnormal')+ptitle('ENG OVSPD TRIP')+
+  plabel('Fault Condition')+pbullets(['Engine overspeed trip has actuated.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce engine N2 speed to within limits.',
+    'If RPM will not decrease within limits, accomplish fuel control malfunction procedure.'
+  ]);
+
+// PDF p.4-3: MAIN INVERTER
+B214B_PROCS['main-inverter'] = ptype('abnormal')+ptitle('MAIN INVERTER')+
+  plabel('Fault Condition')+pbullets(['Number 1 (Main) inverter has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reset circuit breaker.',
+    'If main inverter is not restored, turn main inv switch off.',
+    'ACVM switch — Standby.'
+  ]);
+
+// PDF p.4-3: STBY INVERTER
+B214B_PROCS['stby-inverter'] = ptype('abnormal')+ptitle('STBY INVERTER')+
+  plabel('Fault Condition')+pbullets(['Number 2 (Standby) inverter has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reset circuit breaker.',
+    'If standby inverter is not restored, Stby Inv switch — Off.'
+  ]);
+
+// PDF p.4-3: GOV MANUAL
+B214B_PROCS['gov-manual'] = ptype('abnormal')+ptitle('GOV MANUAL')+
+  plabel('Fault Condition')+pbullets(['Governor is in emergency mode.'])+
+  plabel('Corrective Action')+pbullets([
+    'Engine RPM and EGT must be controlled with pilot\'s throttle.',
+    'Make slow changes in power settings to prevent compressor stalling.'
+  ]);
+
+// PDF p.4-3: FUEL FILTER
+B214B_PROCS['fuel-filter'] = ptype('abnormal')+ptitle('FUEL FILTER')+
+  plabel('Fault Condition')+pbullets(['Fuel filter is partially closed and is now by-passed. Possible fuel contamination.'])+
+  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
+
+// PDF p.4-4: XMSN CHIP DET
+B214B_PROCS['xmsn-chip'] = ptype('abnormal')+ptitle('XMSN CHIP DET')+
+  plabel('Fault Condition')+pbullets(['Metal particles in transmission oil.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.4-4: CHIP 42° BOX
+B214B_PROCS['chip-42'] = ptype('abnormal')+ptitle('CHIP 42° BOX')+
+  plabel('Fault Condition')+pbullets(['Metal particles in 42° intermediate gearbox oil.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.4-4: CHIP 90° BOX
+B214B_PROCS['chip-90'] = ptype('abnormal')+ptitle('CHIP 90° BOX')+
+  plabel('Fault Condition')+pbullets(['Metal particles in tail rotor gearbox oil.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.4-4: CHIP GRBX
+B214B_PROCS['chip-grbx'] = ptype('abnormal')+ptitle('CHIP GRBX')+
+  plabel('Fault Condition')+pbullets(['Metal particles in engine gearbox.'])+
+  plabel('Corrective Action')+pbullets([
+    'Reduce power.',
+    'Land as soon as practical.'
+  ]);
+
+// PDF p.4-4: LEFT FUEL BOOST
+B214B_PROCS['fuel-boost-l'] = ptype('abnormal')+ptitle('LEFT FUEL BOOST')+
+  plabel('Fault Condition')+pbullets(['Left fuel boost pump has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Land as soon as practical.',
+    'Observe fuel pressure.'
+  ]);
+
+// PDF p.4-4: FUEL LOW
+B214B_PROCS['fuel-low'] = ptype('abnormal')+ptitle('FUEL LOW')+
+  plabel('Fault Condition')+pbullets(['Fuel quantity below 330 pounds.'])+
+  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
+
+// PDF p.4-4: RIGHT FUEL BOOST
+B214B_PROCS['fuel-boost-r'] = ptype('abnormal')+ptitle('RIGHT FUEL BOOST')+
+  plabel('Fault Condition')+pbullets(['Right fuel boost pump has failed.'])+
+  plabel('Corrective Action')+pbullets([
+    'Land as soon as practical.',
+    'Observe fuel pressure.'
+  ]);
+
+// PDF p.4-4: HTR AIR LINES
+B214B_PROCS['htr-air-lines'] = ptype('abnormal')+ptitle('HTR AIR LINES')+
+  plabel('Fault Condition')+pbullets(['Excessive air temperature in heater air lines.'])+
+  plabel('Corrective Action')+pbullets(['Heater — Off.']);
+
+// PDF p.4-4: ENG GRBX FILTER
+B214B_PROCS['eng-grbx-filter'] = ptype('abnormal')+ptitle('ENG GRBX FILTER')+
+  plabel('Fault Condition')+pbullets(['Gearbox oil is by-passing filter.'])+
+  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
+
+// ── NOT IN PDF — development notice ──
+B214B_PROCS['door-lock']    = DEV;
+B214B_PROCS['ext-power']    = DEV;
+B214B_PROCS['dc-gen']       = DEV;
+B214B_PROCS['eng-chip-det'] = DEV;
+B214B_PROCS['eng-anti-ice'] = DEV;
+B214B_PROCS['spare']        = '<p class="proc-dev">SPARE — Nonfunctional. No procedure.</p>';
 
 function b214b(id) {
-  var content = B214B_PROCS[id];
-  if (!content) content = '<p class="proc-dev">Content under development: ' + id + '</p>';
+  var content = B214B_PROCS[id] || DEV;
   document.getElementById('proc-scroll').innerHTML = content;
   document.getElementById('proc-hdr-title').textContent = B214B_TITLES[id] || id.toUpperCase();
-  // store which panel we came from so back goes to correct home
   document.getElementById('proc-page').dataset.from = 'home-214b';
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('proc-page').classList.add('active');
@@ -1768,10 +1955,8 @@ function showPage(id) {
 }
 
 function selectAircraft(ac) {
-  if (ac === '214st') {
-    showPage('home');
-  }
-  // future: ac === '214b' → showPage('home-214b')
+  if (ac === '214st') { showPage('home'); }
+  else if (ac === '214b') { showPage('home-214b'); }
 }
 
 function setUpdStatus(msg) {
