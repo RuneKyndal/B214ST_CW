@@ -184,22 +184,22 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
      ROW 0 — FIRE WARNINGS (red)
 ════════════════════════ -->
 <!-- FIRE ENG 1 -->
-<g class="cw-light cw-fire" onclick="showProc('fire-eng')">
+<g class="cw-light cw-warn" onclick="showProc('fire-eng')">
   <rect x="10" y="28" width="90" height="26"/>
   <text x="55" y="45" text-anchor="middle" font-size="9">FIRE ENG 1</text>
 </g>
 <!-- L BAG FIRE -->
-<g class="cw-light cw-fire" onclick="showProc('bag-fire')">
+<g class="cw-light cw-warn" onclick="showProc('bag-fire')">
   <rect x="178" y="28" width="90" height="26"/>
   <text x="223" y="45" text-anchor="middle" font-size="9">L BAG FIRE</text>
 </g>
 <!-- R BAG FIRE -->
-<g class="cw-light cw-fire" onclick="showProc('bag-fire')">
+<g class="cw-light cw-warn" onclick="showProc('bag-fire')">
   <rect x="312" y="28" width="90" height="26"/>
   <text x="357" y="45" text-anchor="middle" font-size="9">R BAG FIRE</text>
 </g>
 <!-- FIRE ENG 2 -->
-<g class="cw-light cw-fire" onclick="showProc('fire-eng')">
+<g class="cw-light cw-warn" onclick="showProc('fire-eng')">
   <rect x="420" y="28" width="90" height="26"/>
   <text x="465" y="45" text-anchor="middle" font-size="9">FIRE ENG 2</text>
 </g>
@@ -213,7 +213,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="180" y="93" text-anchor="middle" font-size="9">1 ENG OUT</text>
 </g>
 <!-- MASTER CAUTION -->
-<g class="cw-light cw-master" onclick="showProc('master-caution')">
+<g class="cw-light cw-rotor" onclick="showProc('master-caution')">
   <rect x="228" y="72" width="64" height="38"/>
   <text x="260" y="86" text-anchor="middle" font-size="8">MASTER</text>
   <text x="260" y="98" text-anchor="middle" font-size="9">CAUTION</text>
@@ -235,7 +235,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="180" y="137" text-anchor="middle" font-size="8">ARM</text>
 </g>
 <!-- ROTOR RPM -->
-<g class="cw-light cw-rotor" onclick="showProc('rotor-rpm')">
+<g class="cw-light cw-caut" onclick="showProc('rotor-rpm')">
   <rect x="228" y="114" width="64" height="26"/>
   <text x="260" y="131" text-anchor="middle" font-size="9">ROTOR RPM</text>
 </g>
@@ -276,7 +276,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="118" y="198" text-anchor="middle" font-size="8">PRESS</text>
 </g>
 <!-- ANTI-ICE L  x=151 -->
-<g class="cw-light cw-caut" onclick="showProc('anti-ice')">
+<g class="cw-light cw-green" onclick="showProc('anti-ice')">
   <rect x="151" y="176" width="58" height="28"/>
   <text x="180" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
   <text x="180" y="198" text-anchor="middle" font-size="8">ON</text>
@@ -291,7 +291,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 <text x="273" y="233" text-anchor="middle" font-size="6" fill="#555">2</text>
 <text x="260" y="246" text-anchor="middle" font-size="6" fill="#555">BRT ◉ DIM</text>
 <!-- ANTI-ICE R  x=311 -->
-<g class="cw-light cw-caut" onclick="showProc('anti-ice')">
+<g class="cw-light cw-green" onclick="showProc('anti-ice')">
   <rect x="311" y="176" width="58" height="28"/>
   <text x="340" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
   <text x="340" y="198" text-anchor="middle" font-size="8">ON</text>
@@ -311,12 +311,12 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="118" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
 </g>
 <!-- OIL L  x=151 -->
-<g class="cw-light cw-caut" onclick="showProc('eng-oil')">
+<g class="cw-light cw-warn" onclick="showProc('eng-oil')">
   <rect x="151" y="208" width="58" height="28"/>
   <text x="180" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
 <!-- OIL R  x=311 -->
-<g class="cw-light cw-caut" onclick="showProc('eng-oil')">
+<g class="cw-light cw-warn" onclick="showProc('eng-oil')">
   <rect x="311" y="208" width="58" height="28"/>
   <text x="340" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
@@ -369,12 +369,12 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="134" y="290" text-anchor="middle" font-size="8">ENG 1</text>
   <text x="134" y="300" text-anchor="middle" font-size="8">CHIP</text>
 </g>
-<g class="cw-light cw-caut" onclick="showProc('xmsn-oil')">
+<g class="cw-light cw-warn" onclick="showProc('xmsn-oil')">
   <rect x="178" y="278" width="80" height="28"/>
   <text x="218" y="290" text-anchor="middle" font-size="8">XMSN</text>
   <text x="218" y="300" text-anchor="middle" font-size="8">OIL</text>
 </g>
-<g class="cw-light cw-caut" onclick="showProc('cbox-oil')">
+<g class="cw-light cw-warn" onclick="showProc('cbox-oil')">
   <rect x="262" y="278" width="80" height="28"/>
   <text x="302" y="290" text-anchor="middle" font-size="8">CBOX</text>
   <text x="302" y="300" text-anchor="middle" font-size="8">OIL</text>
@@ -432,7 +432,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="50" y="354" text-anchor="middle" font-size="8">BATT 1</text>
   <text x="50" y="364" text-anchor="middle" font-size="8">HOT</text>
 </g>
-<g class="cw-light cw-caut" onclick="showProc('batt-sys')">
+<g class="cw-light cw-warn" onclick="showProc('batt-sys')">
   <rect x="94" y="342" width="80" height="28"/>
   <text x="134" y="354" text-anchor="middle" font-size="8">NO.1 BATT</text>
   <text x="134" y="364" text-anchor="middle" font-size="8">SYS</text>
@@ -447,7 +447,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="302" y="354" text-anchor="middle" font-size="8">GEN 2</text>
   <text x="302" y="364" text-anchor="middle" font-size="8">HOT</text>
 </g>
-<g class="cw-light cw-caut" onclick="showProc('batt-sys')">
+<g class="cw-light cw-warn" onclick="showProc('batt-sys')">
   <rect x="346" y="342" width="80" height="28"/>
   <text x="386" y="354" text-anchor="middle" font-size="8">NO.2 BATT</text>
   <text x="386" y="364" text-anchor="middle" font-size="8">SYS</text>
@@ -470,7 +470,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="134" y="386" text-anchor="middle" font-size="8">BUS</text>
   <text x="134" y="396" text-anchor="middle" font-size="8">FEEDER</text>
 </g>
-<g class="cw-light cw-nolink" onclick="showProc('ext-power')">
+<g class="cw-light cw-caut" onclick="showProc('ext-power')">
   <rect x="178" y="374" width="80" height="28"/>
   <text x="218" y="386" text-anchor="middle" font-size="8">EXT</text>
   <text x="218" y="396" text-anchor="middle" font-size="8">POWER</text>
