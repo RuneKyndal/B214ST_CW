@@ -4,7 +4,7 @@
 const CACHE_NAME = 'cwp-runtime-cache';
 
 const ASSETS = [
-    './', './index.html', './manifest.json', './sw.js', './icon.png'
+    './', './index.html', './manifest.json', './sw.js', './icon.png' , './rickroll.mp4'
 ];
 
 self.addEventListener('install', function(event) {
