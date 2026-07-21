@@ -36,9 +36,12 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 .disclaimer{width:100%;max-width:420px;margin-top:8px;padding:12px 14px;border:1px solid #333;border-radius:8px;background:#0d0d0d;}
 .disclaimer h4{margin:0 0 6px;font-size:0.75rem;color:#fff;text-transform:uppercase;letter-spacing:1px;}
 .disclaimer p{margin:0;font-size:0.72rem;color:#aaa;line-height:1.6;}
-.upd-btn-land{width:100%;max-width:420px;margin-top:18px;padding:14px 16px;border-radius:8px;border:2px solid #3399ff;background:#0a1a3a;color:#66aaff;font-size:0.9rem;font-weight:bold;cursor:pointer;text-align:center;letter-spacing:1px;}
+.landing-actions{display:flex;width:100%;max-width:420px;gap:8px;margin-top:18px;}
+.upd-btn-land{flex:1;min-width:0;padding:14px 12px;border-radius:8px;border:2px solid #3399ff;background:#0a1a3a;color:#66aaff;font-size:0.9rem;font-weight:bold;cursor:pointer;text-align:center;letter-spacing:1px;}
 .upd-btn-land:active{opacity:0.7;}
 .upd-status-land{display:block;font-size:0.65rem;color:#3399ff;margin-top:4px;font-weight:normal;letter-spacing:0;}
+.manual-btn-land{flex:0 0 118px;padding:14px 10px;border-radius:8px;border:2px solid #888;background:#252525;color:#eee;font-size:0.9rem;font-weight:bold;cursor:pointer;text-align:center;letter-spacing:1px;}
+.manual-btn-land:active{opacity:0.7;}
 
 /* ── CWP HOME PAGE ── */
 #home{overflow-y:auto;}
@@ -147,11 +150,13 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
     <p>This C/W reference is intended as a memory aid only. It is not to be relied upon for in-flight critical decision making. Always refer to the approved Aircraft Manual — these must always take precedence.</p>
   </div>
 
-  <!-- Update button -->
-  <button class="upd-btn-land" onclick="forceUpdate()">
-    ⟳ CHECK FOR UPDATES
-    <span class="upd-status-land" id="upd-status">TAP TO REFRESH ALL CONTENT</span>
-  </button>
+  <div class="landing-actions">
+    <button class="upd-btn-land" onclick="forceUpdate()">
+      ⟳ CHECK FOR UPDATES
+      <span class="upd-status-land" id="upd-status">TAP TO REFRESH ALL CONTENT</span>
+    </button>
+    <button class="manual-btn-land" onclick="window.location.href='manual.html'">MANUAL</button>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════
