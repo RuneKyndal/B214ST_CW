@@ -1,7 +1,7 @@
 {
-    "name": "Aircraft C/W Panel Quick Reference",
+    "name": "Caution Panel Quick Reference",
     "short_name": "C/W Reference",
-    "description": "Bell 214ST Caution Warning Panel Quick Reference v1.1",
+    "description": "Caution Panel Quick Reference v1.1",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
