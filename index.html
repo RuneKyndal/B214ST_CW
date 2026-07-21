@@ -42,12 +42,13 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 
 /* ── CWP HOME PAGE ── */
 #home{overflow-y:auto;}
+#home-214b{overflow-y:auto;}
 .home-title{text-align:center;padding:8px 8px 2px;font-size:0.95rem;font-weight:bold;color:#ff0;letter-spacing:2px;}
 .home-sub{text-align:center;font-size:0.7rem;color:#aaa;padding-bottom:6px;}
 
-/* ── CWP SVG PANEL ── */
-#cwp-wrap{width:100%;overflow-x:auto;overflow-y:auto;flex:1;padding:6px 4px;}
-#cwp-wrap svg{display:block;margin:0 auto;max-width:100%;height:auto;}
+/* ── CWP SVG PANEL — scale to fit screen, no scroll ── */
+#cwp-wrap,#cwp-wrap-b{width:100%;flex:1;padding:2px 2px;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;}
+#cwp-wrap svg,#cwp-wrap-b svg{display:block;width:100%;height:100%;max-height:calc(100vh - 70px);object-fit:contain;}
 
 /* Clickable light styles */
 .cw-light{cursor:pointer;}
@@ -57,6 +58,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 .cw-fire text{fill:#fff;font-weight:bold;}
 .cw-warn rect{fill:#1a1a1a;stroke:#ff4444;stroke-width:1.5;}
 .cw-warn text{fill:#ff4444;font-weight:bold;}
+.cw-yell rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1.5;}
+.cw-yell text{fill:#ffcc00;font-weight:bold;}
 .cw-caut rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1;}
 .cw-caut text{fill:#ffcc00;font-weight:bold;}
 .cw-afcs rect{fill:#1a1a1a;stroke:#ffcc00;stroke-width:1;}
@@ -1486,19 +1489,19 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
   <circle cx="498" cy="462" r="6"/><line x1="494" y1="462" x2="502" y2="462" stroke="#555" stroke-width="1"/><line x1="498" y1="458" x2="498" y2="466" stroke="#555" stroke-width="1"/>
 </g>
 
-<!-- ═══ WARNING LIGHTS ROW — evenly spaced across full width ═══ -->
-<!-- 3 lights: each w=130, gaps = (520-3*130)/4 = 32.5 → x = 32, 196, 358 -->
-<g class="cw-light cw-warn" onclick="b214b('rpm')">
-  <rect x="32" y="10" width="130" height="34"/>
-  <text x="97" y="32" text-anchor="middle" font-size="12" font-weight="bold">RPM</text>
-</g>
-<g class="cw-light cw-fire" onclick="b214b('fire')">
-  <rect x="196" y="10" width="130" height="34"/>
-  <text x="261" y="32" text-anchor="middle" font-size="12" font-weight="bold">FIRE</text>
-</g>
+<!-- ═══ WARNING LIGHTS ROW — evenly spaced, smaller ═══ -->
+<!-- ENG OUT left, FIRE centre, RPM right — RPM yellow -->
 <g class="cw-light cw-warn" onclick="b214b('eng-out')">
-  <rect x="360" y="10" width="130" height="34"/>
-  <text x="425" y="32" text-anchor="middle" font-size="12" font-weight="bold">ENG OUT</text>
+  <rect x="40" y="12" width="110" height="28"/>
+  <text x="95" y="30" text-anchor="middle" font-size="10" font-weight="bold">ENG OUT</text>
+</g>
+<g class="cw-light cw-warn" onclick="b214b('fire')">
+  <rect x="205" y="12" width="110" height="28"/>
+  <text x="260" y="30" text-anchor="middle" font-size="10" font-weight="bold">FIRE</text>
+</g>
+<g class="cw-light cw-yell" onclick="b214b('rpm')">
+  <rect x="370" y="12" width="110" height="28"/>
+  <text x="425" y="30" text-anchor="middle" font-size="10" font-weight="bold">RPM</text>
 </g>
 
 <!-- ═══ MAIN LIGHT GRID — 4 cols × 10 rows inside bezel ═══ -->
@@ -1507,7 +1510,7 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 <!-- ROW 1  y=66 -->
 <g class="cw-light cw-caut" onclick="b214b('door-lock')"><rect x="20" y="66" width="118" height="28"/><text x="79" y="84" text-anchor="middle" font-size="8">DOOR LOCK</text></g>
 <g class="cw-light cw-caut" onclick="b214b('ext-power')"><rect x="142" y="66" width="118" height="28"/><text x="201" y="84" text-anchor="middle" font-size="8">EXT POWER</text></g>
-<g class="cw-light cw-warn" onclick="b214b('eng-oil-press')"><rect x="264" y="66" width="118" height="28"/><text x="323" y="75" text-anchor="middle" font-size="8">ENG</text><text x="323" y="88" text-anchor="middle" font-size="8">OIL PRESS</text></g>
+<g class="cw-light cw-yell" onclick="b214b('eng-oil-press')"><rect x="264" y="66" width="118" height="28"/><text x="323" y="75" text-anchor="middle" font-size="8">ENG</text><text x="323" y="88" text-anchor="middle" font-size="8">OIL PRESS</text></g>
 <g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="386" y="66" width="118" height="28"/><text x="445" y="84" text-anchor="middle" font-size="8">SPARE</text></g>
 
 <!-- ROW 2  y=98 -->
@@ -1542,8 +1545,8 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 
 <!-- ROW 7  y=258 -->
 <g class="cw-light cw-warn" onclick="b214b('xmsn-oil-temp')"><rect x="20" y="258" width="118" height="28"/><text x="79" y="267" text-anchor="middle" font-size="8">XMSN</text><text x="79" y="280" text-anchor="middle" font-size="8">OIL TEMP</text></g>
-<g class="cw-light cw-caut" onclick="b214b('temp-42')"><rect x="142" y="258" width="118" height="28"/><text x="201" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="201" y="280" text-anchor="middle" font-size="8">42° BOX</text></g>
-<g class="cw-light cw-caut" onclick="b214b('temp-90')"><rect x="264" y="258" width="118" height="28"/><text x="323" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="323" y="280" text-anchor="middle" font-size="8">90° BOX</text></g>
+<g class="cw-light cw-warn" onclick="b214b('temp-42')"><rect x="142" y="258" width="118" height="28"/><text x="201" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="201" y="280" text-anchor="middle" font-size="8">42° BOX</text></g>
+<g class="cw-light cw-warn" onclick="b214b('temp-90')"><rect x="264" y="258" width="118" height="28"/><text x="323" y="267" text-anchor="middle" font-size="8">TEMP</text><text x="323" y="280" text-anchor="middle" font-size="8">90° BOX</text></g>
 <g class="cw-light cw-warn" onclick="b214b('grbx-oil-temp')"><rect x="386" y="258" width="118" height="28"/><text x="445" y="267" text-anchor="middle" font-size="8">GRBX</text><text x="445" y="280" text-anchor="middle" font-size="8">OIL TEMP</text></g>
 
 <!-- ROW 8  y=290 -->
@@ -1554,13 +1557,13 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 
 <!-- ROW 9  y=322 -->
 <g class="cw-light cw-warn" onclick="b214b('rotor-brake')"><rect x="20" y="322" width="118" height="28"/><text x="79" y="331" text-anchor="middle" font-size="8">ROTOR</text><text x="79" y="344" text-anchor="middle" font-size="8">BRAKE</text></g>
-<g class="cw-light cw-warn" onclick="b214b('hydr-sys1')"><rect x="142" y="322" width="118" height="28"/><text x="201" y="340" text-anchor="middle" font-size="8">HYDR SYS 1</text></g>
+<g class="cw-light cw-yell" onclick="b214b('hydr-sys1')"><rect x="142" y="322" width="118" height="28"/><text x="201" y="340" text-anchor="middle" font-size="8">HYDR SYS 1</text></g>
 <g class="cw-light cw-caut" onclick="b214b('eng-duct-ovht')"><rect x="264" y="322" width="118" height="28"/><text x="323" y="331" text-anchor="middle" font-size="8">ENG</text><text x="323" y="344" text-anchor="middle" font-size="8">DUCT OVHT</text></g>
-<g class="cw-light cw-caut" onclick="b214b('hydr-sys2')"><rect x="386" y="322" width="118" height="28"/><text x="445" y="340" text-anchor="middle" font-size="8">HYDR SYS 2</text></g>
+<g class="cw-light cw-yell" onclick="b214b('hydr-sys2')"><rect x="386" y="322" width="118" height="28"/><text x="445" y="340" text-anchor="middle" font-size="8">HYDR SYS 2</text></g>
 
 <!-- ROW 10  y=354 -->
 <g class="cw-light cw-nolink" onclick="b214b('spare')"><rect x="20" y="354" width="118" height="28"/><text x="79" y="372" text-anchor="middle" font-size="8">SPARE</text></g>
-<g class="cw-light cw-warn" onclick="b214b('eng-ovspd')"><rect x="142" y="354" width="118" height="28"/><text x="201" y="363" text-anchor="middle" font-size="8">ENG</text><text x="201" y="376" text-anchor="middle" font-size="8">OVSPD TRIP</text></g>
+<g class="cw-light cw-yell" onclick="b214b('eng-ovspd')"><rect x="142" y="354" width="118" height="28"/><text x="201" y="363" text-anchor="middle" font-size="8">ENG</text><text x="201" y="376" text-anchor="middle" font-size="8">OVSPD TRIP</text></g>
 <g class="cw-light cw-caut" onclick="b214b('htr-air-lines')"><rect x="264" y="354" width="118" height="28"/><text x="323" y="363" text-anchor="middle" font-size="8">HTR</text><text x="323" y="376" text-anchor="middle" font-size="8">AIR LINES</text></g>
 <g class="cw-light cw-caut" onclick="b214b('eng-grbx-filter')"><rect x="386" y="354" width="118" height="28"/><text x="445" y="363" text-anchor="middle" font-size="8">ENG GRBX</text><text x="445" y="376" text-anchor="middle" font-size="8">FILTER</text></g>
 
@@ -1665,7 +1668,7 @@ var B214B_TITLES = {
 // Source: Sections 3 and 4, Warning and Caution Lights tables
 // Lights NOT listed in the FM show development notice only.
 var B214B_PROCS = {};
-var DEV = '<p class="proc-dev" style="padding:20px;color:#666;font-style:italic;">Procedure not listed in BHT-214B1-FM-1 Rev.8 Warning &amp; Caution Lights table.<br><br>Content under development — verify against your approved Flight Manual.</p>';
+var DEV = '<p class="proc-dev" style="padding:20px;color:#666;font-style:italic;">Content under development — verify against your approved Flight Manual.</p>';
 
 // ── WARNING LIGHTS (separate overhead panel) ──
 
@@ -1717,7 +1720,8 @@ B214B_PROCS['xmsn-oil-temp'] = ptype('abnormal')+ptitle('XMSN OIL TEMP')+
   plabel('Corrective Action')+pbullets([
     'Reduce power.',
     'Verify fault with gage reading.',
-    'If light remains illuminated and temperature does not decrease within limits, land as soon as possible.'
+    'If light remains illuminated and temperature does not decrease within limits,',
+    'land as soon as possible.'
   ]);
 
 // PDF p.3-4: ENGINE OIL PRESS
@@ -1734,7 +1738,8 @@ B214B_PROCS['rotor-brake'] = ptype('abnormal')+ptitle('ROTOR BRAKE')+
   plabel('Fault Condition')+pbullets(['Puck(s) not fully retracted.'])+
   plabel('Corrective Action')+pbullets([
     'Check handle — Off.',
-    'If light remains illuminated, land as soon as possible.'
+    'If light remains illuminated,',
+    'land as soon as possible.'
   ]);
 
 // PDF p.3-4: BATTERY (1 OR 2) HOT
@@ -1765,7 +1770,8 @@ B214B_PROCS['temp-42'] = ptype('abnormal')+ptitle('TEMP 42° BOX')+
   plabel('Fault Condition')+pbullets(['Excessive 42° intermediate gearbox oil temperature.'])+
   plabel('Corrective Action')+pbullets([
     'Reduce power.',
-    'If light remains illuminated, land as soon as possible.'
+    'If light remains illuminated, ',
+    'land as soon as possible.'
   ]);
 
 // PDF p.3-5: PRESS 90° BOX
@@ -1781,7 +1787,8 @@ B214B_PROCS['temp-90'] = ptype('abnormal')+ptitle('TEMP 90° BOX')+
   plabel('Fault Condition')+pbullets(['Excessive tail rotor gearbox oil temperature.'])+
   plabel('Corrective Action')+pbullets([
     'Reduce power.',
-    'If light remains illuminated, land as soon as possible.'
+    'If light remains illuminated, ',
+    'land as soon as possible.'
   ]);
 
 // PDF p.3-5: GRBX OIL PRESS
@@ -1799,23 +1806,28 @@ B214B_PROCS['grbx-oil-temp'] = ptype('abnormal')+ptitle('GRBX OIL TEMP')+
   plabel('Corrective Action')+pbullets([
     'Reduce power.',
     'Verify fault with gage reading.',
-    'If light remains illuminated and temperature does not decrease within limits, land as soon as possible.'
+    'If light remains illuminated and temperature does not decrease within limits,',
+    'land as soon as possible.'
   ]);
 
 // PDF p.3-6: ENG DUCT OVHT
 B214B_PROCS['eng-duct-ovht'] = ptype('abnormal')+ptitle('ENG DUCT OVHT')+
-  plabel('Fault Condition')+pbullets(['Reverse airflow in particle separator bypass. Flapper door is malfunctioning.'])+
+  plabel('Fault Condition')+pbullets([
+  'Reverse airflow in particle separator bypass.',
+  'Flapper door is malfunctioning.'])+
   plabel('Corrective Action')+pbullets([
     'In hovering flight, turn into relative wind.',
     'Monitor EGT and gas producer tachometer.',
-    'If surging occurs, land and inspect flapper door.'
+    'If surging occurs,',
+    'land and inspect flapper door.'
   ]);
 
 // PDF p.3-6: HYDR SYS 1
 B214B_PROCS['hydr-sys1'] = ptype('abnormal')+ptitle('HYDR SYS 1')+
   plabel('Fault Condition')+pbullets(['Number 1 hydraulic system has failed.'])+
   plabel('Corrective Action')+pbullets([
-    'Verify failure by observing hydraulic system #1 pressure, loss of tail rotor control boost and loss of AFCS yaw channel.',
+    'Verify failure by observing hydraulic system #1 pressure,',
+    'loss of tail rotor control boost and loss of AFCS yaw channel.',
     'Land as soon as practical.'
   ]);
 
@@ -1823,7 +1835,8 @@ B214B_PROCS['hydr-sys1'] = ptype('abnormal')+ptitle('HYDR SYS 1')+
 B214B_PROCS['hydr-sys2'] = ptype('abnormal')+ptitle('HYDR SYS 2')+
   plabel('Fault Condition')+pbullets(['Number 2 hydraulic system has failed.'])+
   plabel('Corrective Action')+pbullets([
-    'Verify failure by observing system #2 pressure, loss of AFCS pitch and roll channels.',
+    'Verify failure by observing system #2 pressure,',
+    'loss of AFCS pitch and roll channels.',
     'Land as soon as practical.'
   ]);
 
@@ -1832,7 +1845,8 @@ B214B_PROCS['eng-ovspd'] = ptype('abnormal')+ptitle('ENG OVSPD TRIP')+
   plabel('Fault Condition')+pbullets(['Engine overspeed trip has actuated.'])+
   plabel('Corrective Action')+pbullets([
     'Reduce engine N2 speed to within limits.',
-    'If RPM will not decrease within limits, accomplish fuel control malfunction procedure.'
+    'If RPM will not decrease within limits, ',
+    'accomplish fuel control malfunction procedure.'
   ]);
 
 // PDF p.4-3: MAIN INVERTER
@@ -1862,7 +1876,8 @@ B214B_PROCS['gov-manual'] = ptype('abnormal')+ptitle('GOV MANUAL')+
 
 // PDF p.4-3: FUEL FILTER
 B214B_PROCS['fuel-filter'] = ptype('abnormal')+ptitle('FUEL FILTER')+
-  plabel('Fault Condition')+pbullets(['Fuel filter is partially closed and is now by-passed. Possible fuel contamination.'])+
+  plabel('Fault Condition')+pbullets(['Fuel filter is partially closed and is now by-passed. ',
+  'Possible fuel contamination.'])+
   plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
 
 // PDF p.4-4: XMSN CHIP DET
@@ -1908,7 +1923,10 @@ B214B_PROCS['fuel-boost-l'] = ptype('abnormal')+ptitle('LEFT FUEL BOOST')+
 // PDF p.4-4: FUEL LOW
 B214B_PROCS['fuel-low'] = ptype('abnormal')+ptitle('FUEL LOW')+
   plabel('Fault Condition')+pbullets(['Fuel quantity below 330 pounds.'])+
-  plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
+  plabel('Corrective Action')+pbullets(['.']);
+
+
+
 
 // PDF p.4-4: RIGHT FUEL BOOST
 B214B_PROCS['fuel-boost-r'] = ptype('abnormal')+ptitle('RIGHT FUEL BOOST')+
@@ -1928,12 +1946,47 @@ B214B_PROCS['eng-grbx-filter'] = ptype('abnormal')+ptitle('ENG GRBX FILTER')+
   plabel('Fault Condition')+pbullets(['Gearbox oil is by-passing filter.'])+
   plabel('Corrective Action')+pbullets(['Land as soon as practical.']);
 
+
+// PDF p.4-4: ENG CHIP DET
+B214B_PROCS['eng-chip-det'] = ptype('abnormal')+ptitle('ENG CHIP DET')+
+  plabel('Fault Condition')+pbullets(['Metal particles detected in engine oil'])+
+  plabel('Corrective Action')+pbullets(['Reduce power - Land as soon as possible.']);
+
+
+// PDF p.4-4: DOOR LOCK
+B214B_PROCS['door-lock'] = ptype('abnormal')+ptitle('DOOR LOCK')+
+  plabel('Fault Condition')+pbullets(['Sliding door(s) open'])+
+  plabel('Corrective Action')+pbullets([
+  'Fasten seat belts.',
+  'Land as soon as practical and close door(s).']);
+
+
+// PDF p.4-4: EXT POWER
+B214B_PROCS['ext-power'] = ptype('abnormal')+ptitle('EXT POWER')+
+  plabel('Fault Condition')+pbullets(['External power access open'])+
+  plabel('Corrective Action')+pbullets(['Secure door.']);
+
+// PDF p.4-4: DC GENERATOR
+B214B_PROCS['dc-gen'] = ptype('abnormal')+ptitle('DC GENERATOR')+
+  plabel('Fault Condition')+pbullets(['DC Generator has failed'])+
+  plabel('Corrective Action')+pbullets([
+  'Reset generator switch',
+  'if generator is not restored, check Non Ess Bus switch to normal position.']);
+
+
+
+// PDF p.4-4: ENG ANTI-ICE ON
+B214B_PROCS['eng-anti-ice'] = ptype('abnormal')+ptitle('ENG ANTI-ICE ON')+
+  plabel('Fault Condition')+pbullets(['Engine Anti-Icing system operating'])+
+  plabel('Corrective Action')+pbullets(['Monitor E GT, if not within limits, turn anti-icing system off.']);
+
+
+
 // ── NOT IN PDF — development notice ──
-B214B_PROCS['door-lock']    = DEV;
-B214B_PROCS['ext-power']    = DEV;
-B214B_PROCS['dc-gen']       = DEV;
-B214B_PROCS['eng-chip-det'] = DEV;
-B214B_PROCS['eng-anti-ice'] = DEV;
+//B214B_PROCS['door-lock']    = DEV;
+//B214B_PROCS['ext-power']    = DEV;
+//B214B_PROCS['dc-gen']       = DEV;
+//B214B_PROCS['eng-anti-ice'] = DEV;
 B214B_PROCS['spare']        = '<p class="proc-dev">SPARE — Nonfunctional. No procedure.</p>';
 
 function b214b(id) {
