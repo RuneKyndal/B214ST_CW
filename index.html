@@ -271,90 +271,91 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
      Widths: 58+4+58+4+94+4+58+4+58 = 342  → left edge = 260-171 = 89
      Right sub-panel mirrors left: OIL/ECU/BLOWER/VALVE right of center
 ════════════════════ -->
+<rect x="5" y="173" width="510" height="328" fill="#0d0d0d" stroke="#eee" stroke-width="1" rx="3"></rect>
 
 <!-- Row A: FUEL PRESS / ANTI-ICE / RESET / ANTI-ICE / FUEL PRESS -->
 <!-- FUEL PRESS L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-press')">
-  <rect x="89" y="176" width="58" height="28"/>
-  <text x="118" y="188" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="118" y="198" text-anchor="middle" font-size="8">PRESS</text>
+  <rect x="10" y="176" width="80" height="28"/>
+  <text x="50" y="188" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="50" y="198" text-anchor="middle" font-size="8">PRESS</text>
 </g>
 <!-- ANTI-ICE L  x=151 -->
 <g class="cw-light cw-green" onclick="showProc('anti-ice')">
-  <rect x="151" y="176" width="58" height="28"/>
-  <text x="180" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
-  <text x="180" y="198" text-anchor="middle" font-size="8">ON</text>
+  <rect x="94" y="176" width="80" height="28"/>
+  <text x="134" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="134" y="198" text-anchor="middle" font-size="8">ON</text>
 </g>
 <!-- RESET/TEST center box  x=213  w=94 spans rows A-C -->
-<rect x="213" y="176" width="94" height="88" fill="#0d0d0d" stroke="#333" stroke-width="1" rx="2"/>
-<text x="260" y="196" text-anchor="middle" font-size="7" fill="#555">RESET</text>
-<text x="260" y="209" text-anchor="middle" font-size="7" fill="#555">TEST ◉ PNL</text>
-<text x="247" y="222" text-anchor="middle" font-size="6" fill="#555">ENG</text>
-<text x="273" y="222" text-anchor="middle" font-size="6" fill="#555">ENG</text>
-<text x="247" y="233" text-anchor="middle" font-size="6" fill="#555">1</text>
-<text x="273" y="233" text-anchor="middle" font-size="6" fill="#555">2</text>
-<text x="260" y="246" text-anchor="middle" font-size="6" fill="#555">BRT ◉ DIM</text>
+<rect x="213" y="176" width="94" height="88" fill="#0d0d0d" stroke="#eee" stroke-width="1" rx="2"/>
+<text x="260" y="196" text-anchor="middle" font-size="7" fill="#eee">RESET</text>
+<text x="260" y="209" text-anchor="middle" font-size="7" fill="#eee">TEST ◉ PNL</text>
+<text x="247" y="222" text-anchor="middle" font-size="6" fill="#eee">ENG</text>
+<text x="273" y="222" text-anchor="middle" font-size="6" fill="#eee">ENG</text>
+<text x="247" y="233" text-anchor="middle" font-size="6" fill="#eee">1</text>
+<text x="273" y="233" text-anchor="middle" font-size="6" fill="#eee">2</text>
+<text x="260" y="246" text-anchor="middle" font-size="6" fill="#eee">BRT ◉ DIM</text>
 <!-- ANTI-ICE R  x=311 -->
 <g class="cw-light cw-green" onclick="showProc('anti-ice')">
-  <rect x="311" y="176" width="58" height="28"/>
-  <text x="340" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
-  <text x="340" y="198" text-anchor="middle" font-size="8">ON</text>
+  <rect x="346" y="176" width="80" height="28"/>
+  <text x="386" y="188" text-anchor="middle" font-size="8">ANTI-ICE</text>
+  <text x="386" y="198" text-anchor="middle" font-size="8">ON</text>
 </g>
 <!-- FUEL PRESS R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-press')">
-  <rect x="373" y="176" width="58" height="28"/>
-  <text x="402" y="188" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="402" y="198" text-anchor="middle" font-size="8">PRESS</text>
+  <rect x="430" y="176" width="80" height="28"/>
+  <text x="470" y="188" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="470" y="198" text-anchor="middle" font-size="8">PRESS</text>
 </g>
 
 <!-- Row B: ECU LOCKOUT / OIL / [RESET BOX] / OIL / ECU LOCKOUT -->
 <!-- ECU LOCKOUT L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
-  <rect x="89" y="208" width="58" height="28"/>
-  <text x="118" y="220" text-anchor="middle" font-size="8">ECU</text>
-  <text x="118" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
+  <rect x="10" y="208" width="80" height="28"/>
+  <text x="50" y="220" text-anchor="middle" font-size="8">ECU</text>
+  <text x="50" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
 </g>
 <!-- OIL L  x=151 -->
 <g class="cw-light cw-warn" onclick="showProc('eng-oil')">
-  <rect x="151" y="208" width="58" height="28"/>
-  <text x="180" y="225" text-anchor="middle" font-size="9">OIL</text>
+  <rect x="94" y="208" width="80" height="28"/>
+  <text x="134" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
 <!-- OIL R  x=311 -->
 <g class="cw-light cw-warn" onclick="showProc('eng-oil')">
-  <rect x="311" y="208" width="58" height="28"/>
-  <text x="340" y="225" text-anchor="middle" font-size="9">OIL</text>
+  <rect x="346" y="208" width="80" height="28"/>
+  <text x="386" y="225" text-anchor="middle" font-size="9">OIL</text>
 </g>
 <!-- ECU LOCKOUT R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('ecu-lockout')">
-  <rect x="373" y="208" width="58" height="28"/>
-  <text x="402" y="220" text-anchor="middle" font-size="8">ECU</text>
-  <text x="402" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
+  <rect x="430" y="208" width="80" height="28"/>
+  <text x="470" y="220" text-anchor="middle" font-size="8">ECU</text>
+  <text x="470" y="230" text-anchor="middle" font-size="8">LOCKOUT</text>
 </g>
 
 <!-- Row C: FUEL VALVE / BLOWER OFF / [RESET BOX] / BLOWER OFF / FUEL VALVE -->
 <!-- FUEL VALVE L  x=89 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
-  <rect x="89" y="240" width="58" height="28"/>
-  <text x="118" y="252" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="118" y="262" text-anchor="middle" font-size="8">VALVE</text>
+  <rect x="10" y="240" width="80" height="28"/>
+  <text x="50" y="252" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="50" y="262" text-anchor="middle" font-size="8">VALVE</text>
 </g>
 <!-- BLOWER OFF L  x=151 -->
 <g class="cw-light cw-caut" onclick="showProc('blower-off')">
-  <rect x="151" y="240" width="58" height="28"/>
-  <text x="180" y="252" text-anchor="middle" font-size="8">BLOWER</text>
-  <text x="180" y="262" text-anchor="middle" font-size="8">OFF</text>
+  <rect x="94" y="240" width="80" height="28"/>
+  <text x="134" y="252" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="134" y="262" text-anchor="middle" font-size="8">OFF</text>
 </g>
 <!-- BLOWER OFF R  x=311 -->
 <g class="cw-light cw-caut" onclick="showProc('blower-off')">
-  <rect x="311" y="240" width="58" height="28"/>
-  <text x="340" y="252" text-anchor="middle" font-size="8">BLOWER</text>
-  <text x="340" y="262" text-anchor="middle" font-size="8">OFF</text>
+  <rect x="346" y="240" width="80" height="28"/>
+  <text x="386" y="252" text-anchor="middle" font-size="8">BLOWER</text>
+  <text x="386" y="262" text-anchor="middle" font-size="8">OFF</text>
 </g>
 <!-- FUEL VALVE R  x=373 -->
 <g class="cw-light cw-caut" onclick="showProc('fuel-valve')">
-  <rect x="373" y="240" width="58" height="28"/>
-  <text x="402" y="252" text-anchor="middle" font-size="8">FUEL</text>
-  <text x="402" y="262" text-anchor="middle" font-size="8">VALVE</text>
+  <rect x="430" y="240" width="80" height="28"/>
+  <text x="470" y="252" text-anchor="middle" font-size="8">FUEL</text>
+  <text x="470" y="262" text-anchor="middle" font-size="8">VALVE</text>
 </g>
 
 <!-- divider line -->
@@ -363,6 +364,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 <!-- ════════════════════
      ROW — NO.1 FUEL TRANS  y=278
 ════════════════════ -->
+
+
 <g class="cw-light cw-caut" onclick="showProc('fuel-trans')">
   <rect x="10" y="278" width="80" height="28"/>
   <text x="50" y="290" text-anchor="middle" font-size="8">NO.1 FUEL</text>
@@ -653,8 +656,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 </g>
 
 <!-- CHIP INDICATOR PANEL  y=582 -->
-<rect x="60" y="582" width="400" height="72" fill="#0d0d0d" stroke="#555" stroke-width="1" rx="3"/>
-<text x="260" y="594" text-anchor="middle" font-size="8" fill="#888">ANNUNCIATOR INDEX</text>
+<rect x="60" y="582" width="400" height="72" fill="#0d0d0d" stroke="#eee" stroke-width="1" rx="3"/>
+<text x="260" y="594" text-anchor="middle" font-size="8" fill="#eee">ANNUNCIATOR INDEX</text>
 <g class="cw-light cw-caut" onclick="showProc('xmsn-chip')">
   <rect x="70" y="597" width="70" height="22"/>
   <text x="105" y="606" text-anchor="middle" font-size="7">MAIN</text>
@@ -665,10 +668,10 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
   <text x="105" y="632" text-anchor="middle" font-size="7">T/R</text>
   <text x="105" y="642" text-anchor="middle" font-size="7">DRIVE</text>
 </g>
-<text x="260" y="606" text-anchor="middle" font-size="7" fill="#666">CHIP INDICATOR</text>
-<circle cx="247" cy="620" r="9" fill="none" stroke="#555" stroke-width="1"/>
-<circle cx="271" cy="620" r="9" fill="none" stroke="#555" stroke-width="1"/>
-<text x="259" y="638" text-anchor="middle" font-size="6" fill="#555">PUSH TO CLEAR</text>
+<text x="260" y="606" text-anchor="middle" font-size="7" fill="#eee">CHIP INDICATOR</text>
+<circle cx="247" cy="620" r="9" fill="none" stroke="#eee" stroke-width="1"/>
+<circle cx="271" cy="620" r="9" fill="none" stroke="#eee" stroke-width="1"/>
+<text x="259" y="638" text-anchor="middle" font-size="6" fill="#eee">PUSH TO CLEAR</text>
 <g class="cw-light cw-caut" onclick="showProc('gr-box-chip')">
   <rect x="354" y="597" width="46" height="22"/>
   <text x="377" y="611" text-anchor="middle" font-size="8">CB 1</text>
@@ -685,9 +688,9 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 
 <!-- BACK TO MAIN PAGE BUTTON -->
 <g style="cursor:pointer;" onclick="showPage('landing')">
-  <rect x="178" y="664" width="164" height="36" fill="#1a1a1a" stroke="#555" stroke-width="1.5" rx="4"/>
-  <text x="260" y="677" text-anchor="middle" font-size="9" fill="#aaa" font-weight="bold">◀ MAIN PAGE</text>
-  <text x="260" y="691" text-anchor="middle" font-size="7" fill="#666">SELECT AIRCRAFT</text>
+  <rect x="178" y="664" width="164" height="36" fill="#1a1a1a" stroke="#eee" stroke-width="1.5" rx="4"/>
+  <text x="260" y="677" text-anchor="middle" font-size="9" fill="#eee" font-weight="bold">◀ MAIN PAGE</text>
+  <text x="260" y="691" text-anchor="middle" font-size="7" fill="#eee">SELECT AIRCRAFT</text>
 </g>
 
 </svg>
@@ -1618,9 +1621,9 @@ PROCS['ext-power'] = '<p class="proc-dev">EXT POWER — Advisory light. Illumina
 
 <!-- BACK TO MAIN PAGE BUTTON -->
 <g style="cursor:pointer;" onclick="showPage('landing')">
-  <rect x="178" y="478" width="164" height="36" fill="#1a1a1a" stroke="#555" stroke-width="1.5" rx="4"/>
-  <text x="260" y="491" text-anchor="middle" font-size="9" fill="#aaa" font-weight="bold">◀ MAIN PAGE</text>
-  <text x="260" y="505" text-anchor="middle" font-size="7" fill="#666">SELECT AIRCRAFT</text>
+  <rect x="178" y="478" width="164" height="36" fill="#1a1a1a" stroke="#eee" stroke-width="1.5" rx="4"/>
+  <text x="260" y="491" text-anchor="middle" font-size="9" fill="#eee" font-weight="bold">◀ MAIN PAGE</text>
+  <text x="260" y="505" text-anchor="middle" font-size="7" fill="#eee">SELECT AIRCRAFT</text>
 </g>
 
 </svg>
