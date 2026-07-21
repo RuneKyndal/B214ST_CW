@@ -103,6 +103,8 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#111;color:#fff;f
 .proc-warning::before{content:"⚠ WARNING";display:block;font-size:0.9rem;margin-bottom:4px;}
 .cw-light-ref{display:inline-block;background:#1a1a1a;border:1.5px solid #ffcc00;color:#ffcc00;font-size:0.7rem;font-weight:bold;padding:1px 6px;border-radius:2px;margin:0 2px;}
 .cw-light-ref.red{border-color:#ff4444;color:#ff4444;}
+.gw-light-ref{display:inline-block;background:#1a1a1a;border:1.5px solid #00cc44;color:#00cc44;font-size:0.7rem;font-weight:bold;padding:1px 6px;border-radius:2px;margin:0 2px;}
+.gw-light-ref.red{border-color:#00cc44;color:#00cc44;}
 .proc-dev{color:#555;font-style:italic;text-align:center;margin-top:30px;font-size:0.9rem;}
 
 /* ── SCROLLBAR ── */
@@ -782,6 +784,7 @@ function pnote(t){return '<div class="proc-note"><strong>NOTE</strong><br>'+t+'<
 function pcaut(t){return '<div class="proc-caution">'+t+'</div>';}
 function pwarn(t){return '<div class="proc-warning">'+t+'</div>';}
 function plight(t,red){return '<span class="cw-light-ref'+(red?' red':'')+'">'+t+'</span>';}
+function glight(t,red){return '<span class="gw-light-ref'+(red?' red':'')+'">'+t+'</span>';}
 function pbullets(arr){return '<ul class="proc-items">'+arr.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul>';}
 function psteps(arr){
   return '<ol class="proc-steps">'+arr.map(function(s,i){
@@ -997,7 +1000,7 @@ plabel('Actions')+psteps([
 
 // ── ENGINE OIL ────────────────────────────────
 PROCS['eng-oil'] = ptype('abnormal')+ptitle('ENGINE OIL PRESSURE')+
-plabel('Indications')+pbullets([plight('OIL')+' light illuminates.'])+
+plabel('Indications')+pbullets([plight('OIL',true)+' light illuminates.'])+
 plabel('Actions')+psteps([
   ['Check ENG OIL gauge.',''],
   ['Reduce affected engine power.',''],
@@ -1218,7 +1221,7 @@ plabel('Procedures')+psteps([
 // ── BATTERY SYSTEM ────────────────────────────
 PROCS['batt-sys'] = ptype('abnormal')+ptitle('BATTERY SYSTEM')+
 plabel('Warning may occur due to')+pbullets(['Cell imbalance in battery.','Defective charger monitor.','Battery temperature above 145°F.'])+
-plabel('Indications')+pbullets([plight('NO 1 BATT SYS')+' or '+plight('NO 2 BATT SYS')+' warning light illuminates.'])+
+plabel('Indications')+pbullets([plight('NO 1 BATT SYS',true)+' or '+plight('NO 2 BATT SYS',true)+' warning light illuminates.'])+
 plabel('Actions')+psteps([['BATTERY Switch (affected battery)','OFF']])+
 pnote('A hot battery (above 155°) will illuminate respective BATT HOT and BATT SYS lights. Battery shall be checked and serviced in accordance with manufacturer\'s instructions.');
 
@@ -1423,7 +1426,7 @@ psteps([
 
 // ── ANTI-ICE ─────────────────────────────────
 PROCS['anti-ice'] = ptype('abnormal')+ptitle('ANTI-ICE ON')+
-plabel('Indication')+pbullets([plight('ANTI-ICE ON')+' light illuminates — indicates that engine anti-ice is active.'])+
+plabel('Indication')+pbullets([glight('ANTI-ICE ON')+' light illuminates — indicates that engine anti-ice is active.'])+
 '<p style="font-size:0.9rem;color:#aaa;">No abnormal procedure required unless anti-ice is NOT commanded on. If illuminated unexpectedly, monitor engine performance and check anti-ice switches.</p>';
 
 // ── ENG ANTI-ICE ─────────────────────────────
